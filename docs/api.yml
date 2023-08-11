@@ -27,7 +27,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/TaskForCreate'
       responses:
         '201':
           description: Created
@@ -63,7 +63,7 @@ paths:
           description: Internal Server Error
     put:
       summary: タスク更新
-      description: タスクの詳細情報を更新します。
+      description: タスクの詳細情報を更新します。リクエストボディには、更新するプロパティのうち少なくとも1つが含まれている必要があります。
       parameters:
         - name: id
           in: path
@@ -75,39 +75,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          description: Bad Request
-        '404':
-          description: Not Found
-        '500':
-          description: Internal Server Error
-    patch:
-      summary: タスクの完了状態を変更
-      description: タスクの完了状態を変更します。
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                completed:
-                  type: boolean
-                  description: タスクが完了したかどうか。
+              $ref: '#/components/schemas/TaskForUpdate'
       responses:
         '200':
           description: OK
@@ -133,6 +101,37 @@ paths:
       responses:
         '204':
           description: No Content
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /tasks/{id}/complete:
+    patch:
+      summary: タスク完了状態変更
+      description: タスクの完了状態を変更します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCompletion'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad Request
         '404':
           description: Not Found
         '500':
@@ -166,3 +165,27 @@ components:
           format: int64
           description: タスクの最終更新日時（UNIXタイムスタンプ）。
           example: 1678349200
+    TaskForCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: タスクのタイトル。
+          example: '買い物する'
+    TaskForUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: タスクのタイトル。
+          example: '買い物する'
+    TaskCompletion:
+      type: object
+      required:
+        - completed
+      properties:
+        completed:
+          type: boolean
+          description: タスクが完了したかどうかを設定します。
