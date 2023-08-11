@@ -1,0 +1,229 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: タスクリストAPI
+
+paths:
+  /tasks:
+    get:
+      summary: タスク一覧取得
+      description: タスク一覧のサマリーを取得します。ソートは作成日時の昇順です。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskSummary'
+        '500':
+          description: Internal Server Error
+    post:
+      summary: タスク作成
+      description: 新しいタスクを作成します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskForCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+
+  /tasks/{id}:
+    get:
+      summary: タスク取得
+      description: IDで指定されたタスクを取得します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      summary: タスク更新
+      description: タスクの詳細情報を更新します。リクエストボディには、少なくとも1つのプロパティが含まれている必要があります。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskForUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: タスク削除
+      description: タスクを削除します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /tasks/{id}/complete:
+    patch:
+      summary: タスク完了状態変更
+      description: タスクの完了状態を変更します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCompletion'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: タスクの一意の識別子(UUID)
+          example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
+        title:
+          type: string
+          description: タスクのタイトル。
+          example: 'スーパーに買い物に行く'
+        completed:
+          type: boolean
+          description: タスクが完了したかどうか
+          example: false
+        description:
+          type: string
+          description: タスクの説明。
+          example: '牛乳と卵を買う'
+        createdAt:
+          type: string
+          format: date-time
+          description: タスクの作成日時（ISO 8601形式）
+          example: '2021-06-22T14:24:02.071Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: タスクの最終更新日時（ISO 8601形式）
+          example: '2021-06-22T14:24:02.071Z'
+    TaskSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: タスクの一意の識別子(UUID)
+          example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
+        title:
+          type: string
+          description: タスクのタイトル
+          example: 'スーパーに買い物に行く'
+        completed:
+          type: boolean
+          description: タスクが完了したかどうか
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          description: タスクの作成日時（ISO 8601形式）
+          example: '2021-06-22T14:24:02.071Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: タスクの最終更新日時（ISO 8601形式）
+          example: '2021-06-22T14:24:02.071Z'
+    TaskForCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: タスクのタイトル
+          example: 'コーヒーを淹れる'
+        description:
+          type: string
+          description: タスクの説明。
+          example: '濃いめで'
+    TaskForUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: タスクのタイトル
+          example: 'ドーナッツを買う'
+        description:
+          type: string
+          description: タスクの説明
+          example: 'オールドファッションを2つ'
+    TaskCompletion:
+      type: object
+      required:
+        - completed
+      properties:
+        completed:
+          type: boolean
+          description: タスクが完了したかどうか
