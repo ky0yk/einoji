@@ -150,7 +150,7 @@ components:
         title:
           type: string
           description: タスクのタイトル。
-          example: '買い物する'
+          example: '買い物に行く'
         completed:
           type: boolean
           description: タスクが完了したかどうか。
@@ -173,14 +173,14 @@ components:
         title:
           type: string
           description: タスクのタイトル。
-          example: '買い物する'
+          example: 'コーヒーを淹れる'
     TaskForUpdate:
       type: object
       properties:
         title:
           type: string
           description: タスクのタイトル。
-          example: '買い物する'
+          example: 'ドーナッツを買う'
     TaskCompletion:
       type: object
       required:
