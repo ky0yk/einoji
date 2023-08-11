@@ -16,7 +16,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Task'
+                  $ref: '#/components/schemas/TaskSummary'
         '500':
           description: Internal Server Error
     post:
@@ -150,7 +150,37 @@ components:
         title:
           type: string
           description: タスクのタイトル。
-          example: '買い物に行く'
+          example: 'スーパーに買い物に行く'
+        completed:
+          type: boolean
+          description: タスクが完了したかどうか。
+          example: false
+        description:
+          type: string
+          description: タスクの説明。
+          example: '牛乳と卵を買う'
+        createdAt:
+          type: string
+          format: date-time
+          description: タスクの作成日時（ISO 8601形式）。
+          example: '2021-06-22T14:24:02.071Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: タスクの最終更新日時（ISO 8601形式）。
+          example: '2021-06-22T14:24:02.071Z'
+    TaskSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: タスクの一意の識別子(UUID)。
+          example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
+        title:
+          type: string
+          description: タスクのタイトル。
+          example: 'スーパーに買い物に行く'
         completed:
           type: boolean
           description: タスクが完了したかどうか。
@@ -174,6 +204,10 @@ components:
           type: string
           description: タスクのタイトル。
           example: 'コーヒーを淹れる'
+        description:
+          type: string
+          description: タスクの説明。
+          example: '濃いめで'
     TaskForUpdate:
       type: object
       properties:
@@ -181,6 +215,10 @@ components:
           type: string
           description: タスクのタイトル。
           example: 'ドーナッツを買う'
+        description:
+          type: string
+          description: タスクの説明。
+          example: 'オールドファッションを2つ'
     TaskCompletion:
       type: object
       required:
