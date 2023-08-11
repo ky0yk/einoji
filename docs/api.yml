@@ -7,7 +7,7 @@ paths:
   /tasks:
     get:
       summary: タスク一覧取得
-      description: タスクの一覧を取得します。ソートは作成日時の昇順です。
+      description: タスク一覧のサマリーを取得します。ソートは作成日時の昇順です。
       responses:
         '200':
           description: OK
@@ -63,7 +63,7 @@ paths:
           description: Internal Server Error
     put:
       summary: タスク更新
-      description: タスクの詳細情報を更新します。リクエストボディには、更新するプロパティのうち少なくとも1つが含まれている必要があります。
+      description: タスクの詳細情報を更新します。リクエストボディには、少なくとも1つのプロパティが含まれている必要があります。
       parameters:
         - name: id
           in: path
@@ -145,7 +145,7 @@ components:
         id:
           type: string
           format: uuid
-          description: タスクの一意の識別子(UUID)。
+          description: タスクの一意の識別子(UUID)
           example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
         title:
           type: string
@@ -153,7 +153,7 @@ components:
           example: 'スーパーに買い物に行く'
         completed:
           type: boolean
-          description: タスクが完了したかどうか。
+          description: タスクが完了したかどうか
           example: false
         description:
           type: string
@@ -162,12 +162,12 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: タスクの作成日時（ISO 8601形式）。
+          description: タスクの作成日時（ISO 8601形式）
           example: '2021-06-22T14:24:02.071Z'
         updatedAt:
           type: string
           format: date-time
-          description: タスクの最終更新日時（ISO 8601形式）。
+          description: タスクの最終更新日時（ISO 8601形式）
           example: '2021-06-22T14:24:02.071Z'
     TaskSummary:
       type: object
@@ -175,25 +175,25 @@ components:
         id:
           type: string
           format: uuid
-          description: タスクの一意の識別子(UUID)。
+          description: タスクの一意の識別子(UUID)
           example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
         title:
           type: string
-          description: タスクのタイトル。
+          description: タスクのタイトル
           example: 'スーパーに買い物に行く'
         completed:
           type: boolean
-          description: タスクが完了したかどうか。
+          description: タスクが完了したかどうか
           example: false
         createdAt:
           type: string
           format: date-time
-          description: タスクの作成日時（ISO 8601形式）。
+          description: タスクの作成日時（ISO 8601形式）
           example: '2021-06-22T14:24:02.071Z'
         updatedAt:
           type: string
           format: date-time
-          description: タスクの最終更新日時（ISO 8601形式）。
+          description: タスクの最終更新日時（ISO 8601形式）
           example: '2021-06-22T14:24:02.071Z'
     TaskForCreate:
       type: object
@@ -202,7 +202,7 @@ components:
       properties:
         title:
           type: string
-          description: タスクのタイトル。
+          description: タスクのタイトル
           example: 'コーヒーを淹れる'
         description:
           type: string
@@ -213,11 +213,11 @@ components:
       properties:
         title:
           type: string
-          description: タスクのタイトル。
+          description: タスクのタイトル
           example: 'ドーナッツを買う'
         description:
           type: string
-          description: タスクの説明。
+          description: タスクの説明
           example: 'オールドファッションを2つ'
     TaskCompletion:
       type: object
@@ -226,4 +226,4 @@ components:
       properties:
         completed:
           type: boolean
-          description: タスクが完了したかどうかを設定します。
+          description: タスクが完了したかどうか
