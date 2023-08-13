@@ -10,7 +10,7 @@ const DYNAMODB_ENDPOINT = process.env.DYNAMODB_ENDPOINT;
 
 const dynamoDBClient = new DynamoDBClient({
   region: AWS_REGION,
-  endpoint: DYNAMODB_ENDPOINT || undefined,
+  endpoint: DYNAMODB_ENDPOINT,
 });
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);

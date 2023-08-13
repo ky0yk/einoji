@@ -8,11 +8,13 @@ import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks';
 import { TaskRecord } from '../../../src/domain/taskRecord';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
+const REGION = process.env.AWS_REGION;
+const DYNAMODB_ENDPOINT = process.env.DYNAMODB_ENDPOINT;
 
 describe('fetchTaskById', () => {
   const localDynamoDB = new DynamoDBClient({
-    endpoint: 'http://localhost:8000',
-    region: 'local',
+    endpoint: DYNAMODB_ENDPOINT,
+    region: REGION,
   });
   const ddbDocClient = DynamoDBDocumentClient.from(localDynamoDB);
 
