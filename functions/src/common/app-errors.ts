@@ -2,8 +2,8 @@ import { ERROR_MESSAGES, ErrorCode } from './error-codes';
 
 class AppError extends Error {
   constructor(
-    public errorCode: ErrorCode,
-    public message: string = ERROR_MESSAGES[errorCode],
+    public code: ErrorCode,
+    public message: string = ERROR_MESSAGES[code],
     public originalError?: any,
   ) {
     super(message);
@@ -11,13 +11,13 @@ class AppError extends Error {
 }
 
 export class ClientError extends AppError {
-  constructor(errorCode: ErrorCode, originalError?: any) {
-    super(errorCode, ERROR_MESSAGES[errorCode], originalError);
+  constructor(code: ErrorCode, originalError?: any) {
+    super(code, ERROR_MESSAGES[code], originalError);
   }
 }
 
 export class ServerError extends AppError {
-  constructor(errorCode: ErrorCode, originalError?: any) {
-    super(errorCode, ERROR_MESSAGES[errorCode], originalError);
+  constructor(code: ErrorCode, originalError?: any) {
+    super(code, ERROR_MESSAGES[code], originalError);
   }
 }

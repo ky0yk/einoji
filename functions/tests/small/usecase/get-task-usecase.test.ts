@@ -62,7 +62,7 @@ describe('errorHandler', () => {
     const result = errorHandler(error);
 
     expect(result).toBeInstanceOf(ClientError);
-    expect(result.errorCode).toEqual(ErrorCode.TASK_NOT_FOUND);
+    expect(result.code).toEqual(ErrorCode.TASK_NOT_FOUND);
   });
 
   it('should return ClientError for DdbClientError', () => {
@@ -71,7 +71,7 @@ describe('errorHandler', () => {
     const result = errorHandler(error);
 
     expect(result).toBeInstanceOf(ClientError);
-    expect(result.errorCode).toEqual(ErrorCode.DDB_CLIENT_ERROR);
+    expect(result.code).toEqual(ErrorCode.DDB_CLIENT_ERROR);
   });
 
   it('should return ServerError for DdbServerError', () => {
@@ -80,7 +80,7 @@ describe('errorHandler', () => {
     const result = errorHandler(error);
 
     expect(result).toBeInstanceOf(ServerError);
-    expect(result.errorCode).toEqual(ErrorCode.DDB_SERVER_ERROR);
+    expect(result.code).toEqual(ErrorCode.DDB_SERVER_ERROR);
   });
 
   it('should return ServerError for other errors', () => {
@@ -89,6 +89,6 @@ describe('errorHandler', () => {
     const result = errorHandler(error);
 
     expect(result).toBeInstanceOf(ServerError);
-    expect(result.errorCode).toEqual(ErrorCode.INTERNAL_SERVER_ERROR);
+    expect(result.code).toEqual(ErrorCode.INTERNAL_SERVER_ERROR);
   });
 });
