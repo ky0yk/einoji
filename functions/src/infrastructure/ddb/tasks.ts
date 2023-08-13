@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { DdbServerError } from './errors/ddb-errors';
-import { logger } from '../../utils/logger';
+import { logger } from '../../common/logger';
 import { TaskRecord, TaskRecordSchema } from '../../domain/taskRecord';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
