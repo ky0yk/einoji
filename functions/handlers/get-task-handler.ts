@@ -5,14 +5,15 @@ import {
   HttpStatus,
   LambdaResponse,
 } from './utils/http-response';
-import {
-  ErrorHandler,
-  RequestHandlerWithoutContext,
-  handlerFactory,
-} from './utils/handler-factory';
+
 import { AppError, ClientError } from '../src/common/app-errors';
 import { ErrorCode } from '../src/common/error-codes';
 import { getTaskUseCase } from '../src/usecases/get-task-usecase';
+import {
+  RequestErrorHandler,
+  handlerFactory,
+  RequestHandlerWithoutContext,
+} from './utils/handler-factory';
 
 export const EventSchema = z.object({
   pathParameters: z.object({ id: z.string().uuid() }),
@@ -35,7 +36,7 @@ const requestHandler: RequestHandlerWithoutContext = async (
   return httpResponse(HttpStatus.OK).withBody(task);
 };
 
-export const errorHandler: ErrorHandler = async (
+export const errorHandler: RequestErrorHandler = async (
   error: AppError,
 ): Promise<LambdaResponse> => {
   switch (error.code) {
