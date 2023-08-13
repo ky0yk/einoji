@@ -8,6 +8,14 @@ export const LambdaResponseSchema = z.object({
 
 export type LambdaResponse = z.infer<typeof LambdaResponseSchema>;
 
+type JsonSerializable =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JsonSerializable }
+  | JsonSerializable[];
+
 export enum HttpStatus {
   OK = 200,
   BAD_REQUEST = 400,
@@ -16,7 +24,7 @@ export enum HttpStatus {
 }
 
 export const httpResponse = (status: HttpStatus) => ({
-  withBody: (body: any): LambdaResponse => ({
+  withBody: (body: JsonSerializable): LambdaResponse => ({
     statusCode: status,
     body: JSON.stringify(body),
   }),

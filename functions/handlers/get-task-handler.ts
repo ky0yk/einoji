@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
 import { z } from 'zod';
 import {
   httpResponse,
@@ -7,10 +7,10 @@ import {
 } from './utils/http-response';
 import {
   ErrorHandler,
-  RequestHandler,
+  RequestHandlerWithoutContext,
   handlerFactory,
 } from './utils/handler-factory';
-import { ClientError } from '../src/common/app-errors';
+import { AppError, ClientError } from '../src/common/app-errors';
 import { ErrorCode } from '../src/common/error-codes';
 import { getTaskUseCase } from '../src/usecases/get-task-usecase';
 
@@ -18,9 +18,8 @@ export const EventSchema = z.object({
   pathParameters: z.object({ id: z.string().uuid() }),
 });
 
-const requestHandler: RequestHandler = async (
+const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
-  context: Context,
 ): Promise<LambdaResponse> => {
   const eventResult = EventSchema.safeParse(event);
 
@@ -37,7 +36,7 @@ const requestHandler: RequestHandler = async (
 };
 
 export const errorHandler: ErrorHandler = async (
-  error,
+  error: AppError,
 ): Promise<LambdaResponse> => {
   switch (error.code) {
     case ErrorCode.TASK_NOT_FOUND:

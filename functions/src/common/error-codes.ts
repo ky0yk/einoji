@@ -4,6 +4,7 @@ export enum ErrorCode {
   DDB_SERVER_ERROR = 'DDB_SERVER_ERROR',
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   INVALID_REQUEST = 'INVALID_REQUEST',
+  UNKNOWN_ERROR = 'UNKNOWN',
 }
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
@@ -12,4 +13,5 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.DDB_SERVER_ERROR]: 'DynamoDB server error.',
   [ErrorCode.INTERNAL_SERVER_ERROR]: 'Internal server error.',
   [ErrorCode.INVALID_REQUEST]: 'Invalid request.',
+  [ErrorCode.UNKNOWN_ERROR]: 'Unknown error.',
 };

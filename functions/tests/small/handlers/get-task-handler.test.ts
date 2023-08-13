@@ -3,17 +3,21 @@ import { ErrorCode } from '../../../src/common/error-codes';
 import { HttpStatus } from '../../../handlers/utils/http-response';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { Task } from '../../../src/domain/task';
-import { ClientError, ServerError } from '../../../src/common/app-errors';
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import {
+  AppError,
+  ClientError,
+  ServerError,
+} from '../../../src/common/app-errors';
+import { APIGatewayEvent } from 'aws-lambda';
 
 const { requestHandler, errorHandler } = _testExports;
 
 jest.mock('../../../src/usecases/get-task-usecase');
 
 describe('Request Handler', () => {
-  const mockValidEvent: APIGatewayEvent = {
+  const mockValidEvent = {
     pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
-  } as any;
+  } as unknown as APIGatewayEvent;
 
   const dummyTask: Task = {
     id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
@@ -31,19 +35,19 @@ describe('Request Handler', () => {
   test('should return 200 status for a valid request', async () => {
     (getTaskUseCase as jest.Mock).mockResolvedValueOnce(dummyTask);
 
-    const result = await requestHandler(mockValidEvent, {} as any);
+    const result = await requestHandler(mockValidEvent);
     expect(result.statusCode).toBe(HttpStatus.OK);
     expect(JSON.parse(result.body!)).toEqual(dummyTask);
     expect(getTaskUseCase).toHaveBeenCalledTimes(1);
     expect(getTaskUseCase).toHaveBeenCalledWith(
-      (mockValidEvent as any).pathParameters.id,
+      mockValidEvent.pathParameters!.id,
     );
   });
 
   test('should return 400 status for an invalid request', async () => {
     const mockEvent = {} as APIGatewayEvent;
 
-    const result = await requestHandler(mockEvent, {} as any);
+    const result = await requestHandler(mockEvent);
     expect(result.statusCode).toBe(HttpStatus.BAD_REQUEST);
     expect(JSON.parse(result.body!).errorCode).toBe(ErrorCode.INVALID_REQUEST);
     expect(getTaskUseCase).toHaveBeenCalledTimes(0);
@@ -56,7 +60,7 @@ describe('Error Handler', () => {
     const ddbClientError = new ClientError(ErrorCode.DDB_CLIENT_ERROR);
     const unknownClientError = new ClientError(ErrorCode.INVALID_REQUEST);
     const ddbServerError = new ServerError(ErrorCode.DDB_SERVER_ERROR);
-    const unknownError = new Error();
+    const unknownError = new AppError(ErrorCode.UNKNOWN_ERROR);
 
     expect((await errorHandler(taskNotFoundError)).statusCode).toBe(
       HttpStatus.NOT_FOUND,

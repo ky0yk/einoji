@@ -1,6 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
-import { DdbServerError } from './errors/ddb-errors';
+import { DdbError, DdbServerError } from './errors/ddb-errors';
 import { logger } from '../../common/logger';
 import { TaskRecord, TaskRecordSchema } from '../../domain/taskRecord';
 
@@ -45,7 +45,9 @@ export const fetchTaskById = async (
   } catch (error: unknown) {
     if (error instanceof Error) {
       logger.error('DynamoDB error:', error);
+      throw new DdbServerError('DynamoDB error', error);
     }
-    throw new DdbServerError('DynamoDB error', error);
+    logger.error('DDbUnknown error:');
+    throw new DdbError('Unknown error');
   }
 };

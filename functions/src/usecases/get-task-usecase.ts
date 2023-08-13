@@ -33,14 +33,13 @@ const toTask = (taskRecord: TaskRecord): Task => {
 const errorHandler = (error: Error) => {
   if (error instanceof TaskNotFoundError) {
     return new ClientError(ErrorCode.TASK_NOT_FOUND, error);
-  }
-  if (error instanceof DdbClientError) {
+  } else if (error instanceof DdbClientError) {
     return new ClientError(ErrorCode.DDB_CLIENT_ERROR, error);
-  }
-  if (error instanceof DdbServerError) {
+  } else if (error instanceof DdbServerError) {
     return new ServerError(ErrorCode.DDB_SERVER_ERROR, error);
+  } else {
+    return new ServerError(ErrorCode.INTERNAL_SERVER_ERROR, error);
   }
-  return new ServerError(ErrorCode.INTERNAL_SERVER_ERROR, error);
 };
 
 export const getTaskUseCase = useCaseFactory(getTask, errorHandler);
