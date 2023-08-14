@@ -4,7 +4,6 @@ import { Task } from '../../../src/domain/task';
 import { TaskRecord } from '../../../src/domain/taskRecord';
 import { DdbServerError } from '../../../src/infrastructure/ddb/errors/ddb-errors';
 import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks-table';
-import { TaskNotFoundError } from '../../../src/usecases/errors/task-errors';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
