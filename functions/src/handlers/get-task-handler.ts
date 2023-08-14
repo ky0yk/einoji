@@ -65,7 +65,7 @@ export const errorHandler: RequestErrorHandler = async (
   }
 };
 
-export const handler = handlerFactory(requestHandler, errorHandler);
+export const handler = handlerFactory('getTask', requestHandler, errorHandler);
 
 export const _testExports = {
   requestHandler,

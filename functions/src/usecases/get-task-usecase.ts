@@ -7,7 +7,7 @@ import {
   DdbClientError,
   DdbServerError,
 } from '../infrastructure/ddb/errors/ddb-errors';
-import { ClientError, ServerError } from '../common/app-errors';
+import { AppError, ClientError, ServerError } from '../common/app-errors';
 import { ErrorCode } from '../common/error-codes';
 
 const getTask = async (taskId: string): Promise<Task> => {
@@ -30,7 +30,7 @@ const toTask = (taskRecord: TaskRecord): Task => {
   };
 };
 
-const errorHandler = (error: Error) => {
+const errorHandler = (error: Error): AppError => {
   if (error instanceof TaskNotFoundError) {
     return new ClientError(ErrorCode.TASK_NOT_FOUND, error);
   } else if (error instanceof DdbClientError) {
@@ -42,7 +42,7 @@ const errorHandler = (error: Error) => {
   }
 };
 
-export const getTaskUseCase = useCaseFactory(getTask, errorHandler);
+export const getTaskUseCase = useCaseFactory('getTask', getTask, errorHandler);
 
 export const _testExports = {
   getTask,

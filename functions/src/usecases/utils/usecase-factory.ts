@@ -1,45 +1,47 @@
+import { AppError } from '../../common/app-errors';
 import { logger } from '../../common/logger';
 
 type UseCase<P, T> = (params: P) => Promise<T>;
-type UseCaseErrorHandler = (error: Error) => Error;
+type UseCaseErrorHandler = (error: Error) => AppError;
 
-// NOTE: 現状の動的に関数名を取得する方法はミニフィケーションや難読化に対応できない
 export const useCaseFactory = <P, T>(
+  name: string,
   useCase: UseCase<P, T>,
   useCaseErrorHandler: UseCaseErrorHandler,
 ): UseCase<P, T> => {
   return async (params: P) => {
     try {
-      return await useCaseHandlerWithLogging(useCase, params);
+      return await useCaseWithLog(name, useCase, params);
     } catch (e: unknown) {
-      logger.error(`Error ${useCase.name}`, String(e));
-      return await useCaseErrorHandlerWithLogging(useCaseErrorHandler, e);
+      return await useCaseErrorHandlerWithLog(name, useCaseErrorHandler, e);
     }
   };
 };
 
-const useCaseHandlerWithLogging = async <P, T>(
-  logic: UseCase<P, T>,
+const useCaseWithLog = async <P, T>(
+  name: string,
+  useCase: UseCase<P, T>,
   params: P,
 ): Promise<T> => {
-  logger.info(`Start ${logic.name}`);
-  const logicResult = await logic(params);
-  logger.info(`End ${logic.name}`);
-  return logicResult;
+  logger.info(`START usecase: ${name}`);
+  const result = await useCase(params);
+  logger.info(`EXIT usecase: ${name}`);
+  return result;
 };
 
-const useCaseErrorHandlerWithLogging = async <T>(
+const useCaseErrorHandlerWithLog = async <T>(
+  name: string,
   processError: UseCaseErrorHandler,
   e: unknown,
 ): Promise<T> => {
+  logger.error(`An error occurred in usecase: ${name}`);
   if (e instanceof Error) {
-    logger.info(`Start ${processError.name}`);
+    logger.error(`START usecase error handling: ${name}`);
     const errorResult = processError(e);
-    logger.info(`End ${processError.name}`, errorResult);
-
+    logger.info(`EXIT usecase error handling: ${name}`, errorResult);
     throw errorResult;
   } else {
-    logger.info(`unexpected error occurred: ${processError.name}}`);
+    logger.info(`unexpected error occurred in usecase: ${name}}`);
     throw new Error('Unknown error');
   }
 };

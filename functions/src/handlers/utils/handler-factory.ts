@@ -13,43 +13,45 @@ export type RequestHandlerWithoutContext = (
 ) => Promise<LambdaResponse>;
 export type RequestErrorHandler = (error: AppError) => Promise<LambdaResponse>;
 
-// NOTE: 現状の動的に関数名を取得する方法はミニフィケーションや難読化に対応できない
 export const handlerFactory = (
+  name: string,
   requestHandler: RequestHandlerWithoutContext,
   requestErrorHandler: RequestErrorHandler,
 ): RequestHandler => {
   return async (event, context) => {
     try {
       logger.addContext(context);
-      return await requestHandlerWithLogging(requestHandler, event);
+      return await requestHandlerWithLog(name, requestHandler, event);
     } catch (e: unknown) {
-      logger.error(`Error ${requestHandler.name}`, String(e));
-      return await errorHandlerWithLogging(requestErrorHandler, e);
+      return await requestErrorHandlerWithLog(name, requestErrorHandler, e);
     }
   };
 };
 
-const requestHandlerWithLogging = async (
+const requestHandlerWithLog = async (
+  name: string,
   requestHandler: RequestHandlerWithoutContext,
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  logger.info(`Start ${requestHandler.name}`);
-  const handlerResult = await requestHandler(event);
-  logger.info(`End ${requestHandler.name}`);
-  return handlerResult;
+  logger.info(`START handler: ${name}`);
+  const result = await requestHandler(event);
+  logger.info(`EXIT handler: ${name}`);
+  return result;
 };
 
-const errorHandlerWithLogging = async (
-  errorHandler: RequestErrorHandler,
+const requestErrorHandlerWithLog = async (
+  name: string,
+  requestErrorHandler: RequestErrorHandler,
   e: unknown,
 ): Promise<LambdaResponse> => {
+  logger.error(`An error occurred in handler: ${name}`);
   if (e instanceof AppError) {
-    logger.info(`Start ${errorHandler.name}`);
-    const errorResult = await errorHandler(e);
-    logger.info(`End ${errorHandler.name}`, errorResult);
+    logger.error(`START Error handling: ${name}`, e);
+    const errorResult = await requestErrorHandler(e);
+    logger.info(`EXIT Error handling: ${name}`);
     return errorResult;
   } else {
-    logger.info(`unexpected error occurred: ${errorHandler.name}}`);
+    logger.error(`An unexpected error occurred in handler: ${name}`, String(e));
     return httpResponse(500).withError(ErrorCode.UNKNOWN_ERROR);
   }
 };
