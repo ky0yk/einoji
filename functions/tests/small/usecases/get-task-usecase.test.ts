@@ -1,5 +1,5 @@
 import { _testExports } from '../../../src/usecases/get-task-usecase';
-import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks';
+import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks-table';
 import { TaskNotFoundError } from '../../../src/usecases/errors/task-errors';
 import { TaskRecord } from '../../../src/domain/taskRecord';
 import { Task } from '../../../src/domain/task';
@@ -12,7 +12,7 @@ import { ErrorCode } from '../../../src/common/error-codes';
 
 const { getTask, errorHandler } = _testExports;
 
-jest.mock('../../../src/infrastructure/ddb/tasks');
+jest.mock('../../../src/infrastructure/ddb/tasks-table');
 
 describe('getTask', () => {
   beforeEach(() => {

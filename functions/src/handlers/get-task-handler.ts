@@ -6,9 +6,9 @@ import {
   LambdaResponse,
 } from './utils/http-response';
 
-import { AppError, ClientError } from '../src/common/app-errors';
-import { ErrorCode } from '../src/common/error-codes';
-import { getTaskUseCase } from '../src/usecases/get-task-usecase';
+import { AppError, ClientError } from '../common/app-errors';
+import { ErrorCode } from '../common/error-codes';
+import { getTaskUseCase } from '../usecases/get-task-usecase';
 import {
   RequestErrorHandler,
   handlerFactory,

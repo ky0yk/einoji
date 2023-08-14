@@ -1,8 +1,8 @@
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
-import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks';
-import { DdbServerError } from '../../../src/infrastructure/ddb/errors/ddb-errors';
 import { mockClient } from 'aws-sdk-client-mock';
-import { TaskRecord } from '../../../src/domain/taskRecord';
+import { TaskRecord } from '../../../../src/domain/taskRecord';
+import { fetchTaskById } from '../../../../src/infrastructure/ddb/tasks-table';
+import { DdbServerError } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);
 

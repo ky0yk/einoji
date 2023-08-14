@@ -1,6 +1,6 @@
 import { Task } from '../domain/task';
 import { TaskRecord } from '../domain/taskRecord';
-import { fetchTaskById } from '../infrastructure/ddb/tasks';
+import { fetchTaskById } from '../infrastructure/ddb/tasks-table';
 import { TaskNotFoundError } from './errors/task-errors';
 import { useCaseFactory } from './utils/usecase-factory';
 import {

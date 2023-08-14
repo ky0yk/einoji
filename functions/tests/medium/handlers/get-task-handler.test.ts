@@ -1,6 +1,6 @@
-import { handler } from '../../../handlers/get-task-handler';
+import { handler } from '../../../src/handlers/get-task-handler';
 import { Task } from '../../../src/domain/task';
-import { HttpStatus } from '../../../handlers/utils/http-response';
+import { HttpStatus } from '../../../src/handlers/utils/http-response';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { ErrorCode } from '../../../src/common/error-codes';
 import { ClientError } from '../../../src/common/app-errors';

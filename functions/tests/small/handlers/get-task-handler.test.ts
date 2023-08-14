@@ -1,6 +1,6 @@
-import { _testExports } from '../../../handlers/get-task-handler';
+import { _testExports } from '../../../src/handlers/get-task-handler';
 import { ErrorCode } from '../../../src/common/error-codes';
-import { HttpStatus } from '../../../handlers/utils/http-response';
+import { HttpStatus } from '../../../src/handlers/utils/http-response';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { Task } from '../../../src/domain/task';
 import {

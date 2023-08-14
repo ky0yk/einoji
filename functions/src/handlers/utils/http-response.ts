@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ERROR_MESSAGES, ErrorCode } from '../../src/common/error-codes';
+import { ERROR_MESSAGES, ErrorCode } from '../../common/error-codes';
 
 export const LambdaResponseSchema = z.object({
   statusCode: z.number(),

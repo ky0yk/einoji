@@ -4,8 +4,8 @@ import {
   DeleteTableCommand,
 } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks';
-import { TaskRecord } from '../../../src/domain/taskRecord';
+import { TaskRecord } from '../../../../src/domain/taskRecord';
+import { fetchTaskById } from '../../../../src/infrastructure/ddb/tasks-table';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const REGION = process.env.AWS_REGION;
