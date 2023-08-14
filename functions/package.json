@@ -8,5 +8,15 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
+    "aws-sdk-client-mock": "^3.0.0"
+  },
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "^1.12.1",
+    "@aws-sdk/lib-dynamodb": "^3.388.0",
+    "aws-lambda": "^1.0.7",
+    "zod": "^3.21.4"
+  }
 }
