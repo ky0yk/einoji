@@ -7,7 +7,6 @@ const config: Config.InitialOptions = {
   },
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$',
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
-  setupFilesAfterEnv: ['./jest.setup.ts'],
 };
 
 export default config;
