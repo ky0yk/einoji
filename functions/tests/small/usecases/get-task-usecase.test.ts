@@ -1,16 +1,10 @@
 import { _testExports } from '../../../src/usecases/get-task-usecase';
 import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks-table';
-import { TaskNotFoundError } from '../../../src/usecases/errors/task-errors';
+import { TaskNotFoundError } from '../../../src/domain/errors/task-errors';
 import { TaskRecord } from '../../../src/domain/taskRecord';
 import { Task } from '../../../src/domain/task';
-import {
-  DdbClientError,
-  DdbServerError,
-} from '../../../src/infrastructure/ddb/errors/ddb-errors';
-import { ClientError, ServerError } from '../../../src/common/app-errors';
-import { ErrorCode } from '../../../src/common/error-codes';
 
-const { getTask, errorHandler } = _testExports;
+const { getTask } = _testExports;
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 
@@ -52,43 +46,5 @@ describe('getTask', () => {
     await expect(getTask(taskId)).rejects.toThrowError(
       new TaskNotFoundError(`Task with taskId ${taskId} not found.`),
     );
-  });
-});
-
-describe('errorHandler', () => {
-  it('should return ClientError for TaskNotFoundError', () => {
-    const error = new TaskNotFoundError('Task not found.');
-
-    const result = errorHandler(error);
-
-    expect(result).toBeInstanceOf(ClientError);
-    expect(result.code).toEqual(ErrorCode.TASK_NOT_FOUND);
-  });
-
-  it('should return ClientError for DdbClientError', () => {
-    const error = new DdbClientError('DDB client error.');
-
-    const result = errorHandler(error);
-
-    expect(result).toBeInstanceOf(ClientError);
-    expect(result.code).toEqual(ErrorCode.DDB_CLIENT_ERROR);
-  });
-
-  it('should return ServerError for DdbServerError', () => {
-    const error = new DdbServerError('DDB server error.');
-
-    const result = errorHandler(error);
-
-    expect(result).toBeInstanceOf(ServerError);
-    expect(result.code).toEqual(ErrorCode.DDB_SERVER_ERROR);
-  });
-
-  it('should return ServerError for other errors', () => {
-    const error = new Error('Unknown error.');
-
-    const result = errorHandler(error);
-
-    expect(result).toBeInstanceOf(ServerError);
-    expect(result.code).toEqual(ErrorCode.INTERNAL_SERVER_ERROR);
   });
 });

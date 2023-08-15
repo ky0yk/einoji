@@ -11,7 +11,7 @@ import { z } from 'zod';
 import {
   mockGetCommandOutput,
   mockPutCommandOutput,
-} from '../../../medium/infrastructure/ddb/tasks-table-helper';
+} from '../../../helper/tasks-table-helper';
 
 const { createTaskImpl, fetchTaskByIdImpl } = _testExports;
 

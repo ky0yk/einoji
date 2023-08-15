@@ -16,7 +16,7 @@ import { logger } from '../../common/logger';
 import { TaskRecord, TaskRecordSchema } from '../../domain/taskRecord';
 import { ddbFactory } from './utils/ddb-factory';
 import { v4 as uuidv4 } from 'uuid';
-import { z } from 'zod';
+import { CreateTaskRequest } from '../../domain/task';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
@@ -29,14 +29,7 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-// TODO あとで切り出すか考える
-const CreateTaskSchema = z.object({
-  title: z.string().min(1).max(100),
-  description: z.string().max(1000).optional(),
-});
-export type CreateTaskBody = z.infer<typeof CreateTaskSchema>;
-
-const createTaskImpl = async (body: CreateTaskBody): Promise<string> => {
+const createTaskImpl = async (body: CreateTaskRequest): Promise<string> => {
   const uuid = uuidv4();
   const now = new Date().toISOString();
 

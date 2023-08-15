@@ -1,6 +1,6 @@
+import { CreateTaskRequest } from '../../../../src/domain/task';
 import { TaskRecord } from '../../../../src/domain/taskRecord';
 import {
-  CreateTaskBody,
   createTask,
   fetchTaskById,
 } from '../../../../src/infrastructure/ddb/tasks-table';
@@ -10,10 +10,10 @@ import {
   deleteTask,
   getTask,
   putTask,
-} from './tasks-table-helper';
+} from '../../../helper/tasks-table-helper';
 
 describe('createTask', () => {
-  const dummyTaskBody: CreateTaskBody = {
+  const dummyTaskBody: CreateTaskRequest = {
     title: 'スーパーに買い物に行く',
     description: '牛乳と卵を買う',
   };
