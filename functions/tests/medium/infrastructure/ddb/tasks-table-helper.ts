@@ -6,6 +6,7 @@ import {
 import {
   DynamoDBDocumentClient,
   PutCommand,
+  GetCommand,
   DeleteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { TaskRecord } from '../../../../src/domain/taskRecord';
@@ -20,12 +21,44 @@ const localDynamoDB = new DynamoDBClient({
 });
 const ddbDocClient = DynamoDBDocumentClient.from(localDynamoDB);
 
+export const mockPutCommandOutput = (httpStatusCode: 200 | 400 | 500) => {
+  return {
+    $metadata: {
+      httpStatusCode: httpStatusCode,
+    },
+  };
+};
+
+export const mockGetCommandOutput = (
+  httpStatusCode: 200 | 400 | 500,
+  item: object | undefined,
+) => {
+  return {
+    $metadata: {
+      httpStatusCode: httpStatusCode,
+    },
+    Item: item,
+  };
+};
+
 export const putTask = async (record: TaskRecord) => {
   const putCommand = new PutCommand({
     TableName: TABLE_NAME,
     Item: record,
   });
   await ddbDocClient.send(putCommand);
+};
+
+export const getTask = async (sortKey: string) => {
+  const getCommand = new GetCommand({
+    TableName: TABLE_NAME,
+    Key: {
+      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
+      taskId: sortKey,
+    },
+  });
+  const res = await ddbDocClient.send(getCommand);
+  return res.Item;
 };
 
 export const deleteTask = async (sortKey: string) => {

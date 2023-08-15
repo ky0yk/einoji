@@ -18,3 +18,9 @@ export class DdbClientError extends DdbError {
     super(message, originalError);
   }
 }
+
+export class DdbUnknownError extends DdbError {
+  constructor(message: string, originalError?: Error) {
+    super(message, originalError);
+  }
+}
