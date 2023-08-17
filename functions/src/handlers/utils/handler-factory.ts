@@ -1,8 +1,8 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { logger } from '../../common/logger';
-import { LambdaResponse, httpResponse } from './http-response';
+import { HttpStatus, LambdaResponse, httpResponse } from './http-response';
 import { ErrorCode } from '../../common/error-codes';
-import { AppError } from '../../common/app-errors';
+import { AppError, ClientError } from '../../common/app-errors';
 
 export type RequestHandler = (
   event: APIGatewayEvent,
@@ -16,7 +16,7 @@ export type RequestErrorHandler = (error: AppError) => Promise<LambdaResponse>;
 export const handlerFactory = (
   name: string,
   requestHandler: RequestHandlerWithoutContext,
-  requestErrorHandler: RequestErrorHandler,
+  requestErrorHandler: RequestErrorHandler = defaultErrorHandler,
 ): RequestHandler => {
   return async (event, context) => {
     try {
@@ -53,5 +53,38 @@ const requestErrorHandlerWithLog = async (
   } else {
     logger.error(`An unexpected error occurred in handler: ${name}`, String(e));
     return httpResponse(500).withError(ErrorCode.UNKNOWN_ERROR);
+  }
+};
+
+const defaultErrorHandler: RequestErrorHandler = async (
+  error: AppError,
+): Promise<LambdaResponse> => {
+  switch (error.code) {
+    case ErrorCode.TASK_NOT_FOUND:
+      return httpResponse(HttpStatus.NOT_FOUND).withError(
+        ErrorCode.TASK_NOT_FOUND,
+      );
+    case ErrorCode.DDB_CLIENT_ERROR:
+      return httpResponse(HttpStatus.BAD_REQUEST).withError(
+        ErrorCode.DDB_CLIENT_ERROR,
+      );
+    case ErrorCode.DDB_SERVER_ERROR:
+      return httpResponse(HttpStatus.INTERNAL_SERVER_ERROR).withError(
+        ErrorCode.DDB_SERVER_ERROR,
+      );
+    case ErrorCode.DDB_UNKNOWN_ERROR:
+      return httpResponse(HttpStatus.INTERNAL_SERVER_ERROR).withError(
+        ErrorCode.DDB_UNKNOWN_ERROR,
+      );
+    default:
+      if (error instanceof ClientError) {
+        return httpResponse(HttpStatus.BAD_REQUEST).withError(
+          ErrorCode.INVALID_REQUEST,
+        );
+      } else {
+        return httpResponse(HttpStatus.INTERNAL_SERVER_ERROR).withError(
+          ErrorCode.UNKNOWN_ERROR,
+        );
+      }
   }
 };

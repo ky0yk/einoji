@@ -3,14 +3,9 @@ import { ErrorCode } from '../../../src/common/error-codes';
 import { HttpStatus } from '../../../src/handlers/utils/http-response';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { Task } from '../../../src/domain/task';
-import {
-  AppError,
-  ClientError,
-  ServerError,
-} from '../../../src/common/app-errors';
 import { APIGatewayEvent } from 'aws-lambda';
 
-const { requestHandler, errorHandler } = _testExports;
+const { requestHandler } = _testExports;
 
 jest.mock('../../../src/usecases/get-task-usecase');
 
@@ -51,31 +46,5 @@ describe('Request Handler', () => {
     expect(result.statusCode).toBe(HttpStatus.BAD_REQUEST);
     expect(JSON.parse(result.body!).errorCode).toBe(ErrorCode.INVALID_REQUEST);
     expect(getTaskUseCase).toHaveBeenCalledTimes(0);
-  });
-});
-
-describe('Error Handler', () => {
-  it('should handle different error codes', async () => {
-    const taskNotFoundError = new ClientError(ErrorCode.TASK_NOT_FOUND);
-    const ddbClientError = new ClientError(ErrorCode.DDB_CLIENT_ERROR);
-    const unknownClientError = new ClientError(ErrorCode.INVALID_REQUEST);
-    const ddbServerError = new ServerError(ErrorCode.DDB_SERVER_ERROR);
-    const unknownError = new AppError(ErrorCode.UNKNOWN_ERROR);
-
-    expect((await errorHandler(taskNotFoundError)).statusCode).toBe(
-      HttpStatus.NOT_FOUND,
-    );
-    expect((await errorHandler(ddbClientError)).statusCode).toBe(
-      HttpStatus.BAD_REQUEST,
-    );
-    expect((await errorHandler(ddbServerError)).statusCode).toBe(
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
-    expect((await errorHandler(unknownClientError)).statusCode).toBe(
-      HttpStatus.BAD_REQUEST,
-    );
-    expect((await errorHandler(unknownError)).statusCode).toBe(
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
   });
 });
