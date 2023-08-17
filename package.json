@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "dotenv -e ./functions/tests/.env.test -- ts-node node_modules/.bin/jest",
-    "test:path": "ts-node node_modules/.bin/jest --",
+    "test": "npm run test:s && npm run test:m",
+    "test:s": "dotenv -e ./functions/tests/.env.test -- ts-node node_modules/.bin/jest --testPathPattern=/functions/tests/small/",
+    "test:m": "dotenv -e ./functions/tests/.env.test -- ts-node node_modules/.bin/jest --runInBand --testPathPattern=/functions/tests/medium/",
     "lint": "eslint '*/**/*.{js,ts}'",
     "lint:fix": "eslint '*/**/*.{js,ts}' --fix",
     "format": "prettier --write '*/**/*.{js,ts,json}'"
