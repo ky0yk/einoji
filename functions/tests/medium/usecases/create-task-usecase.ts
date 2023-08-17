@@ -1,4 +1,4 @@
-import { CreateTaskRequest, Task, toTask } from '../../../src/domain/task';
+import { CreateTaskRequest } from '../../../src/domain/task';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 import {
