@@ -1,17 +1,13 @@
 import { APIGatewayEvent } from 'aws-lambda';
 import { z } from 'zod';
-import {
-  httpResponse,
-  HttpStatus,
-  LambdaResponse,
-} from './utils/http-response';
+import { httpResponse, HttpStatus, LambdaResponse } from './http/http-response';
 
 import { ErrorCode } from '../common/error-codes';
 import { getTaskUseCase } from '../usecases/get-task-usecase';
 import {
   handlerFactory,
   RequestHandlerWithoutContext,
-} from './utils/handler-factory';
+} from './factory/handler-factory';
 
 export const EventSchema = z.object({
   pathParameters: z.object({ id: z.string().uuid() }),

@@ -1,5 +1,4 @@
 import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks-table';
-import { TaskNotFoundError } from '../../../src/domain/errors/task-errors';
 import { TaskItem } from '../../../src/domain/taskItem';
 import { Task } from '../../../src/domain/task';
 

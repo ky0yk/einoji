@@ -14,9 +14,9 @@ import {
 } from './errors/ddb-errors';
 import { logger } from '../../common/logger';
 import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
-import { ddbFactory } from './utils/ddb-factory';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskRequest } from '../../handlers/request_schemas/create-task-request';
+import { ddbFactory } from './factory/ddb-factory';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;

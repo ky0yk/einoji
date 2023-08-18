@@ -1,10 +1,6 @@
 import { logger } from '../../../common/logger';
-import {
-  DdbClientError,
-  DdbError,
-  DdbServerError,
-  DdbUnknownError,
-} from '../errors/ddb-errors';
+import { DdbError } from '../errors/ddb-errors';
+import { ddbErrorHandler } from './ddb-error-handler';
 
 type ddbOperation<P, T> = (params: P) => Promise<T>;
 type ddbOperationErrorHandler = (error: Error) => DdbError;
@@ -12,17 +8,13 @@ type ddbOperationErrorHandler = (error: Error) => DdbError;
 export const ddbFactory = <P, T>(
   name: string,
   ddbOperation: ddbOperation<P, T>,
-  ddbOperationErrorHandler: ddbOperationErrorHandler = defaultErrorHandler,
+  errorHandler: ddbOperationErrorHandler = ddbErrorHandler,
 ): ddbOperation<P, T> => {
   return async (params: P) => {
     try {
       return await ddbOperationWithLog(name, ddbOperation, params);
     } catch (e: unknown) {
-      return await ddbOperationErrorHandlerWithLog(
-        name,
-        ddbOperationErrorHandler,
-        e,
-      );
+      return await ddbOperationErrorHandlerWithLog(name, errorHandler, e);
     }
   };
 };
@@ -53,19 +45,4 @@ const ddbOperationErrorHandlerWithLog = async <T>(
     logger.info(`unexpected error occurred in Dynamodb Operation: ${name}}`);
     throw new Error('Unknown error');
   }
-};
-
-// 再スローするだけのデフォルトのエラーハンドラ
-const defaultErrorHandler = (error: Error): DdbError => {
-  if (error instanceof DdbClientError) {
-    logger.error('DynamoDB Client error:', error);
-  } else if (error instanceof DdbServerError) {
-    logger.error('DynamoDB Server error:', error);
-  } else if (error instanceof DdbUnknownError) {
-    logger.error('DynamoDB Unknown error:', error);
-  } else {
-    logger.error('DynamoDB Unknown error:', error);
-    throw new DdbUnknownError('DynamoDB Unknown error', error);
-  }
-  throw error;
 };

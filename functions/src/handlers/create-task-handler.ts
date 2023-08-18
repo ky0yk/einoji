@@ -3,12 +3,8 @@ import { z } from 'zod';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
-} from './utils/handler-factory';
-import {
-  HttpStatus,
-  LambdaResponse,
-  httpResponse,
-} from './utils/http-response';
+} from './factory/handler-factory';
+import { HttpStatus, LambdaResponse, httpResponse } from './http/http-response';
 import { ErrorCode } from '../common/error-codes';
 import { createTaskUseCase } from '../usecases/create-task-usecase';
 import { CreateTaskRequestSchema } from './request_schemas/create-task-request';

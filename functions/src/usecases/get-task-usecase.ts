@@ -1,7 +1,7 @@
 import { Task, toTask } from '../domain/task';
 import { fetchTaskById } from '../infrastructure/ddb/tasks-table';
 import { TaskNotFoundError } from '../domain/errors/task-errors';
-import { useCaseFactory } from './utils/usecase-factory';
+import { useCaseFactory } from './factory/usecase-factory';
 
 const getTask = async (taskId: string): Promise<Task> => {
   const taskRecord = await fetchTaskById(taskId);

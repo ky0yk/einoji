@@ -1,5 +1,5 @@
 import { ErrorCode } from '../../../src/common/error-codes';
-import { HttpStatus } from '../../../src/handlers/utils/http-response';
+import { HttpStatus } from '../../../src/handlers/http/http-response';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { Task } from '../../../src/domain/task';
 import { APIGatewayEvent, Context } from 'aws-lambda';
@@ -9,15 +9,6 @@ jest.mock('../../../src/usecases/get-task-usecase');
 const mockValidEvent = {
   pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
 } as unknown as APIGatewayEvent;
-
-const dummyTask: Task = {
-  id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
-  title: 'スーパーに買い物に行く',
-  completed: false,
-  description: '牛乳と卵を買う',
-  createdAt: '2021-06-22T14:24:02.071Z',
-  updatedAt: '2021-06-22T14:24:02.071Z',
-};
 
 import { handler } from '../../../src/handlers/get-task-handler';
 import { ClientError } from '../../../src/common/app-errors';

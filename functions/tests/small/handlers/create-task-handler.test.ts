@@ -1,6 +1,6 @@
 import { handler } from '../../../src/handlers/create-task-handler';
 import { ErrorCode } from '../../../src/common/error-codes';
-import { HttpStatus } from '../../../src/handlers/utils/http-response';
+import { HttpStatus } from '../../../src/handlers/http/http-response';
 import { Task } from '../../../src/domain/task';
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
