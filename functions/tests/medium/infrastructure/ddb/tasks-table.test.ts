@@ -1,5 +1,5 @@
-import { CreateTaskRequest } from '../../../../src/domain/task';
-import { TaskRecord } from '../../../../src/domain/taskRecord';
+import { TaskItem } from '../../../../src/domain/taskItem';
+import { CreateTaskRequest } from '../../../../src/handlers/request_schemas/create-task-request';
 import {
   createTask,
   fetchTaskById,
@@ -44,7 +44,7 @@ describe('createTask', () => {
 });
 
 describe('fetchTaskById', () => {
-  const dummyTaskRecord: TaskRecord = {
+  const dummyTaskRecord: TaskItem = {
     userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
     taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
     title: 'スーパーに買い物に行く',

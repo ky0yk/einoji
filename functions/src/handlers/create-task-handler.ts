@@ -11,7 +11,7 @@ import {
 } from './utils/http-response';
 import { ErrorCode } from '../common/error-codes';
 import { createTaskUseCase } from '../usecases/create-task-usecase';
-import { CreateTaskRequestSchema } from '../domain/task';
+import { CreateTaskRequestSchema } from './request_schemas/create-task-request';
 
 const EventSchema = z.object({
   body: z.string(),

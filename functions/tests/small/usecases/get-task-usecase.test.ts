@@ -1,6 +1,6 @@
 import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks-table';
 import { TaskNotFoundError } from '../../../src/domain/errors/task-errors';
-import { TaskRecord } from '../../../src/domain/taskRecord';
+import { TaskItem } from '../../../src/domain/taskItem';
 import { Task } from '../../../src/domain/task';
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
@@ -12,7 +12,7 @@ describe('getTask', () => {
 
   test('should return a task when it exists', async () => {
     const taskId = 'some-task-id';
-    const taskRecord: TaskRecord = {
+    const taskRecord: TaskItem = {
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
       taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
       title: 'スーパーに買い物に行く',
@@ -54,7 +54,7 @@ import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 
 describe('getTaskUseCase', () => {
-  const dummyTaskRecord: TaskRecord = {
+  const dummyTaskRecord: TaskItem = {
     userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
     taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
     title: 'スーパーに買い物に行く',

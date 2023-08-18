@@ -4,7 +4,7 @@ import {
   PutCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { TaskRecord } from '../../../../src/domain/taskRecord';
+import { TaskItem } from '../../../../src/domain/taskItem';
 import { DdbServerError } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
 import { _testExports } from '../../../../src/infrastructure/ddb/tasks-table';
 import { z } from 'zod';
@@ -90,7 +90,7 @@ describe('fetchTaskByIdImpl', () => {
   });
 
   test('should return a task record for a valid task ID', async () => {
-    const dummyTaskRecord: TaskRecord = {
+    const dummyTaskRecord: TaskItem = {
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
       taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
       title: 'スーパーに買い物に行く',

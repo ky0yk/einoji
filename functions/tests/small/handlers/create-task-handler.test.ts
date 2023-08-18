@@ -1,10 +1,11 @@
 import { handler } from '../../../src/handlers/create-task-handler';
 import { ErrorCode } from '../../../src/common/error-codes';
 import { HttpStatus } from '../../../src/handlers/utils/http-response';
-import { CreateTaskRequest, Task } from '../../../src/domain/task';
+import { Task } from '../../../src/domain/task';
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
 import { ClientError, ServerError } from '../../../src/common/app-errors';
+import { CreateTaskRequest } from '../../../src/handlers/request_schemas/create-task-request';
 
 jest.mock('../../../src/usecases/create-task-usecase');
 

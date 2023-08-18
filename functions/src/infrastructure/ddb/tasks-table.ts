@@ -13,10 +13,10 @@ import {
   DdbUnknownError,
 } from './errors/ddb-errors';
 import { logger } from '../../common/logger';
-import { TaskRecord, TaskRecordSchema } from '../../domain/taskRecord';
+import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
 import { ddbFactory } from './utils/ddb-factory';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateTaskRequest } from '../../domain/task';
+import { CreateTaskRequest } from '../../handlers/request_schemas/create-task-request';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
@@ -52,9 +52,7 @@ const createTaskImpl = async (body: CreateTaskRequest): Promise<string> => {
   return uuid;
 };
 
-const fetchTaskByIdImpl = async (
-  taskId: string,
-): Promise<TaskRecord | null> => {
+const fetchTaskByIdImpl = async (taskId: string): Promise<TaskItem | null> => {
   const commandInput = {
     TableName: TABLE_NAME,
     Key: {
@@ -71,7 +69,7 @@ const fetchTaskByIdImpl = async (
     return null;
   }
 
-  const parseResult = TaskRecordSchema.safeParse(result.Item);
+  const parseResult = TaskItemSchema.safeParse(result.Item);
   if (!parseResult.success) {
     throw new DdbServerError(
       'Retrieved item does not match the expected schema',

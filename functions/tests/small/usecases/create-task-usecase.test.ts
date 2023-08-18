@@ -1,5 +1,5 @@
-import { CreateTaskRequest, Task, toTask } from '../../../src/domain/task';
-import { TaskRecord } from '../../../src/domain/taskRecord';
+import { Task, toTask } from '../../../src/domain/task';
+import { TaskItem } from '../../../src/domain/taskItem';
 import {
   createTask as ddbCreateTask,
   fetchTaskById,
@@ -16,6 +16,7 @@ import {
 } from '../../../src/infrastructure/ddb/errors/ddb-errors';
 import { ErrorCode } from '../../../src/common/error-codes';
 import { ClientError, ServerError } from '../../../src/common/app-errors';
+import { CreateTaskRequest } from '../../../src/handlers/request_schemas/create-task-request';
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 jest.mock('../../../src/domain/task');
@@ -47,7 +48,7 @@ const dummyTaskWithoutDescription: Task = {
 
 const validTaskId = 'valid-task-id';
 
-const dummyTaskRecord: TaskRecord = {
+const dummyTaskRecord: TaskItem = {
   userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
   taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
   title: 'スーパーに買い物に行く',

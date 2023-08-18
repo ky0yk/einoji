@@ -1,5 +1,6 @@
-import { CreateTaskRequest, Task, toTask } from '../../../src/domain/task';
-import { TaskRecord } from '../../../src/domain/taskRecord';
+import { Task, toTask } from '../../../src/domain/task';
+import { TaskItem } from '../../../src/domain/taskItem';
+import { CreateTaskRequest } from '../../../src/handlers/request_schemas/create-task-request';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
 import {
   createTable,
@@ -23,7 +24,7 @@ describe('createTaskUseCase', () => {
   test('should create a task successfully in the real database', async () => {
     const createdTask: Task = await createTaskUseCase(taskBody);
 
-    const fetchedTaskRecord: TaskRecord = await getTask(createdTask.id);
+    const fetchedTaskRecord: TaskItem = await getTask(createdTask.id);
     const fetchedTask: Task = toTask(fetchedTaskRecord);
 
     expect(fetchedTask).toEqual(createdTask);

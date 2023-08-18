@@ -9,7 +9,7 @@ import {
   GetCommand,
   DeleteCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { TaskRecord, TaskRecordSchema } from '../../src/domain/taskRecord';
+import { TaskItem, TaskItemSchema } from '../../src/domain/taskItem';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const REGION = process.env.AWS_REGION;
@@ -41,7 +41,7 @@ export const mockGetCommandOutput = (
   };
 };
 
-export const putTask = async (record: TaskRecord): Promise<void> => {
+export const putTask = async (record: TaskItem): Promise<void> => {
   const putCommand = new PutCommand({
     TableName: TABLE_NAME,
     Item: record,
@@ -49,7 +49,7 @@ export const putTask = async (record: TaskRecord): Promise<void> => {
   await ddbDocClient.send(putCommand);
 };
 
-export const getTask = async (sortKey: string): Promise<TaskRecord> => {
+export const getTask = async (sortKey: string): Promise<TaskItem> => {
   const getCommand = new GetCommand({
     TableName: TABLE_NAME,
     Key: {
@@ -58,7 +58,7 @@ export const getTask = async (sortKey: string): Promise<TaskRecord> => {
     },
   });
   const res = await ddbDocClient.send(getCommand);
-  return TaskRecordSchema.parse(res.Item);
+  return TaskItemSchema.parse(res.Item);
 };
 
 export const deleteTask = async (sortKey: string): Promise<void> => {

@@ -1,6 +1,6 @@
 import * as z from 'zod';
 import { isoDate } from './isoDate';
-import { TaskRecord } from './taskRecord';
+import { TaskItem } from './taskItem';
 import { TaskConversionError } from './errors/task-errors';
 
 export const TaskSchema = z.object({
@@ -14,13 +14,7 @@ export const TaskSchema = z.object({
 
 export type Task = z.infer<typeof TaskSchema>;
 
-export const CreateTaskRequestSchema = z.object({
-  title: z.string().min(1).max(100),
-  description: z.string().max(1000).optional(),
-});
-export type CreateTaskRequest = z.infer<typeof CreateTaskRequestSchema>;
-
-export const toTask = (taskRecord: TaskRecord): Task => {
+export const toTask = (taskRecord: TaskItem): Task => {
   try {
     return {
       id: taskRecord.taskId,
