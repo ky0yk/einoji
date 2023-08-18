@@ -35,7 +35,3 @@ const requestHandler: RequestHandlerWithoutContext = async (
 };
 
 export const handler = handlerFactory('getTask', requestHandler);
-
-export const _testExports = {
-  requestHandler,
-};

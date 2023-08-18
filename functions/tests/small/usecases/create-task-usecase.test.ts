@@ -4,56 +4,65 @@ import {
   createTask as ddbCreateTask,
   fetchTaskById,
 } from '../../../src/infrastructure/ddb/tasks-table';
-import { TaskUnknownError } from '../../../src/domain/errors/task-errors';
-import { _testExports } from '../../../src/usecases/create-task-usecase';
+import {
+  TaskConversionError,
+  TaskUnknownError,
+} from '../../../src/domain/errors/task-errors';
+import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
+import {
+  DdbClientError,
+  DdbServerError,
+  DdbUnknownError,
+} from '../../../src/infrastructure/ddb/errors/ddb-errors';
+import { ErrorCode } from '../../../src/common/error-codes';
+import { ClientError, ServerError } from '../../../src/common/app-errors';
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 jest.mock('../../../src/domain/task');
 
-const { createTask } = _testExports;
+const dummyCreateTaskRequest: CreateTaskRequest = {
+  title: 'コーヒーを淹れる',
+  description: '濃いめで',
+};
+const dummyCreateTaskRequestWithoutDescription: CreateTaskRequest = {
+  title: 'コーヒーを淹れる',
+};
 
-describe('createTask', () => {
+const dummyTask: Task = {
+  id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+  title: 'スーパーに買い物に行く',
+  completed: false,
+  description: '牛乳と卵を買う',
+  createdAt: '2021-06-22T14:24:02.071Z',
+  updatedAt: '2021-06-22T14:24:02.071Z',
+};
+const dummyTaskWithoutDescription: Task = {
+  id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+  title: 'スーパーに買い物に行く',
+  completed: false,
+  description: '',
+  createdAt: '2021-06-22T14:24:02.071Z',
+  updatedAt: '2021-06-22T14:24:02.071Z',
+};
+
+const validTaskId = 'valid-task-id';
+
+const dummyTaskRecord: TaskRecord = {
+  userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
+  taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+  title: 'スーパーに買い物に行く',
+  completed: false,
+  description: '牛乳と卵を買う',
+  createdAt: '2021-06-22T14:24:02.071Z',
+  updatedAt: '2021-06-22T14:24:02.071Z',
+};
+
+describe('createTaskUseCase', () => {
   beforeEach(() => {
     (ddbCreateTask as jest.Mock).mockClear();
     (fetchTaskById as jest.Mock).mockClear();
     (toTask as jest.Mock).mockClear();
   });
-  const dummyCreateTaskRequest: CreateTaskRequest = {
-    title: 'mockTitle',
-    description: 'mockDescription',
-  };
-  const dummyCreateTaskRequestWithoutDescription: CreateTaskRequest = {
-    title: 'mockTitle',
-  };
-
-  const dummyTask: Task = {
-    id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
-    title: 'スーパーに買い物に行く',
-    completed: false,
-    description: '牛乳と卵を買う',
-    createdAt: '2021-06-22T14:24:02.071Z',
-    updatedAt: '2021-06-22T14:24:02.071Z',
-  };
-  const dummyTaskWithoutDescription: Task = {
-    id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
-    title: 'スーパーに買い物に行く',
-    completed: false,
-    description: '',
-    createdAt: '2021-06-22T14:24:02.071Z',
-    updatedAt: '2021-06-22T14:24:02.071Z',
-  };
-
-  const validTaskId = 'valid-task-id';
-
-  const dummyTaskRecord: TaskRecord = {
-    userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
-    taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
-    title: 'スーパーに買い物に行く',
-    completed: false,
-    description: '牛乳と卵を買う',
-    createdAt: '2021-06-22T14:24:02.071Z',
-    updatedAt: '2021-06-22T14:24:02.071Z',
-  };
 
   test.each`
     request                                     | task
@@ -64,7 +73,7 @@ describe('createTask', () => {
     (fetchTaskById as jest.Mock).mockResolvedValue(dummyTaskRecord);
     (toTask as jest.Mock).mockReturnValue(task);
 
-    const result = await createTask(request);
+    const result = await createTaskUseCase(request);
 
     expect(ddbCreateTask).toHaveBeenCalledTimes(1);
     expect(ddbCreateTask).toHaveBeenCalledWith(request);
@@ -84,8 +93,8 @@ describe('createTask', () => {
     (ddbCreateTask as jest.Mock).mockResolvedValue(invalidTaskId);
     (fetchTaskById as jest.Mock).mockResolvedValue(null);
 
-    await expect(createTask(dummyCreateTaskRequest)).rejects.toThrow(
-      TaskUnknownError,
+    await expect(createTaskUseCase(dummyCreateTaskRequest)).rejects.toThrow(
+      ServerError,
     );
 
     expect(ddbCreateTask).toHaveBeenCalledTimes(1);
@@ -94,4 +103,56 @@ describe('createTask', () => {
     expect(fetchTaskById).toHaveBeenCalledTimes(1);
     expect(fetchTaskById).toHaveBeenCalledWith(invalidTaskId);
   });
+});
+
+describe('should throw Error when', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+  test.each`
+    occurError                 | expectedError
+    ${new DdbClientError('')}  | ${new ClientError(ErrorCode.DDB_CLIENT_ERROR)}
+    ${new DdbServerError('')}  | ${new ServerError(ErrorCode.DDB_SERVER_ERROR)}
+    ${new DdbUnknownError('')} | ${new ServerError(ErrorCode.DDB_UNKNOWN_ERROR)}
+  `(
+    'ddbCreateTask encounters an error',
+    async ({ occurError, expectedError }) => {
+      (ddbCreateTask as jest.Mock).mockRejectedValue(occurError);
+
+      await expect(createTaskUseCase(dummyCreateTaskRequest)).rejects.toThrow(
+        expectedError,
+      );
+    },
+  );
+
+  test.each`
+    occurError                 | expectedError
+    ${new DdbClientError('')}  | ${new ClientError(ErrorCode.DDB_CLIENT_ERROR)}
+    ${new DdbServerError('')}  | ${new ServerError(ErrorCode.DDB_SERVER_ERROR)}
+    ${new DdbUnknownError('')} | ${new ServerError(ErrorCode.DDB_UNKNOWN_ERROR)}
+  `(
+    'fetchTaskById encounters an error',
+    async ({ occurError, expectedError }) => {
+      (fetchTaskById as jest.Mock).mockRejectedValue(occurError);
+
+      await expect(createTaskUseCase(dummyCreateTaskRequest)).rejects.toThrow(
+        expectedError,
+      );
+    },
+  );
+
+  test.each`
+    occurError                     | expectedError
+    ${new TaskConversionError('')} | ${new ClientError(ErrorCode.TASK_CONVERSION_ERROR)}
+    ${new TaskUnknownError('')}    | ${new ClientError(ErrorCode.TASK_UNKNOWN_ERROR)}
+  `(
+    'toTask conversion encounters an error',
+    async ({ occurError, expectedError }) => {
+      (fetchTaskById as jest.Mock).mockRejectedValue(occurError);
+
+      await expect(createTaskUseCase(dummyCreateTaskRequest)).rejects.toThrow(
+        expectedError,
+      );
+    },
+  );
 });

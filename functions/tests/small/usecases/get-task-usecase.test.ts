@@ -1,10 +1,7 @@
-import { _testExports } from '../../../src/usecases/get-task-usecase';
 import { fetchTaskById } from '../../../src/infrastructure/ddb/tasks-table';
 import { TaskNotFoundError } from '../../../src/domain/errors/task-errors';
 import { TaskRecord } from '../../../src/domain/taskRecord';
 import { Task } from '../../../src/domain/task';
-
-const { getTask } = _testExports;
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 
@@ -13,7 +10,7 @@ describe('getTask', () => {
     jest.resetAllMocks();
   });
 
-  it('should return a task when it exists', async () => {
+  test('should return a task when it exists', async () => {
     const taskId = 'some-task-id';
     const taskRecord: TaskRecord = {
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
@@ -34,17 +31,70 @@ describe('getTask', () => {
     };
     (fetchTaskById as jest.Mock).mockResolvedValueOnce(taskRecord);
 
-    const result = await getTask(taskId);
+    const result = await getTaskUseCase(taskId);
 
     expect(result).toEqual(expectedTask);
   });
 
-  it('should throw TaskNotFoundError when the task is not found', async () => {
+  test('should throw TaskNotFoundError when the task is not found', async () => {
     const taskId = 'not-found-id';
     (fetchTaskById as jest.Mock).mockResolvedValueOnce(null);
 
-    await expect(getTask(taskId)).rejects.toThrowError(
-      new TaskNotFoundError(`Task with taskId ${taskId} not found.`),
+    await expect(getTaskUseCase(taskId)).rejects.toThrowError(
+      new ServerError(ErrorCode.TASK_NOT_FOUND),
+    );
+  });
+});
+
+import { ClientError, ServerError } from '../../../src/common/app-errors';
+import { ErrorCode } from '../../../src/common/error-codes';
+import { DdbServerError } from '../../../src/infrastructure/ddb/errors/ddb-errors';
+import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
+
+jest.mock('../../../src/infrastructure/ddb/tasks-table');
+
+describe('getTaskUseCase', () => {
+  const dummyTaskRecord: TaskRecord = {
+    userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
+    taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+    title: 'スーパーに買い物に行く',
+    completed: false,
+    description: '牛乳と卵を買う',
+    createdAt: '2021-06-22T14:24:02.071Z',
+    updatedAt: '2021-06-22T14:24:02.071Z',
+  };
+  const expectedTask: Task = {
+    id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+    title: 'スーパーに買い物に行く',
+    completed: false,
+    description: '牛乳と卵を買う',
+    createdAt: '2021-06-22T14:24:02.071Z',
+    updatedAt: '2021-06-22T14:24:02.071Z',
+  };
+
+  test('should return the expected task for a valid taskId', async () => {
+    const taskId = 'valid-task-id';
+    (fetchTaskById as jest.Mock).mockResolvedValueOnce(dummyTaskRecord);
+    const result = await getTaskUseCase(taskId);
+    expect(result).toEqual(expectedTask);
+  });
+
+  test('should throw a ClientError with TASK_NOT_FOUND code for an invalid taskId', async () => {
+    const taskId = 'invalid-task-id';
+    (fetchTaskById as jest.Mock).mockResolvedValueOnce(null);
+    await expect(getTaskUseCase(taskId)).rejects.toThrow(
+      new ClientError(ErrorCode.TASK_NOT_FOUND),
+    );
+  });
+
+  test('should handle a DdbServerError and return a ServerError with DDB_SERVER_ERROR code', async () => {
+    const taskId = 'valid-task-id';
+    (fetchTaskById as jest.Mock).mockRejectedValueOnce(
+      new DdbServerError('DynamoDB error'),
+    );
+
+    await expect(getTaskUseCase(taskId)).rejects.toEqual(
+      new ServerError(ErrorCode.DDB_SERVER_ERROR),
     );
   });
 });

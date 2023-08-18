@@ -13,7 +13,3 @@ const getTask = async (taskId: string): Promise<Task> => {
 };
 
 export const getTaskUseCase = useCaseFactory('getTask', getTask);
-
-export const _testExports = {
-  getTask,
-};

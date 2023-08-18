@@ -16,7 +16,3 @@ const createTask = async (body: CreateTaskRequest): Promise<Task> => {
 };
 
 export const createTaskUseCase = useCaseFactory('createTask', createTask);
-
-export const _testExports = {
-  createTask,
-};
