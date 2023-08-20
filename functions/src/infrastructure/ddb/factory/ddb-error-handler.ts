@@ -1,4 +1,3 @@
-import { logger } from '../../../common/logger';
 import {
   DdbClientError,
   DdbError,
@@ -8,14 +7,10 @@ import {
 
 export const ddbErrorHandler = (error: Error): DdbError => {
   if (error instanceof DdbClientError) {
-    logger.error('DynamoDB Client error:', error);
+    throw new DdbClientError('DynamoDB Client error', error);
   } else if (error instanceof DdbServerError) {
-    logger.error('DynamoDB Server error:', error);
-  } else if (error instanceof DdbUnknownError) {
-    logger.error('DynamoDB Unknown error:', error);
+    throw new DdbServerError('DynamoDB Server error', error);
   } else {
-    logger.error('DynamoDB Unknown error:', error);
     throw new DdbUnknownError('DynamoDB Unknown error', error);
   }
-  throw error;
 };
