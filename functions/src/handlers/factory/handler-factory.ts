@@ -12,7 +12,7 @@ export type RequestHandler = (
 export type RequestHandlerWithoutContext = (
   event: APIGatewayEvent,
 ) => Promise<LambdaResponse>;
-export type RequestErrorHandler = (error: AppError) => Promise<LambdaResponse>;
+export type RequestErrorHandler = (error: AppError) => LambdaResponse;
 
 export const handlerFactory = (
   name: string,

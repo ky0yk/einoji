@@ -1,6 +1,6 @@
-class TaskError extends Error {
+export class TaskError extends Error {
   constructor(
-    message: string,
+    public message: string,
     public originalError?: Error,
   ) {
     super(message);
