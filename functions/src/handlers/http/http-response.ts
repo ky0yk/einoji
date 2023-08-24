@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import { ERROR_MESSAGES, ErrorCode } from '../../common/error-codes';
+import { ErrorCode } from '../../common/errors/error-codes';
+import { USER_ERROR_MESSAGES } from '../../common/errors/error-messsages';
+import { HttpStatus } from './http-status';
 
 export const LambdaResponseSchema = z.object({
   statusCode: z.number(),
@@ -16,14 +18,6 @@ type JsonSerializable =
   | { [key: string]: JsonSerializable }
   | JsonSerializable[];
 
-export enum HttpStatus {
-  OK = 200,
-  CREATED = 201,
-  BAD_REQUEST = 400,
-  NOT_FOUND = 404,
-  INTERNAL_SERVER_ERROR = 500,
-}
-
 export const httpResponse = (status: HttpStatus) => ({
   withBody: (body: JsonSerializable): LambdaResponse => ({
     statusCode: status,
@@ -31,6 +25,9 @@ export const httpResponse = (status: HttpStatus) => ({
   }),
   withError: (errorCode: ErrorCode): LambdaResponse => ({
     statusCode: status,
-    body: JSON.stringify({ errorCode, message: ERROR_MESSAGES[errorCode] }),
+    body: JSON.stringify({
+      code: errorCode,
+      message: USER_ERROR_MESSAGES[errorCode],
+    }),
   }),
 });

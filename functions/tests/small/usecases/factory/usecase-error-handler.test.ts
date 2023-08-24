@@ -1,34 +1,38 @@
-import { ClientError, ServerError } from '../../../../src/common/app-errors';
-import { ErrorCode } from '../../../../src/common/error-codes';
+import { AppError } from '../../../../src/common/errors/app-errors';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
+
 import {
   TaskConversionError,
   TaskNotFoundError,
   TaskUnknownError,
 } from '../../../../src/domain/errors/task-errors';
 import {
-  DdbClientError,
-  DdbServerError,
-  DdbUnknownError,
+  DdbResourceNotFoundError,
+  DdbProvisionedThroughputExceededError,
+  DdbValidationError,
+  DdbInternalServerError,
 } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
 import { useCaseErrorHandler } from '../../../../src/usecases/factory/usecase-error-handler';
 
 describe('useCaseErrorHandler', () => {
-  test.each`
-    error_instance                   | expected_error_class | expected_error_code
-    ${new TaskNotFoundError('')}     | ${ClientError}       | ${ErrorCode.TASK_NOT_FOUND}
-    ${new TaskConversionError('')}   | ${ServerError}       | ${ErrorCode.TASK_CONVERSION_ERROR}
-    ${new TaskUnknownError('')}      | ${ServerError}       | ${ErrorCode.TASK_UNKNOWN_ERROR}
-    ${new DdbClientError('')}        | ${ClientError}       | ${ErrorCode.DDB_CLIENT_ERROR}
-    ${new DdbServerError('')}        | ${ServerError}       | ${ErrorCode.DDB_SERVER_ERROR}
-    ${new DdbUnknownError('')}       | ${ServerError}       | ${ErrorCode.DDB_UNKNOWN_ERROR}
-    ${new Error('Some other error')} | ${ServerError}       | ${ErrorCode.INTERNAL_SERVER_ERROR}
-  `(
-    'returns correct error for $error_instance.name',
-    ({ error_instance, expected_error_class, expected_error_code }) => {
-      const resultError = useCaseErrorHandler(error_instance);
+  const originalError = new Error('Original DDB error');
 
-      expect(resultError).toBeInstanceOf(expected_error_class);
-      expect(resultError.code).toBe(expected_error_code);
+  test.each`
+    error_instance                                                  | expected_error_code
+    ${new TaskNotFoundError('')}                                    | ${ErrorCode.TASK_NOT_FOUND}
+    ${new TaskConversionError('')}                                  | ${ErrorCode.TASK_CONVERSION_ERROR}
+    ${new TaskUnknownError('')}                                     | ${ErrorCode.TASK_UNKNOWN_ERROR}
+    ${new DdbResourceNotFoundError('', originalError)}              | ${ErrorCode.DDB_RESOURCE_NOT_FOUND}
+    ${new DdbProvisionedThroughputExceededError('', originalError)} | ${ErrorCode.DDB_THROUGHPUT_EXCEEDED}
+    ${new DdbValidationError('', originalError)}                    | ${ErrorCode.DDB_VALIDATION_ERROR}
+    ${new DdbInternalServerError('', originalError)}                | ${ErrorCode.DDB_INTERNAL_SERVER_ERROR}
+    ${new Error('Some other error')}                                | ${ErrorCode.UNKNOWN_ERROR}
+  `(
+    'given $error_instance it should return an error with class $EXPECTED_ERROR_CLASS and code $expected_error_code',
+    ({ error_instance, expected_error_code }) => {
+      const result = useCaseErrorHandler(error_instance);
+      expect(result).toBeInstanceOf(AppError);
+      expect(result.code).toBe(expected_error_code);
     },
   );
 });

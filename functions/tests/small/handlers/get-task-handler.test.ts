@@ -1,17 +1,9 @@
-import { ErrorCode } from '../../../src/common/error-codes';
-import { HttpStatus } from '../../../src/handlers/http/http-response';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { Task } from '../../../src/domain/task';
 import { APIGatewayEvent, Context } from 'aws-lambda';
-
-jest.mock('../../../src/usecases/get-task-usecase');
-
-const mockValidEvent = {
-  pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
-} as unknown as APIGatewayEvent;
-
 import { handler } from '../../../src/handlers/get-task-handler';
-import { ClientError } from '../../../src/common/app-errors';
+import { AppError } from '../../../src/common/errors/app-errors';
+import { ErrorCode } from '../../../src/common/errors/error-codes';
 
 jest.mock('../../../src/usecases/get-task-usecase');
 
@@ -30,14 +22,15 @@ describe('getTaskHandler', () => {
   };
   const dummyContext = {} as Context;
 
-  test('should handle a valid request and return the task', async () => {
-    const mockEvent = {
-      pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
-    } as unknown as APIGatewayEvent;
-    (getTaskUseCase as jest.Mock).mockResolvedValueOnce(dummyTask);
+  const mockValidEvent = {
+    pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
+  } as unknown as APIGatewayEvent;
 
-    const result = await handler(mockEvent, dummyContext);
-    expect(result.statusCode).toBe(HttpStatus.OK);
+  test('valid request should return the task with status 200', async () => {
+    (getTaskUseCase as jest.Mock).mockResolvedValueOnce(dummyTask);
+    const result = await handler(mockValidEvent, dummyContext);
+
+    expect(result.statusCode).toBe(200);
     expect(JSON.parse(result.body!)).toEqual(dummyTask);
     expect(getTaskUseCase).toHaveBeenCalledTimes(1);
     expect(getTaskUseCase).toHaveBeenCalledWith(
@@ -45,29 +38,26 @@ describe('getTaskHandler', () => {
     );
   });
 
-  test('should handle task not found and return a not found error', async () => {
-    const mockEvent = {
-      pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
-    } as unknown as APIGatewayEvent;
+  test('task not found should return status 404', async () => {
     (getTaskUseCase as jest.Mock).mockRejectedValueOnce(
-      new ClientError(ErrorCode.TASK_NOT_FOUND),
+      new AppError(ErrorCode.TASK_NOT_FOUND),
     );
+    const result = await handler(mockValidEvent, dummyContext);
 
-    const result = await handler(mockEvent, dummyContext);
-    expect(result.statusCode).toBe(HttpStatus.NOT_FOUND);
-    expect(JSON.parse(result.body!).errorCode).toBe(ErrorCode.TASK_NOT_FOUND);
+    expect(result.statusCode).toBe(404);
+    expect(JSON.parse(result.body!).code).toBe(ErrorCode.TASK_NOT_FOUND);
     expect(getTaskUseCase).toHaveBeenCalledTimes(1);
     expect(getTaskUseCase).toHaveBeenCalledWith(
       mockValidEvent.pathParameters!.id,
     );
   });
 
-  test('should handle an invalid request and return a bad request error', async () => {
+  test('invalid request should return status 400', async () => {
     const mockEvent = {} as unknown as APIGatewayEvent;
-
     const result = await handler(mockEvent, dummyContext);
-    expect(result.statusCode).toBe(HttpStatus.BAD_REQUEST);
-    expect(JSON.parse(result.body!).errorCode).toBe(ErrorCode.INVALID_REQUEST);
+
+    expect(result.statusCode).toBe(400);
+    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_REQUEST);
     expect(getTaskUseCase).toHaveBeenCalledTimes(0);
   });
 });

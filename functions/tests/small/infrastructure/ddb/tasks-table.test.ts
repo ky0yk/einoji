@@ -5,15 +5,16 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 import { TaskItem } from '../../../../src/domain/taskItem';
-import { DdbServerError } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
-import { _testExports } from '../../../../src/infrastructure/ddb/tasks-table';
 import { z } from 'zod';
 import {
   mockGetCommandOutput,
   mockPutCommandOutput,
 } from '../../../helper/tasks-table-helper';
-
-const { createTaskImpl, fetchTaskByIdImpl } = _testExports;
+import { DdbInternalServerError } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
+import {
+  createTask,
+  fetchTaskById,
+} from '../../../../src/infrastructure/ddb/tasks-table';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);
 
@@ -30,7 +31,7 @@ describe('createTaskImpl', () => {
     const mockResponse = mockPutCommandOutput(200);
     documentMockClient.on(PutCommand).resolves(mockResponse);
 
-    const createdTaskId = await createTaskImpl(taskBody);
+    const createdTaskId = await createTask(taskBody);
 
     // mockが一回呼ばれたことを確認
     const callsOfPut = documentMockClient.commandCalls(PutCommand);
@@ -58,7 +59,7 @@ describe('createTaskImpl', () => {
     const mockResponse = mockPutCommandOutput(200);
     documentMockClient.on(PutCommand).resolves(mockResponse);
 
-    const createdTaskId = await createTaskImpl(taskBody);
+    const createdTaskId = await createTask(taskBody);
 
     // mockが一回呼ばれたことを確認
     const callsOfPut = documentMockClient.commandCalls(PutCommand);
@@ -102,7 +103,7 @@ describe('fetchTaskByIdImpl', () => {
     const mockResponse = mockGetCommandOutput(200, dummyTaskRecord);
     documentMockClient.on(GetCommand).resolves(mockResponse);
 
-    const result = await fetchTaskByIdImpl(mockTaskId);
+    const result = await fetchTaskById(mockTaskId);
 
     const callsOfGet = documentMockClient.commandCalls(GetCommand);
     expect(callsOfGet).toHaveLength(1);
@@ -119,7 +120,7 @@ describe('fetchTaskByIdImpl', () => {
   test('should return null if the task is not found', async () => {
     const mockResponse = mockGetCommandOutput(200, undefined);
     documentMockClient.on(GetCommand).resolves(mockResponse);
-    const task = await fetchTaskByIdImpl('some-task-id');
+    const task = await fetchTaskById('some-task-id');
 
     expect(task).toBeNull();
     expect(documentMockClient.calls()).toHaveLength(1);
@@ -131,7 +132,9 @@ describe('fetchTaskByIdImpl', () => {
     };
     const mockResponse = mockGetCommandOutput(200, invalidTaskRecord);
     documentMockClient.on(GetCommand).resolves(mockResponse);
-    await expect(fetchTaskByIdImpl(mockTaskId)).rejects.toThrow(DdbServerError);
+    await expect(fetchTaskById(mockTaskId)).rejects.toThrow(
+      DdbInternalServerError,
+    );
     expect(documentMockClient.calls()).toHaveLength(1);
   });
 });

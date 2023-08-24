@@ -1,4 +1,4 @@
-import { AppError } from '../../common/app-errors';
+import { AppError } from '../../common/errors/app-errors';
 import { logger } from '../../common/logger';
 import { useCaseErrorHandler } from './usecase-error-handler';
 

@@ -2,21 +2,16 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
   GetCommand,
-  GetCommandOutput,
   PutCommand,
   PutCommandInput,
-  PutCommandOutput,
 } from '@aws-sdk/lib-dynamodb';
-import {
-  DdbClientError,
-  DdbServerError,
-  DdbUnknownError,
-} from './errors/ddb-errors';
+
 import { logger } from '../../common/logger';
 import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskRequest } from '../../handlers/request_schemas/create-task-request';
 import { ddbFactory } from './factory/ddb-factory';
+import { DdbInternalServerError } from './errors/ddb-errors';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
@@ -46,8 +41,7 @@ const createTaskImpl = async (body: CreateTaskRequest): Promise<string> => {
     },
   };
   const putCommand = new PutCommand(putCommandInput);
-  const res = await dynamoDb.send(putCommand);
-  checkHttpStatusCode(res);
+  await dynamoDb.send(putCommand);
 
   return uuid;
 };
@@ -62,7 +56,6 @@ const fetchTaskByIdImpl = async (taskId: string): Promise<TaskItem | null> => {
   };
   const command = new GetCommand(commandInput);
   const result = await dynamoDb.send(command);
-  checkHttpStatusCode(result);
 
   if (!result.Item) {
     logger.warn(`Task with taskId ${taskId} not found.`);
@@ -71,7 +64,7 @@ const fetchTaskByIdImpl = async (taskId: string): Promise<TaskItem | null> => {
 
   const parseResult = TaskItemSchema.safeParse(result.Item);
   if (!parseResult.success) {
-    throw new DdbServerError(
+    throw new DdbInternalServerError(
       'Retrieved item does not match the expected schema',
       parseResult.error,
     );
@@ -80,28 +73,5 @@ const fetchTaskByIdImpl = async (taskId: string): Promise<TaskItem | null> => {
   return parseResult.data;
 };
 
-const checkHttpStatusCode = (
-  response: PutCommandOutput | GetCommandOutput,
-): void => {
-  const httpStatusCode = response?.$metadata?.httpStatusCode ?? null;
-
-  if (httpStatusCode === null) {
-    throw new DdbUnknownError('Invalid response or missing httpStatusCode');
-  } else if (httpStatusCode >= 200 && httpStatusCode < 300) {
-    return;
-  } else if (httpStatusCode >= 400 && httpStatusCode < 500) {
-    throw new DdbClientError('Bad Request');
-  } else if (httpStatusCode >= 500 && httpStatusCode < 600) {
-    throw new DdbServerError('Internal Server Error');
-  } else {
-    throw new DdbUnknownError('Unknown Error');
-  }
-};
-
 export const createTask = ddbFactory('createTask', createTaskImpl);
 export const fetchTaskById = ddbFactory('fetchTaskById', fetchTaskByIdImpl);
-
-export const _testExports = {
-  createTaskImpl,
-  fetchTaskByIdImpl,
-};

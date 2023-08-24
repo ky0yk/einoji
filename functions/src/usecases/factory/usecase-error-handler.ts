@@ -1,5 +1,5 @@
-import { AppError } from '../../common/app-errors';
-import { ErrorCode } from '../../common/error-codes';
+import { AppError } from '../../common/errors/app-errors';
+import { ErrorCode } from '../../common/errors/error-codes';
 import {
   TaskConversionError,
   TaskError,
@@ -9,9 +9,9 @@ import {
 import {
   DdbError,
   DdbInternalServerError,
-  DdbProvisionedThroughputExceededException,
+  DdbProvisionedThroughputExceededError,
   DdbResourceNotFoundError,
-  DdbValidationException,
+  DdbValidationError,
 } from '../../infrastructure/ddb/errors/ddb-errors';
 
 export const useCaseErrorHandler = (error: DdbError | TaskError): AppError => {
@@ -22,14 +22,14 @@ export const useCaseErrorHandler = (error: DdbError | TaskError): AppError => {
       error,
     );
   }
-  if (error instanceof DdbProvisionedThroughputExceededException) {
+  if (error instanceof DdbProvisionedThroughputExceededError) {
     return new AppError(
       ErrorCode.DDB_THROUGHPUT_EXCEEDED,
       error.originalError?.message,
       error,
     );
   }
-  if (error instanceof DdbValidationException) {
+  if (error instanceof DdbValidationError) {
     return new AppError(
       ErrorCode.DDB_VALIDATION_ERROR,
       error.originalError?.message,

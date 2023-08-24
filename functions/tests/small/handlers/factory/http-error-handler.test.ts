@@ -1,29 +1,29 @@
-import { ClientError, ServerError } from '../../../../src/common/app-errors';
-import { ERROR_MESSAGES, ErrorCode } from '../../../../src/common/error-codes';
+import { AppError } from '../../../../src/common/errors/app-errors';
+import { USER_ERROR_MESSAGES } from '../../../../src/common/errors/error-messsages';
 import { httpErrorHandler } from '../../../../src/handlers/factory/http-error-handler';
-import { HttpStatus } from '../../../../src/handlers/http/http-response';
 
 describe('httpErrorHandler', () => {
   test.each`
-    error_instance                                  | expected_status                     | expected_error_code
-    ${new ServerError(ErrorCode.TASK_NOT_FOUND)}    | ${HttpStatus.NOT_FOUND}             | ${ErrorCode.TASK_NOT_FOUND}
-    ${new ServerError(ErrorCode.DDB_CLIENT_ERROR)}  | ${HttpStatus.BAD_REQUEST}           | ${ErrorCode.DDB_CLIENT_ERROR}
-    ${new ServerError(ErrorCode.DDB_SERVER_ERROR)}  | ${HttpStatus.INTERNAL_SERVER_ERROR} | ${ErrorCode.DDB_SERVER_ERROR}
-    ${new ServerError(ErrorCode.DDB_UNKNOWN_ERROR)} | ${HttpStatus.INTERNAL_SERVER_ERROR} | ${ErrorCode.DDB_UNKNOWN_ERROR}
-    ${new ServerError(ErrorCode.UNKNOWN_ERROR)}     | ${HttpStatus.INTERNAL_SERVER_ERROR} | ${ErrorCode.UNKNOWN_ERROR}
-    ${new ClientError(ErrorCode.UNKNOWN_ERROR)}     | ${HttpStatus.BAD_REQUEST}           | ${ErrorCode.INVALID_REQUEST}
+    errorCode                      | expected_http_status_code | expected_user_error_message
+    ${'TASK_NOT_FOUND'}            | ${404}                    | ${USER_ERROR_MESSAGES['TASK_NOT_FOUND']}
+    ${'TASK_CONVERSION_ERROR'}     | ${500}                    | ${USER_ERROR_MESSAGES['TASK_CONVERSION_ERROR']}
+    ${'TASK_UNKNOWN_ERROR'}        | ${500}                    | ${USER_ERROR_MESSAGES['TASK_UNKNOWN_ERROR']}
+    ${'DDB_RESOURCE_NOT_FOUND'}    | ${404}                    | ${USER_ERROR_MESSAGES['DDB_RESOURCE_NOT_FOUND']}
+    ${'DDB_THROUGHPUT_EXCEEDED'}   | ${429}                    | ${USER_ERROR_MESSAGES['DDB_THROUGHPUT_EXCEEDED']}
+    ${'DDB_VALIDATION_ERROR'}      | ${400}                    | ${USER_ERROR_MESSAGES['DDB_VALIDATION_ERROR']}
+    ${'DDB_INTERNAL_SERVER_ERROR'} | ${500}                    | ${USER_ERROR_MESSAGES['DDB_INTERNAL_SERVER_ERROR']}
+    ${'UNKNOWN_ERROR'}             | ${500}                    | ${USER_ERROR_MESSAGES['UNKNOWN_ERROR']}
   `(
-    'returns $expected_status and error code $expected_error_code for error $error_instance',
-    async ({ error_instance, expected_status, expected_error_code }) => {
-      const response = await httpErrorHandler(error_instance);
+    'given an AppError with code $errorCode it should return a response with status $expected_http_status_code and message $expected_user_error_message',
+    ({ errorCode, expected_http_status_code, expected_user_error_message }) => {
+      const appError = new AppError(errorCode, 'Some detailed error message');
+      const response = httpErrorHandler(appError);
 
-      expect(response.statusCode).toBe(expected_status);
-
-      const responseBody = JSON.parse(response.body || '{}');
-      expect(responseBody.errorCode).toBe(expected_error_code);
-      expect(responseBody.message).toBe(
-        ERROR_MESSAGES[expected_error_code as ErrorCode],
-      );
+      expect(response.statusCode).toBe(expected_http_status_code);
+      expect(JSON.parse(response.body!)).toEqual({
+        code: errorCode,
+        message: expected_user_error_message,
+      });
     },
   );
 });

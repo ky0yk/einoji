@@ -13,13 +13,13 @@ export class DdbResourceNotFoundError extends DdbError {
   }
 }
 
-export class DdbProvisionedThroughputExceededException extends DdbError {
+export class DdbProvisionedThroughputExceededError extends DdbError {
   constructor(message: string, originalError: Error) {
     super(message, originalError);
   }
 }
 
-export class DdbValidationException extends DdbError {
+export class DdbValidationError extends DdbError {
   constructor(message: string, originalError: Error) {
     super(message, originalError);
   }

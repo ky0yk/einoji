@@ -1,4 +1,5 @@
-import { ERROR_MESSAGES, ErrorCode } from './error-codes';
+import { ErrorCode } from './error-codes';
+import { ERROR_MESSAGES } from './error-messsages';
 
 export class AppError extends Error {
   constructor(
