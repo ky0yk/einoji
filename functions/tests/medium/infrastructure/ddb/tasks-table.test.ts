@@ -1,5 +1,5 @@
 import { TaskItem } from '../../../../src/domain/taskItem';
-import { CreateTaskRequest } from '../../../../src/handlers/request_schemas/create-task-request';
+import { CreateTaskRequest } from '../../../../src/handlers/http/requestSchemas/create-task-request';
 import {
   createTask,
   fetchTaskById,

@@ -5,7 +5,7 @@ import {
   fetchTaskById,
 } from '../../../src/infrastructure/ddb/tasks-table';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
-import { CreateTaskRequest } from '../../../src/handlers/request_schemas/create-task-request';
+import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/create-task-request';
 import { AppError } from '../../../src/common/errors/app-errors';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
 

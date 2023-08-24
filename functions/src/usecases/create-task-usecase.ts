@@ -5,7 +5,7 @@ import {
 } from '../infrastructure/ddb/tasks-table';
 import { TaskNotFoundError } from '../domain/errors/task-errors';
 import { useCaseFactory } from './factory/usecase-factory';
-import { CreateTaskRequest } from '../handlers/request_schemas/create-task-request';
+import { CreateTaskRequest } from '../handlers/http/requestSchemas/create-task-request';
 
 const createTask = async (body: CreateTaskRequest): Promise<Task> => {
   const newTaskId = await ddbCreateTask(body);

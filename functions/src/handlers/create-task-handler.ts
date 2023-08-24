@@ -5,7 +5,7 @@ import {
   handlerFactory,
 } from './factory/handler-factory';
 import { createTaskUseCase } from '../usecases/create-task-usecase';
-import { CreateTaskRequestSchema } from './request_schemas/create-task-request';
+import { CreateTaskRequestSchema } from './http/requestSchemas/create-task-request';
 import { LambdaResponse, httpResponse } from './http/http-response';
 import { HttpStatus } from './http/http-status';
 import { ErrorCode } from '../common/errors/error-codes';
