@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { ErrorCode } from '../../common/errors/error-codes';
-import { USER_ERROR_MESSAGES } from '../../common/errors/error-messsages';
-import { HttpStatus } from './http-status';
+import { ERROR_RESPONSE_MAP } from './error-response-map';
 
 export const LambdaResponseSchema = z.object({
   statusCode: z.number(),
@@ -18,16 +17,25 @@ type JsonSerializable =
   | { [key: string]: JsonSerializable }
   | JsonSerializable[];
 
-export const httpResponse = (status: HttpStatus) => ({
-  withBody: (body: JsonSerializable): LambdaResponse => ({
-    statusCode: status,
-    body: JSON.stringify(body),
-  }),
-  withError: (errorCode: ErrorCode): LambdaResponse => ({
-    statusCode: status,
-    body: JSON.stringify({
-      code: errorCode,
-      message: USER_ERROR_MESSAGES[errorCode],
+type WithBodyResponseGenerator = {
+  withBody: (body: JsonSerializable) => LambdaResponse;
+};
+
+export const httpResponse = (status: number): WithBodyResponseGenerator => {
+  return {
+    withBody: (body: JsonSerializable) => ({
+      statusCode: status,
+      body: JSON.stringify(body),
     }),
-  }),
-});
+  };
+};
+
+export const httpErrorResponse = (errorCode: ErrorCode): LambdaResponse => {
+  return {
+    statusCode: ERROR_RESPONSE_MAP[errorCode].statusCode,
+    body: JSON.stringify({
+      code: ERROR_RESPONSE_MAP[errorCode].userErrorCode,
+      message: ERROR_RESPONSE_MAP[errorCode].message,
+    }),
+  };
+};

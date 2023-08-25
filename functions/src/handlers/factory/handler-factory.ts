@@ -1,10 +1,9 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { logger } from '../../common/logger';
-import { LambdaResponse, httpResponse } from '../http/http-response';
+import { LambdaResponse, httpErrorResponse } from '../http/http-response';
 
 import { AppError } from '../../common/errors/app-errors';
 import { httpErrorHandler } from './http-error-handler';
-import { HttpStatus } from '../http/http-status';
 import { ErrorCode } from '../../common/errors/error-codes';
 
 export type RequestHandler = (
@@ -55,8 +54,6 @@ const requestErrorHandlerWithLog = async (
     return errorResult;
   } else {
     logger.error(`An unexpected error occurred in handler: ${name}`, String(e));
-    return httpResponse(HttpStatus.INTERNAL_SERVER_ERROR).withError(
-      ErrorCode.UNKNOWN_ERROR,
-    );
+    return httpErrorResponse(ErrorCode.UNKNOWN_ERROR);
   }
 };

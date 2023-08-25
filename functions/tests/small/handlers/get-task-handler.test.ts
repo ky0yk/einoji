@@ -4,6 +4,7 @@ import { APIGatewayEvent, Context } from 'aws-lambda';
 import { handler } from '../../../src/handlers/get-task-handler';
 import { AppError } from '../../../src/common/errors/app-errors';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
+import { UserErrorCode } from '../../../src/handlers/http/error-response-map';
 
 jest.mock('../../../src/usecases/get-task-usecase');
 
@@ -45,7 +46,9 @@ describe('getTaskHandler', () => {
     const result = await handler(mockValidEvent, dummyContext);
 
     expect(result.statusCode).toBe(404);
-    expect(JSON.parse(result.body!).code).toBe(ErrorCode.TASK_NOT_FOUND);
+    expect(JSON.parse(result.body!).code).toBe(
+      UserErrorCode.TASK_NOT_AVAILABLE,
+    );
     expect(getTaskUseCase).toHaveBeenCalledTimes(1);
     expect(getTaskUseCase).toHaveBeenCalledWith(
       mockValidEvent.pathParameters!.id,
