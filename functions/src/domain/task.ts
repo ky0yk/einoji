@@ -14,16 +14,18 @@ export const TaskSchema = z.object({
 
 export type Task = z.infer<typeof TaskSchema>;
 
-export const toTask = (taskRecord: TaskItem): Task => {
+export const toTask = (item: TaskItem): Task => {
+  const interimTask = {
+    id: item.taskId,
+    title: item.title,
+    description: item.description,
+    completed: item.completed,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
+
   try {
-    return {
-      id: taskRecord.taskId,
-      title: taskRecord.title,
-      description: taskRecord.description,
-      completed: taskRecord.completed,
-      createdAt: taskRecord.createdAt,
-      updatedAt: taskRecord.updatedAt,
-    };
+    return TaskSchema.parse(interimTask);
   } catch (error) {
     throw new TaskConversionError('Failed to convert TaskRecord to Task');
   }
