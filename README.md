@@ -1,5 +1,5 @@
-# dd-todo
+# einoji
 
 ## APIドキュメント
 
-https://ky0yk.github.io/dd-todo/swagger/
+https://ky0yk.github.io/einoji/swagger/
