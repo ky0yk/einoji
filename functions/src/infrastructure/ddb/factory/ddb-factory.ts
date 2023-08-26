@@ -42,7 +42,7 @@ const ddbOperationErrorHandlerWithLog = async <T>(
     logger.info(`EXIT Dynamodb Operation error handling: ${name}`, errorResult);
     throw errorResult;
   } else {
-    logger.info(`unexpected error occurred in Dynamodb Operation: ${name}}`);
+    logger.error(`unexpected error occurred in Dynamodb Operation: ${name}}`);
     throw new Error('Unknown error');
   }
 };

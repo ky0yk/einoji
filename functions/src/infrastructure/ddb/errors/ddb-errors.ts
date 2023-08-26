@@ -1,9 +1,9 @@
 export class DdbError extends Error {
-  originalError: Error;
-
-  constructor(message: string, originalError: Error) {
+  constructor(
+    public message: string,
+    public originalError?: Error,
+  ) {
     super(message);
-    this.originalError = originalError;
   }
 }
 

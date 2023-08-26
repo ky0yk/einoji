@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ErrorCode } from '../../common/errors/error-codes';
 import { ERROR_RESPONSE_MAP } from './error-response-map';
+import { HttpStatus } from './http-status';
 
 export const LambdaResponseSchema = z.object({
   statusCode: z.number(),
@@ -21,7 +22,7 @@ type WithBodyResponseGenerator = {
   withBody: (body: JsonSerializable) => LambdaResponse;
 };
 
-export const httpResponse = (status: number): WithBodyResponseGenerator => {
+export const httpResponse = (status: HttpStatus): WithBodyResponseGenerator => {
   return {
     withBody: (body: JsonSerializable) => ({
       statusCode: status,

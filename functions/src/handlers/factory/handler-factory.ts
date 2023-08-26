@@ -1,10 +1,10 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { logger } from '../../common/logger';
-import { LambdaResponse, httpErrorResponse } from '../http/http-response';
 
 import { AppError } from '../../common/errors/app-errors';
-import { httpErrorHandler } from './http-error-handler';
 import { ErrorCode } from '../../common/errors/error-codes';
+import { LambdaResponse, httpErrorResponse } from '../http/http-response';
+import { httpErrorHandler } from './http-error-handler';
 
 export type RequestHandler = (
   event: APIGatewayEvent,
