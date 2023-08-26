@@ -5,18 +5,15 @@ import {
   DdbValidationError,
 } from '../errors/ddb-errors';
 
-export const ddbErrorHandler = (originalError: Error) => {
-  switch (originalError.name) {
+export const ddbErrorHandler = (error: Error) => {
+  switch (error.name) {
     case 'ResourceNotFoundException':
-      throw new DdbResourceNotFoundError(originalError.message, originalError);
+      throw new DdbResourceNotFoundError(error.message, error);
     case 'ProvisionedThroughputExceededException':
-      throw new DdbProvisionedThroughputExceededError(
-        originalError.message,
-        originalError,
-      );
+      throw new DdbProvisionedThroughputExceededError(error.message, error);
     case 'ValidationException':
-      throw new DdbValidationError(originalError.message, originalError);
+      throw new DdbValidationError(error.message, error);
     default:
-      throw new DdbInternalServerError(originalError.message, originalError);
+      throw new DdbInternalServerError(error.message, error);
   }
 };
