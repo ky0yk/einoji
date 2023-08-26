@@ -1,12 +1,46 @@
 import { TaskItem } from '../../../../src/domain/taskItem';
+import { CreateTaskRequest } from '../../../../src/handlers/http/requestSchemas/create-task-request';
 
-import { getTaskItemById } from '../../../../src/infrastructure/ddb/tasks-table';
+import {
+  createTaskItem,
+  getTaskItemById,
+} from '../../../../src/infrastructure/ddb/tasks-table';
 import {
   createTable,
   deleteTable,
   deleteTask,
   putTask,
 } from '../../../helpers/tasks-table-helpers';
+describe('createTask', () => {
+  const dummyTaskBody: CreateTaskRequest = {
+    title: 'スーパーに買い物に行く',
+    description: '牛乳と卵を買う',
+  };
+
+  beforeAll(async () => {
+    await createTable();
+  });
+
+  afterAll(async () => {
+    await deleteTable();
+  });
+
+  test('should add a new task to the DynamoDB table', async () => {
+    const newTaskId = await createTaskItem(dummyTaskBody);
+
+    const createdTask = await getTaskItemById(newTaskId);
+    if (!createdTask) {
+      throw new Error('Created task not found');
+    }
+    expect(createdTask).toBeDefined();
+
+    expect(createdTask.taskId).toEqual(newTaskId);
+
+    expect(createdTask.title).toEqual(dummyTaskBody.title);
+    expect(createdTask.description).toEqual(dummyTaskBody.description);
+    expect(createdTask.completed).toEqual(false);
+  });
+});
 
 describe('getTaskItemById', () => {
   const dummyTaskItem: TaskItem = {

@@ -1,15 +1,77 @@
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+} from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 
 import { DdbInternalServerError } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
-import { getTaskItemById } from '../../../../src/infrastructure/ddb/tasks-table';
+import {
+  createTaskItem,
+  getTaskItemById,
+} from '../../../../src/infrastructure/ddb/tasks-table';
 import { TaskItem } from '../../../../src/domain/taskItem';
+import { z } from 'zod';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);
 
 const TASK_TABLE_NAME = process.env.TASKS_TABLE_NAME;
+describe('createTaskImpl', () => {
+  afterEach(() => {
+    documentMockClient.reset();
+  });
+  const UuidSchema = z.string().uuid();
 
-describe('fetchTaskById', () => {
+  test('should return a generated UUID when creating a task with a title and description', async () => {
+    const taskBody = { title: 'Test Task', description: 'Test Description' };
+    documentMockClient.on(PutCommand).resolves({});
+
+    const createdTaskId = await createTaskItem(taskBody);
+
+    const callsOfPut = documentMockClient.commandCalls(PutCommand);
+    expect(callsOfPut).toHaveLength(1);
+    expect(callsOfPut[0].args[0].input).toEqual({
+      TableName: TASK_TABLE_NAME,
+      Item: {
+        userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
+        taskId: expect.any(String),
+        title: taskBody.title,
+        description: taskBody.description,
+        completed: false,
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
+    });
+    const parseResult = UuidSchema.safeParse(createdTaskId);
+    expect(parseResult.success).toBe(true);
+  });
+
+  test('should return a generated UUID when creating a task with only a title', async () => {
+    const taskBody = { title: 'Test Task' };
+    documentMockClient.on(PutCommand).resolves({});
+
+    const createdTaskId = await createTaskItem(taskBody);
+
+    const callsOfPut = documentMockClient.commandCalls(PutCommand);
+    expect(callsOfPut).toHaveLength(1);
+    expect(callsOfPut[0].args[0].input).toEqual({
+      TableName: TASK_TABLE_NAME,
+      Item: {
+        userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
+        taskId: expect.any(String),
+        title: taskBody.title,
+        description: '',
+        completed: false,
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
+    });
+    const parseResult = UuidSchema.safeParse(createdTaskId);
+    expect(parseResult.success).toBe(true);
+  });
+});
+
+describe('getTaskItemById', () => {
   const mockTaskId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
 
   beforeEach(() => {
