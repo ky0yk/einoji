@@ -1,20 +1,32 @@
 export class DdbError extends Error {
-  constructor(
-    message: string,
-    public originalError?: Error,
-  ) {
+  originalError: Error;
+
+  constructor(message: string, originalError: Error) {
     super(message);
+    this.originalError = originalError;
   }
 }
 
-export class DdbServerError extends DdbError {
-  constructor(message: string, originalError?: Error) {
+export class DdbResourceNotFoundError extends DdbError {
+  constructor(message: string, originalError: Error) {
     super(message, originalError);
   }
 }
 
-export class DdbClientError extends DdbError {
-  constructor(message: string, originalError?: Error) {
+export class DdbProvisionedThroughputExceededError extends DdbError {
+  constructor(message: string, originalError: Error) {
+    super(message, originalError);
+  }
+}
+
+export class DdbValidationError extends DdbError {
+  constructor(message: string, originalError: Error) {
+    super(message, originalError);
+  }
+}
+
+export class DdbInternalServerError extends DdbError {
+  constructor(message: string, originalError: Error) {
     super(message, originalError);
   }
 }

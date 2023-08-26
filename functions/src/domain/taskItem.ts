@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { isoDate } from './isoDate';
 
-export const TaskRecordSchema = z.object({
+export const TaskItemSchema = z.object({
   userId: z.string().uuid(),
   taskId: z.string().uuid(),
   title: z.string(),
@@ -11,4 +11,4 @@ export const TaskRecordSchema = z.object({
   updatedAt: isoDate,
 });
 
-export type TaskRecord = z.infer<typeof TaskRecordSchema>;
+export type TaskItem = z.infer<typeof TaskItemSchema>;
