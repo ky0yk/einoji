@@ -17,7 +17,7 @@ describe('fetchTaskById', () => {
   });
 
   test('should return a task record for a valid task ID', async () => {
-    const dummyTaskRecord: TaskItem = {
+    const dummyTaskItem: TaskItem = {
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
       taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
       title: 'スーパーに買い物に行く',
@@ -27,7 +27,7 @@ describe('fetchTaskById', () => {
       updatedAt: '2021-06-22T14:24:02.071Z',
     };
 
-    documentMockClient.on(GetCommand).resolves({ Item: dummyTaskRecord });
+    documentMockClient.on(GetCommand).resolves({ Item: dummyTaskItem });
 
     const result = await getTaskItemById(mockTaskId);
 
@@ -40,7 +40,7 @@ describe('fetchTaskById', () => {
         taskId: mockTaskId,
       },
     });
-    expect(result).toEqual(dummyTaskRecord);
+    expect(result).toEqual(dummyTaskItem);
   });
 
   test('should return null if the task is not found', async () => {
