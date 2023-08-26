@@ -1,5 +1,6 @@
-import { AppError } from '../../common/app-errors';
+import { AppError } from '../../common/errors/app-errors';
 import { logger } from '../../common/logger';
+import { useCaseErrorHandler } from './usecase-error-handler';
 
 type UseCase<P, T> = (params: P) => Promise<T>;
 type UseCaseErrorHandler = (error: Error) => AppError;
@@ -7,13 +8,13 @@ type UseCaseErrorHandler = (error: Error) => AppError;
 export const useCaseFactory = <P, T>(
   name: string,
   useCase: UseCase<P, T>,
-  useCaseErrorHandler: UseCaseErrorHandler,
+  errorHandler: UseCaseErrorHandler = useCaseErrorHandler,
 ): UseCase<P, T> => {
   return async (params: P) => {
     try {
       return await useCaseWithLog(name, useCase, params);
     } catch (e: unknown) {
-      return await useCaseErrorHandlerWithLog(name, useCaseErrorHandler, e);
+      return await useCaseErrorHandlerWithLog(name, errorHandler, e);
     }
   };
 };
