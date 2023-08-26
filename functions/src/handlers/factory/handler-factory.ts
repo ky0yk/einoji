@@ -1,8 +1,10 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { logger } from '../../common/logger';
-import { LambdaResponse, httpResponse } from './http-response';
-import { ErrorCode } from '../../common/error-codes';
-import { AppError } from '../../common/app-errors';
+import { LambdaResponse, httpErrorResponse } from '../http/http-response';
+
+import { AppError } from '../../common/errors/app-errors';
+import { httpErrorHandler } from './http-error-handler';
+import { ErrorCode } from '../../common/errors/error-codes';
 
 export type RequestHandler = (
   event: APIGatewayEvent,
@@ -11,19 +13,19 @@ export type RequestHandler = (
 export type RequestHandlerWithoutContext = (
   event: APIGatewayEvent,
 ) => Promise<LambdaResponse>;
-export type RequestErrorHandler = (error: AppError) => Promise<LambdaResponse>;
+export type RequestErrorHandler = (error: AppError) => LambdaResponse;
 
 export const handlerFactory = (
   name: string,
   requestHandler: RequestHandlerWithoutContext,
-  requestErrorHandler: RequestErrorHandler,
+  errorHandler: RequestErrorHandler = httpErrorHandler,
 ): RequestHandler => {
   return async (event, context) => {
     try {
       logger.addContext(context);
       return await requestHandlerWithLog(name, requestHandler, event);
     } catch (e: unknown) {
-      return await requestErrorHandlerWithLog(name, requestErrorHandler, e);
+      return await requestErrorHandlerWithLog(name, errorHandler, e);
     }
   };
 };
@@ -47,11 +49,11 @@ const requestErrorHandlerWithLog = async (
   logger.error(`An error occurred in handler: ${name}`);
   if (e instanceof AppError) {
     logger.error(`START Error handling: ${name}`, e);
-    const errorResult = await requestErrorHandler(e);
+    const errorResult = requestErrorHandler(e);
     logger.info(`EXIT Error handling: ${name}`);
     return errorResult;
   } else {
     logger.error(`An unexpected error occurred in handler: ${name}`, String(e));
-    return httpResponse(500).withError(ErrorCode.UNKNOWN_ERROR);
+    return httpErrorResponse(ErrorCode.UNKNOWN_ERROR);
   }
 };
