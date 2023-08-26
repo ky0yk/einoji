@@ -1,5 +1,4 @@
 import { APIGatewayEvent } from 'aws-lambda';
-import { z } from 'zod';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
@@ -8,30 +7,15 @@ import { createTaskUseCase } from '../usecases/create-task-usecase';
 import { CreateTaskRequestSchema } from './http/requestSchemas/create-task-request';
 import { LambdaResponse, httpResponse } from './http/http-response';
 import { HttpStatus } from './http/http-status';
-import { ErrorCode } from '../common/errors/error-codes';
-import { AppError } from '../common/errors/app-errors';
-
-const EventSchema = z.object({
-  body: z.string(),
-});
+import { validateBody, validateEvent } from './http/validators';
 
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  const eventResult = EventSchema.safeParse(event);
+  const validEvent = validateEvent(event);
+  const validBody = validateBody(CreateTaskRequestSchema, validEvent.body);
 
-  if (!eventResult.success) {
-    throw new AppError(ErrorCode.INVALID_REQUEST);
-  }
-
-  const body = eventResult.data.body;
-  const bodyResult = CreateTaskRequestSchema.safeParse(JSON.parse(body));
-
-  if (!bodyResult.success) {
-    throw new AppError(ErrorCode.INVALID_REQUEST);
-  }
-
-  const createdTask = await createTaskUseCase(bodyResult.data);
+  const createdTask = await createTaskUseCase(validBody);
 
   return httpResponse(HttpStatus.CREATED).withBody(createdTask);
 };
