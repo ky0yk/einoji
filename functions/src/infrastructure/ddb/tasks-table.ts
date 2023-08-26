@@ -1,9 +1,10 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
-import { DdbError, DdbServerError } from './errors/ddb-errors';
+
 import { logger } from '../../common/logger';
-import { TaskRecord, TaskRecordSchema } from '../../domain/taskRecord';
-import { ddbFactory } from './utils/ddb-factory';
+import { ddbFactory } from './factory/ddb-factory';
+import { DdbInternalServerError } from './errors/ddb-errors';
+import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
@@ -16,9 +17,9 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-const fetchTaskByIdImpl = async (
+const getTaskItemByIdImpl = async (
   taskId: string,
-): Promise<TaskRecord | null> => {
+): Promise<TaskItem | null> => {
   const commandInput = {
     TableName: TABLE_NAME,
     Key: {
@@ -34,9 +35,9 @@ const fetchTaskByIdImpl = async (
     return null;
   }
 
-  const parseResult = TaskRecordSchema.safeParse(result.Item);
+  const parseResult = TaskItemSchema.safeParse(result.Item);
   if (!parseResult.success) {
-    throw new DdbServerError(
+    throw new DdbInternalServerError(
       'Retrieved item does not match the expected schema',
       parseResult.error,
     );
@@ -45,23 +46,7 @@ const fetchTaskByIdImpl = async (
   return parseResult.data;
 };
 
-const errorHandler = (error: Error): DdbError => {
-  if (error instanceof DdbServerError) {
-    logger.error('DynamoDB Server error:', error);
-    throw error;
-  } else {
-    logger.error('DynamoDB Unknown error:');
-    throw new DdbError('DynamoDB Unknown error');
-  }
-};
-
-export const fetchTaskById = ddbFactory(
-  'fetchTaskById',
-  fetchTaskByIdImpl,
-  errorHandler,
+export const getTaskItemById = ddbFactory(
+  'getTaskItemById',
+  getTaskItemByIdImpl,
 );
-
-export const _testExports = {
-  fetchTaskByIdImpl,
-  errorHandler,
-};
