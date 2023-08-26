@@ -20,10 +20,10 @@ const localDynamoDB = new DynamoDBClient({
 });
 const ddbDocClient = DynamoDBDocumentClient.from(localDynamoDB);
 
-export const putTask = async (record: TaskItem): Promise<void> => {
+export const putTask = async (item: TaskItem): Promise<void> => {
   const putCommand = new PutCommand({
     TableName: TABLE_NAME,
-    Item: record,
+    Item: item,
   });
   await ddbDocClient.send(putCommand);
 };

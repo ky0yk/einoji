@@ -36,6 +36,8 @@ describe('getTask', () => {
     const result = await getTaskUseCase(taskId);
 
     expect(result).toEqual(expectedTask);
+    expect(getTaskItemById).toHaveBeenCalledTimes(1);
+    expect(getTaskItemById).toHaveBeenCalledWith(taskId);
   });
 
   test('should throw AppError with TASK_NOT_FOUND when the task is not found', async () => {
@@ -45,5 +47,21 @@ describe('getTask', () => {
     await expect(getTaskUseCase(taskId)).rejects.toThrowError(
       new AppError(ErrorCode.TASK_NOT_FOUND),
     );
+    expect(getTaskItemById).toHaveBeenCalledTimes(1);
+    expect(getTaskItemById).toHaveBeenCalledWith(taskId);
+  });
+
+  test('should throw AppError with TASK_CONVERSION_ERROR when the task record cannot be converted to Task', async () => {
+    const taskId = 'some-task-id';
+    const taskRecord = {
+      invalidField: 'invalidValue',
+    };
+    (getTaskItemById as jest.Mock).mockResolvedValueOnce(taskRecord);
+
+    await expect(getTaskUseCase(taskId)).rejects.toThrowError(
+      new AppError(ErrorCode.TASK_CONVERSION_ERROR),
+    );
+    expect(getTaskItemById).toHaveBeenCalledTimes(1);
+    expect(getTaskItemById).toHaveBeenCalledWith(taskId);
   });
 });
