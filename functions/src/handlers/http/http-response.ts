@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import { ErrorCode } from '../../common/errors/error-codes';
-import { ERROR_RESPONSE_MAP } from './error-response-map';
 import { HttpStatus } from './http-status';
+import {
+  USER_ERROR_MESSAGES,
+  errorCodeToUserErrorCode,
+  userErrorCodeToHttpStatus,
+} from './user-error-mapping';
 
 export const LambdaResponseSchema = z.object({
   statusCode: z.number(),
@@ -32,11 +36,14 @@ export const httpResponse = (status: HttpStatus): WithBodyResponseGenerator => {
 };
 
 export const httpErrorResponse = (errorCode: ErrorCode): LambdaResponse => {
+  const userErrorCode = errorCodeToUserErrorCode(errorCode);
+  const statusCode = userErrorCodeToHttpStatus(userErrorCode);
+
   return {
-    statusCode: ERROR_RESPONSE_MAP[errorCode].statusCode,
+    statusCode: statusCode,
     body: JSON.stringify({
-      code: ERROR_RESPONSE_MAP[errorCode].userErrorCode,
-      message: ERROR_RESPONSE_MAP[errorCode].message,
+      code: userErrorCode,
+      message: USER_ERROR_MESSAGES[userErrorCode],
     }),
   };
 };

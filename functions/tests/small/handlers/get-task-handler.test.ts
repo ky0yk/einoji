@@ -4,7 +4,7 @@ import { APIGatewayEvent, Context } from 'aws-lambda';
 import { handler } from '../../../src/handlers/get-task-handler';
 import { AppError } from '../../../src/common/errors/app-errors';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { UserErrorCode } from '../../../src/handlers/http/error-response-map';
+import { UserErrorCode } from '../../../src/handlers/http/user-error-mapping';
 
 jest.mock('../../../src/usecases/get-task-usecase');
 
