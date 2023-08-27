@@ -7,8 +7,14 @@ import {
   userErrorCodeToHttpStatus,
 } from './user-error-mapping';
 
+// NOTE: 現状application/json以外は扱わないので、Content-Typeは固定
 export const LambdaResponseSchema = z.object({
   statusCode: z.number(),
+  headers: z
+    .object({
+      'Content-Type': z.literal('application/json'),
+    })
+    .optional(),
   body: z.string().optional(),
 });
 
@@ -30,6 +36,9 @@ export const httpResponse = (status: HttpStatus): WithBodyResponseGenerator => {
   return {
     withBody: (body: JsonSerializable) => ({
       statusCode: status,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     }),
   };
@@ -41,6 +50,9 @@ export const httpErrorResponse = (errorCode: ErrorCode): LambdaResponse => {
 
   return {
     statusCode: statusCode,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       code: userErrorCode,
       message: USER_ERROR_MESSAGES[userErrorCode],
