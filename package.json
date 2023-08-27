@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test:s && npm run test:m",
+    "test": "npm run lint && npm run test:s && npm run test:m",
     "test:s": "dotenv -e ./functions/tests/.env.test -- ts-node node_modules/.bin/jest --testPathPattern=/functions/tests/small/",
     "test:m": "dotenv -e ./functions/tests/.env.test -- ts-node node_modules/.bin/jest --runInBand --testPathPattern=/functions/tests/medium/",
     "test:path": "dotenv -e ./functions/tests/.env.test -- ts-node node_modules/.bin/jest --",
