@@ -29,6 +29,6 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Small Test
-        run: npm test:small
+        run: npm run test:s
       - name: Medium Test
-        run: npm test:medium
+        run: npm run test:m
