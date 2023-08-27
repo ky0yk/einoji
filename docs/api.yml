@@ -27,7 +27,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskForCreate'
+              $ref: '#/components/schemas/CreateTaskRequest'
       responses:
         '201':
           description: Created
@@ -77,7 +77,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskForUpdate'
+              $ref: '#/components/schemas/UpdateTaskRequest'
       responses:
         '200':
           description: OK
@@ -125,7 +125,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskCompletion'
+              $ref: '#/components/schemas/CompleteTaskRequest'
 
       responses:
         '200':
@@ -204,7 +204,7 @@ components:
           format: date-time
           description: タスクの最終更新日時（ISO 8601形式）
           example: '2021-06-22T14:24:02.071Z'
-    TaskForCreate:
+    CreateTaskRequest:
       type: object
       required:
         - title
@@ -213,14 +213,17 @@ components:
           $ref: '#/components/schemas/TaskTitle'
         description:
           $ref: '#/components/schemas/TaskDescription'
-    TaskForUpdate:
+    UpdateTaskRequest:
       type: object
       properties:
         title:
           $ref: '#/components/schemas/TaskTitle'
         description:
           $ref: '#/components/schemas/TaskDescription'
-    TaskCompletion:
+      example:
+        title: ドーナッツを買う
+        description: オールドファッションを2つ
+    CompleteTaskRequest:
       type: object
       required:
         - completed
