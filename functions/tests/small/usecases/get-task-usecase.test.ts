@@ -14,7 +14,7 @@ describe('getTask', () => {
 
   test('should return a task when it exists', async () => {
     const taskId = 'some-task-id';
-    const taskRecord: TaskItem = {
+    const dummyTaskItem: TaskItem = {
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
       taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
       title: 'スーパーに買い物に行く',
@@ -31,7 +31,7 @@ describe('getTask', () => {
       createdAt: '2021-06-22T14:24:02.071Z',
       updatedAt: '2021-06-22T14:24:02.071Z',
     };
-    (getTaskItemById as jest.Mock).mockResolvedValueOnce(taskRecord);
+    (getTaskItemById as jest.Mock).mockResolvedValueOnce(dummyTaskItem);
 
     const result = await getTaskUseCase(taskId);
 
@@ -51,12 +51,12 @@ describe('getTask', () => {
     expect(getTaskItemById).toHaveBeenCalledWith(taskId);
   });
 
-  test('should throw AppError with TASK_CONVERSION_ERROR when the task record cannot be converted to Task', async () => {
+  test('should throw AppError with TASK_CONVERSION_ERROR when the TaskItem cannot be converted to Task', async () => {
     const taskId = 'some-task-id';
-    const taskRecord = {
+    const invalidTaskItem = {
       invalidField: 'invalidValue',
     };
-    (getTaskItemById as jest.Mock).mockResolvedValueOnce(taskRecord);
+    (getTaskItemById as jest.Mock).mockResolvedValueOnce(invalidTaskItem);
 
     await expect(getTaskUseCase(taskId)).rejects.toThrowError(
       new AppError(ErrorCode.TASK_CONVERSION_ERROR),

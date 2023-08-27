@@ -78,7 +78,7 @@ describe('getTaskItemById', () => {
 
   const dummyTaskId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
 
-  test('should return a task record for a valid task ID', async () => {
+  test('should return a TaskItem for a valid task ID', async () => {
     const dummyTaskItem: TaskItem = {
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
       taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
@@ -114,11 +114,11 @@ describe('getTaskItemById', () => {
   });
 
   test('should throw an error if the retrieved item does not match the schema', async () => {
-    const invalidTaskRecord = {
+    const invalidTaskItem = {
       invalidField: 'invalidValue',
     };
 
-    documentMockClient.on(GetCommand).resolves({ Item: invalidTaskRecord });
+    documentMockClient.on(GetCommand).resolves({ Item: invalidTaskItem });
     await expect(getTaskItemById(dummyTaskId)).rejects.toThrow(
       DdbInternalServerError,
     );
