@@ -14,9 +14,9 @@ import { TaskItem } from '../../../../src/domain/taskItem';
 import { z } from 'zod';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);
-
 const TASK_TABLE_NAME = process.env.TASKS_TABLE_NAME;
-describe('createTaskImpl', () => {
+
+describe('createTaskItem', () => {
   afterEach(() => {
     documentMockClient.reset();
   });
@@ -72,11 +72,11 @@ describe('createTaskImpl', () => {
 });
 
 describe('getTaskItemById', () => {
-  const mockTaskId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
-
   beforeEach(() => {
     documentMockClient.reset();
   });
+
+  const dummyTaskId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
 
   test('should return a task record for a valid task ID', async () => {
     const dummyTaskItem: TaskItem = {
@@ -91,7 +91,7 @@ describe('getTaskItemById', () => {
 
     documentMockClient.on(GetCommand).resolves({ Item: dummyTaskItem });
 
-    const result = await getTaskItemById(mockTaskId);
+    const result = await getTaskItemById(dummyTaskId);
 
     const callsOfGet = documentMockClient.commandCalls(GetCommand);
     expect(callsOfGet).toHaveLength(1);
@@ -99,7 +99,7 @@ describe('getTaskItemById', () => {
       TableName: TASK_TABLE_NAME,
       Key: {
         userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
-        taskId: mockTaskId,
+        taskId: dummyTaskId,
       },
     });
     expect(result).toEqual(dummyTaskItem);
@@ -119,7 +119,7 @@ describe('getTaskItemById', () => {
     };
 
     documentMockClient.on(GetCommand).resolves({ Item: invalidTaskRecord });
-    await expect(getTaskItemById(mockTaskId)).rejects.toThrow(
+    await expect(getTaskItemById(dummyTaskId)).rejects.toThrow(
       DdbInternalServerError,
     );
     expect(documentMockClient.calls()).toHaveLength(1);
