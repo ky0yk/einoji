@@ -143,6 +143,17 @@ paths:
 
 components:
   schemas:
+    TaskTitle:
+      type: string
+      description: タスクのタイトル
+      minLength: 1
+      maxLength: 100
+      example: 'コーヒーを淹れる'
+    TaskDescription:
+      type: string
+      description: タスクの説明
+      maxLength: 1000
+      example: '濃いめで'
     Task:
       type: object
       properties:
@@ -152,17 +163,13 @@ components:
           description: タスクの一意の識別子(UUID)
           example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
         title:
-          type: string
-          description: タスクのタイトル。
-          example: 'スーパーに買い物に行く'
+          $ref: '#/components/schemas/TaskTitle'
         completed:
           type: boolean
           description: タスクが完了したかどうか
           example: false
         description:
-          type: string
-          description: タスクの説明。
-          example: '牛乳と卵を買う'
+          $ref: '#/components/schemas/TaskDescription'
         createdAt:
           type: string
           format: date-time
@@ -182,9 +189,7 @@ components:
           description: タスクの一意の識別子(UUID)
           example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
         title:
-          type: string
-          description: タスクのタイトル
-          example: 'スーパーに買い物に行く'
+          $ref: '#/components/schemas/TaskTitle'
         completed:
           type: boolean
           description: タスクが完了したかどうか
@@ -205,24 +210,16 @@ components:
         - title
       properties:
         title:
-          type: string
-          description: タスクのタイトル
-          example: 'コーヒーを淹れる'
+          $ref: '#/components/schemas/TaskTitle'
         description:
-          type: string
-          description: タスクの説明。
-          example: '濃いめで'
+          $ref: '#/components/schemas/TaskDescription'
     TaskForUpdate:
       type: object
       properties:
         title:
-          type: string
-          description: タスクのタイトル
-          example: 'ドーナッツを買う'
+          $ref: '#/components/schemas/TaskTitle'
         description:
-          type: string
-          description: タスクの説明
-          example: 'オールドファッションを2つ'
+          $ref: '#/components/schemas/TaskDescription'
     TaskCompletion:
       type: object
       required:
