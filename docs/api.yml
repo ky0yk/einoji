@@ -17,8 +17,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TaskSummary'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
     post:
       summary: タスク作成
       description: 新しいタスクを作成します。
@@ -36,9 +38,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
 
   /tasks/{id}:
     get:
@@ -58,11 +62,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/ResourceNotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+
     put:
       summary: タスク更新
       description: タスクの詳細情報を更新します。リクエストボディには、少なくとも1つのプロパティが含まれている必要があります。
@@ -86,11 +93,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/ResourceNotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+
     delete:
       summary: タスク削除
       description: タスクを削除します。
@@ -104,11 +114,13 @@ paths:
         '204':
           description: No Content
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/ResourceNotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
 
   /tasks/{id}/complete:
     patch:
@@ -126,7 +138,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CompleteTaskRequest'
-
       responses:
         '200':
           description: OK
@@ -135,12 +146,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/ResourceNotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: Internal Server Error
-
+          $ref: '#/components/responses/ServerError'
 components:
   schemas:
     TaskTitle:
@@ -231,3 +243,82 @@ components:
         completed:
           type: boolean
           description: タスクが完了したかどうか
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  responses:
+    BadRequest:
+      description: BadRequest
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            INVALID_REQUEST:
+              $ref: '#/components/examples/INVALID_REQUEST'
+    ResourceNotFound:
+      description: ResourceNotFound
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            TASK_NOT_AVAILABLE:
+              $ref: '#/components/examples/TASK_NOT_AVAILABLE'
+            RESOURCE_NOT_FOUND:
+              $ref: '#/components/examples/RESOURCE_NOT_FOUND'
+    TooManyRequests:
+      description: TooManyRequests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            SYSTEM_OVERLOAD:
+              $ref: '#/components/examples/SYSTEM_OVERLOAD'
+    ServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            SYSTEM_ERROR:
+              $ref: '#/components/examples/SYSTEM_ERROR'
+            TASK_PROCESS_ERROR:
+              $ref: '#/components/examples/TASK_PROCESS_ERROR'
+            UNKNOWN_ERROR:
+              $ref: '#/components/examples/UNKNOWN_ERROR'
+  examples:
+    INVALID_REQUEST:
+      value:
+        code: 'INVALID_REQUEST'
+        message: 'The provided data is invalid.'
+    TASK_NOT_AVAILABLE:
+      value:
+        code: 'TASK_NOT_AVAILABLE'
+        message: 'The requested task could not be found.'
+    RESOURCE_NOT_FOUND:
+      value:
+        code: 'RESOURCE_NOT_FOUND'
+        message: 'The requested data could not be found.'
+    SYSTEM_OVERLOAD:
+      value:
+        code: 'SYSTEM_OVERLOAD'
+        message: 'The system is currently busy. Please try again later.'
+    SYSTEM_ERROR:
+      value:
+        code: 'SYSTEM_ERROR'
+        message: 'We encountered an internal error. Please try again.'
+    TASK_PROCESS_ERROR:
+      value:
+        code: 'TASK_PROCESS_ERROR'
+        message: 'Failed to process the task data.'
+    UNKNOWN_ERROR:
+      value:
+        code: 'UNKNOWN_ERROR'
+        message: 'An unexpected error occurred. Please try again.'
