@@ -17,10 +17,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TaskSummary'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
     post:
       summary: タスク作成
       description: 新しいタスクを作成します。
@@ -39,10 +40,10 @@ paths:
                 $ref: '#/components/schemas/Task'
         '400':
           $ref: '#/components/responses/BadRequest'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /tasks/{id}:
     get:
@@ -65,10 +66,10 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/ResourceNotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
     put:
       summary: タスク更新
@@ -96,10 +97,10 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/ResourceNotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
     delete:
       summary: タスク削除
@@ -117,10 +118,10 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/ResourceNotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /tasks/{id}/complete:
     patch:
@@ -149,10 +150,10 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/ResourceNotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 components:
   schemas:
     TaskTitle:
@@ -232,9 +233,6 @@ components:
           $ref: '#/components/schemas/TaskTitle'
         description:
           $ref: '#/components/schemas/TaskDescription'
-      example:
-        title: ドーナッツを買う
-        description: オールドファッションを2つ
     CompleteTaskRequest:
       type: object
       required:
@@ -269,10 +267,8 @@ components:
           examples:
             TASK_NOT_AVAILABLE:
               $ref: '#/components/examples/TASK_NOT_AVAILABLE'
-            RESOURCE_NOT_FOUND:
-              $ref: '#/components/examples/RESOURCE_NOT_FOUND'
-    TooManyRequests:
-      description: TooManyRequests
+    ServiceUnavailable:
+      description: ServiceUnavailable
       content:
         application/json:
           schema:
@@ -289,36 +285,21 @@ components:
           examples:
             SYSTEM_ERROR:
               $ref: '#/components/examples/SYSTEM_ERROR'
-            TASK_PROCESS_ERROR:
-              $ref: '#/components/examples/TASK_PROCESS_ERROR'
-            UNKNOWN_ERROR:
-              $ref: '#/components/examples/UNKNOWN_ERROR'
+
   examples:
     INVALID_REQUEST:
       value:
         code: 'INVALID_REQUEST'
-        message: 'The provided data is invalid.'
+        message: 'Your request contains invalid data. Please check the input.'
     TASK_NOT_AVAILABLE:
       value:
         code: 'TASK_NOT_AVAILABLE'
-        message: 'The requested task could not be found.'
-    RESOURCE_NOT_FOUND:
-      value:
-        code: 'RESOURCE_NOT_FOUND'
-        message: 'The requested data could not be found.'
-    SYSTEM_OVERLOAD:
-      value:
-        code: 'SYSTEM_OVERLOAD'
-        message: 'The system is currently busy. Please try again later.'
+        message: 'The requested Task could not be found. Please verify the task information.'
     SYSTEM_ERROR:
       value:
         code: 'SYSTEM_ERROR'
-        message: 'We encountered an internal error. Please try again.'
-    TASK_PROCESS_ERROR:
+        message: 'An unexpected error occurred. Please try again later.'
+    SYSTEM_OVERLOAD:
       value:
-        code: 'TASK_PROCESS_ERROR'
-        message: 'Failed to process the task data.'
-    UNKNOWN_ERROR:
-      value:
-        code: 'UNKNOWN_ERROR'
-        message: 'An unexpected error occurred. Please try again.'
+        code: 'SYSTEM_OVERLOAD'
+        message: 'The system is currently overloaded. Please try again later.'
