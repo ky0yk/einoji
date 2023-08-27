@@ -79,7 +79,7 @@ describe('createTaskUseCase', () => {
     expect(result).toEqual(task);
   });
 
-  test('should throw AppError with TASK_NOT_FOUND if task item is not found', async () => {
+  test('should throw AppError with TASK_NOT_FOUND if TaskItem is not found', async () => {
     const invalidTaskId = 'invalid-task-id';
 
     (createTaskItem as jest.Mock).mockResolvedValue(invalidTaskId);

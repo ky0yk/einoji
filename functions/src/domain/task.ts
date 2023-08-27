@@ -27,6 +27,6 @@ export const toTask = (item: TaskItem): Task => {
   try {
     return TaskSchema.parse(interimTask);
   } catch (error) {
-    throw new TaskConversionError('Failed to convert TaskRecord to Task');
+    throw new TaskConversionError('Failed to convert TaskItem to Task');
   }
 };

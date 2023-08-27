@@ -63,7 +63,7 @@ describe('getTaskItemById', () => {
     updatedAt: '2021-06-22T14:24:02.071Z',
   };
 
-  test('should return the dummy task item by task ID', async () => {
+  test('should return the TaskItem by correct task ID', async () => {
     const TaskItem = await getTaskItemById(dummyTaskItem.taskId);
     expect(TaskItem).toEqual(dummyTaskItem);
   });
