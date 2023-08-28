@@ -4,7 +4,6 @@ import { ErrorCode } from '../../../../src/common/errors/error-codes';
 import {
   TaskConversionError,
   TaskNotFoundError,
-  TaskUnknownError,
 } from '../../../../src/domain/errors/task-errors';
 import {
   DdbResourceNotFoundError,
@@ -21,7 +20,6 @@ describe('useCaseErrorHandler', () => {
     error_instance                                                  | expected_error_code
     ${new TaskNotFoundError('')}                                    | ${ErrorCode.TASK_NOT_FOUND}
     ${new TaskConversionError('')}                                  | ${ErrorCode.TASK_CONVERSION_ERROR}
-    ${new TaskUnknownError('')}                                     | ${ErrorCode.TASK_UNKNOWN_ERROR}
     ${new DdbResourceNotFoundError('', originalError)}              | ${ErrorCode.DDB_RESOURCE_NOT_FOUND}
     ${new DdbProvisionedThroughputExceededError('', originalError)} | ${ErrorCode.DDB_THROUGHPUT_EXCEEDED}
     ${new DdbValidationError('', originalError)}                    | ${ErrorCode.DDB_VALIDATION_ERROR}

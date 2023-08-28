@@ -11,7 +11,9 @@ const createTask = async (body: CreateTaskRequest): Promise<Task> => {
   const newTaskId = await createTaskItem(body);
   const newTaskRecord = await getTaskItemById(newTaskId);
   if (!newTaskRecord) {
-    throw new TaskNotFoundError('Task not found after creation.');
+    throw new TaskNotFoundError(
+      `Task not found after creation. TaskId: ${newTaskId}}`,
+    );
   }
   return toTask(newTaskRecord);
 };
