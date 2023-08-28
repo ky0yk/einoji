@@ -45,7 +45,7 @@ describe('getTask', () => {
     (getTaskItemById as jest.Mock).mockResolvedValueOnce(null);
 
     await expect(getTaskUseCase(taskId)).rejects.toThrowError(
-      new AppError(ErrorCode.TASK_NOT_FOUND),
+      new AppError(ErrorCode.TASK_NOT_FOUND, 'task not found'),
     );
     expect(getTaskItemById).toHaveBeenCalledTimes(1);
     expect(getTaskItemById).toHaveBeenCalledWith(taskId);
@@ -59,7 +59,7 @@ describe('getTask', () => {
     (getTaskItemById as jest.Mock).mockResolvedValueOnce(invalidTaskItem);
 
     await expect(getTaskUseCase(taskId)).rejects.toThrowError(
-      new AppError(ErrorCode.TASK_CONVERSION_ERROR),
+      new AppError(ErrorCode.MALFORMED_DATA, 'task conversion error'),
     );
     expect(getTaskItemById).toHaveBeenCalledTimes(1);
     expect(getTaskItemById).toHaveBeenCalledWith(taskId);

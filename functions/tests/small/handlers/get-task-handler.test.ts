@@ -41,7 +41,7 @@ describe('getTaskHandler', () => {
 
   test('task not found should return status 404', async () => {
     (getTaskUseCase as jest.Mock).mockRejectedValueOnce(
-      new AppError(ErrorCode.TASK_NOT_FOUND),
+      new AppError(ErrorCode.TASK_NOT_FOUND, 'task not found'),
     );
     const result = await handler(mockValidEvent, dummyContext);
 
@@ -60,7 +60,7 @@ describe('getTaskHandler', () => {
     const result = await handler(mockEvent, dummyContext);
 
     expect(result.statusCode).toBe(400);
-    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_REQUEST);
+    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_PAYLOAD);
     expect(getTaskUseCase).toHaveBeenCalledTimes(0);
   });
 });

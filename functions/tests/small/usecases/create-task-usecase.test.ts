@@ -86,7 +86,7 @@ describe('createTaskUseCase', () => {
     (getTaskItemById as jest.Mock).mockResolvedValue(null);
 
     await expect(createTaskUseCase(dummyCreateTaskRequest)).rejects.toThrow(
-      new AppError(ErrorCode.TASK_NOT_FOUND),
+      new AppError(ErrorCode.TASK_NOT_FOUND, 'task not found'),
     );
 
     expect(createTaskItem).toHaveBeenCalledTimes(1);

@@ -15,7 +15,13 @@ export const validateEvent = (event: APIGatewayEvent) => {
   const eventResult = EventSchema.safeParse(event);
 
   if (!eventResult.success) {
-    throw new AppError(ErrorCode.INVALID_REQUEST);
+    const errorDetails = eventResult.error.errors
+      .map((e) => e.message)
+      .join(', ');
+    throw new AppError(
+      ErrorCode.INVALID_PAYLOAD,
+      `Invalid or missing event body. Details: ${errorDetails}`,
+    );
   }
   return eventResult.data;
 };
@@ -24,7 +30,13 @@ export const validateEventWithPathParams = (event: APIGatewayEvent) => {
   const eventResult = EventWithPathParamSchema.safeParse(event);
 
   if (!eventResult.success) {
-    throw new AppError(ErrorCode.INVALID_REQUEST);
+    const errorDetails = eventResult.error.errors
+      .map((e) => e.message)
+      .join(', ');
+    throw new AppError(
+      ErrorCode.INVALID_PAYLOAD,
+      `Invalid or missing path parameters. Expecting a UUID format for the ID. Details: ${errorDetails}`,
+    );
   }
   return eventResult.data;
 };
@@ -36,7 +48,13 @@ export const validateBody = <T extends ZodRawShape>(
   const bodyResult = schema.safeParse(JSON.parse(str));
 
   if (!bodyResult.success) {
-    throw new AppError(ErrorCode.INVALID_REQUEST);
+    const errorDetails = bodyResult.error.errors
+      .map((e) => e.message)
+      .join(', ');
+    throw new AppError(
+      ErrorCode.INVALID_PAYLOAD,
+      `Invalid or malformed request body. Details: ${errorDetails}`,
+    );
   }
   return bodyResult.data;
 };
