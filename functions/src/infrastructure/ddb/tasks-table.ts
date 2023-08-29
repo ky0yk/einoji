@@ -60,14 +60,14 @@ const getTaskItemByIdImpl = async (
   const result = await dynamoDb.send(command);
 
   if (!result.Item) {
-    logger.warn(`Task with taskId ${taskId} not found.`);
+    logger.warn(`Task with TaskId ${taskId} not found.`);
     return null;
   }
 
   const parseResult = TaskItemSchema.safeParse(result.Item);
   if (!parseResult.success) {
     throw new DdbInternalServerError(
-      'Retrieved item does not match the expected schema',
+      `Retrieved item does not match the expected schema. TaskId: ${taskId}`,
       parseResult.error,
     );
   }
