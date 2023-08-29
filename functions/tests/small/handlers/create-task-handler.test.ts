@@ -84,7 +84,7 @@ describe('Create Task Request Handler', () => {
   `('should return 400 status for an invalid request', async ({ request }) => {
     const result = await handler(request, dummyContext);
     expect(result.statusCode).toBe(400);
-    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_REQUEST);
+    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_PAYLOAD);
     expect(createTaskUseCase).toHaveBeenCalledTimes(0);
   });
 });

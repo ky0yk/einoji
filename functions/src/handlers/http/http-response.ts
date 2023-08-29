@@ -1,11 +1,7 @@
 import { z } from 'zod';
-import { ErrorCode } from '../../common/errors/error-codes';
 import { HttpStatus } from './http-status';
-import {
-  USER_ERROR_MESSAGES,
-  errorCodeToUserErrorCode,
-  userErrorCodeToHttpStatus,
-} from './user-error-mapping';
+import { AppError } from '../../common/errors/app-errors';
+import { errorCodetoStatus } from '../../common/errors/error-codes';
 
 // NOTE: 現状application/json以外は扱わないので、Content-Typeは固定
 export const LambdaResponseSchema = z.object({
@@ -44,18 +40,17 @@ export const httpResponse = (status: HttpStatus): WithBodyResponseGenerator => {
   };
 };
 
-export const httpErrorResponse = (errorCode: ErrorCode): LambdaResponse => {
-  const userErrorCode = errorCodeToUserErrorCode(errorCode);
-  const statusCode = userErrorCodeToHttpStatus(userErrorCode);
+export const httpErrorResponse = (error: AppError): LambdaResponse => {
+  const status = errorCodetoStatus(error.code);
 
   return {
-    statusCode: statusCode,
+    statusCode: status,
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      code: userErrorCode,
-      message: USER_ERROR_MESSAGES[userErrorCode],
+      code: error.code,
+      message: error.message,
     }),
   };
 };

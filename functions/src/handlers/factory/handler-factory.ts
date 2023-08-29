@@ -54,6 +54,7 @@ const requestErrorHandlerWithLog = async (
     return errorResult;
   } else {
     logger.error(`An unexpected error occurred in handler: ${name}`, String(e));
-    return httpErrorResponse(ErrorCode.UNKNOWN_ERROR);
+    const error = new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error');
+    return httpErrorResponse(error);
   }
 };

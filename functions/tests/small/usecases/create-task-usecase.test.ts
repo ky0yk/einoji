@@ -2,12 +2,12 @@ import { Task, toTask } from '../../../src/domain/task';
 import { TaskItem } from '../../../src/domain/taskItem';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
 import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/create-task-request';
-import { AppError } from '../../../src/common/errors/app-errors';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
 import {
   createTaskItem,
   getTaskItemById,
 } from '../../../src/infrastructure/ddb/tasks-table';
+import { AppError } from '../../../src/common/errors/app-errors';
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 jest.mock('../../../src/domain/task');
@@ -85,9 +85,9 @@ describe('createTaskUseCase', () => {
     (createTaskItem as jest.Mock).mockResolvedValue(invalidTaskId);
     (getTaskItemById as jest.Mock).mockResolvedValue(null);
 
-    await expect(createTaskUseCase(dummyCreateTaskRequest)).rejects.toThrow(
-      new AppError(ErrorCode.TASK_NOT_FOUND, 'task not found'),
-    );
+    const err = await createTaskUseCase(dummyCreateTaskRequest).catch((e) => e);
+    expect(err).toBeInstanceOf(AppError);
+    expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
 
     expect(createTaskItem).toHaveBeenCalledTimes(1);
     expect(createTaskItem).toHaveBeenCalledWith(dummyCreateTaskRequest);

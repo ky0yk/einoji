@@ -44,23 +44,23 @@ describe('getTask', () => {
     const taskId = 'not-found-id';
     (getTaskItemById as jest.Mock).mockResolvedValueOnce(null);
 
-    await expect(getTaskUseCase(taskId)).rejects.toThrowError(
-      new AppError(ErrorCode.TASK_NOT_FOUND, 'task not found'),
-    );
+    const err = await getTaskUseCase(taskId).catch((e) => e);
+    expect(err).toBeInstanceOf(AppError);
+    expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
     expect(getTaskItemById).toHaveBeenCalledTimes(1);
     expect(getTaskItemById).toHaveBeenCalledWith(taskId);
   });
 
-  test('should throw AppError with TASK_CONVERSION_ERROR when the TaskItem cannot be converted to Task', async () => {
+  test('should throw AppError with MALFORMED_DATA when the TaskItem cannot be converted to Task', async () => {
     const taskId = 'some-task-id';
     const invalidTaskItem = {
       invalidField: 'invalidValue',
     };
     (getTaskItemById as jest.Mock).mockResolvedValueOnce(invalidTaskItem);
 
-    await expect(getTaskUseCase(taskId)).rejects.toThrowError(
-      new AppError(ErrorCode.MALFORMED_DATA, 'task conversion error'),
-    );
+    const err = await getTaskUseCase(taskId).catch((e) => e);
+    expect(err).toBeInstanceOf(AppError);
+    expect(err.code).toBe(ErrorCode.MALFORMED_DATA);
     expect(getTaskItemById).toHaveBeenCalledTimes(1);
     expect(getTaskItemById).toHaveBeenCalledWith(taskId);
   });
