@@ -19,9 +19,9 @@ paths:
                   $ref: '#/components/schemas/TaskSummary'
         # TODO: クエリパラメータが増えたら400系のエラーを追加する
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          $ref: '#/components/responses/Common500'
         '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+          $ref: '#/components/responses/Common503'
     post:
       summary: タスク作成
       description: 新しいタスクを作成します。
@@ -54,9 +54,9 @@ paths:
                 INVALID_PAYLOAD:
                   $ref: '#/components/examples/INVALID_PAYLOAD'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          $ref: '#/components/responses/Common500'
         '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+          $ref: '#/components/responses/Common503'
 
   /tasks/{id}:
     get:
@@ -91,11 +91,11 @@ paths:
                 INVALID_PATH_PARAMETER:
                   $ref: '#/components/examples/INVALID_PATH_PARAMETER'
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/Common404'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          $ref: '#/components/responses/Common500'
         '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+          $ref: '#/components/responses/Common503'
 
     put:
       summary: タスク更新
@@ -120,28 +120,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: 'Bad Request'
-          content:
-            application/json:
-              schema:
-                type: 'object'
-                properties:
-                  code:
-                    type: 'string'
-                    enum: [INVALID_PAYLOAD, INVALID_PATH_PARAMETER]
-                  message:
-                    type: 'string'
-              examples:
-                INVALID_PAYLOAD:
-                  $ref: '#/components/examples/INVALID_PAYLOAD'
-                INVALID_PATH_PARAMETER:
-                  $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+          $ref: '#/components/responses/400PathPayload'
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/Common404'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          $ref: '#/components/responses/Common500'
         '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+          $ref: '#/components/responses/Common503'
 
     delete:
       summary: タスク削除
@@ -156,28 +141,13 @@ paths:
         '204':
           description: No Content
         '400':
-          description: 'Bad Request'
-          content:
-            application/json:
-              schema:
-                type: 'object'
-                properties:
-                  code:
-                    type: 'string'
-                    enum: [INVALID_PAYLOAD, INVALID_PATH_PARAMETER]
-                  message:
-                    type: 'string'
-              examples:
-                INVALID_PAYLOAD:
-                  $ref: '#/components/examples/INVALID_PAYLOAD'
-                INVALID_PATH_PARAMETER:
-                  $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+          $ref: '#/components/responses/400PathPayload'
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/Common404'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          $ref: '#/components/responses/Common500'
         '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+          $ref: '#/components/responses/Common503'
 
   /tasks/{id}/complete:
     patch:
@@ -203,28 +173,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: 'Bad Request'
-          content:
-            application/json:
-              schema:
-                type: 'object'
-                properties:
-                  code:
-                    type: 'string'
-                    enum: [INVALID_PAYLOAD, INVALID_PATH_PARAMETER]
-                  message:
-                    type: 'string'
-              examples:
-                INVALID_PAYLOAD:
-                  $ref: '#/components/examples/INVALID_PAYLOAD'
-                INVALID_PATH_PARAMETER:
-                  $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+          $ref: '#/components/responses/400PathPayload'
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/Common404'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          $ref: '#/components/responses/Common500'
         '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+          $ref: '#/components/responses/Common503'
 
 components:
   schemas:
@@ -323,7 +278,7 @@ components:
           type: string
 
   responses:
-    NotFound:
+    Common404:
       description: 'Not Found'
       content:
         application/json:
@@ -338,7 +293,7 @@ components:
           examples:
             TASK_NOT_FOUND:
               $ref: '#/components/examples/TASK_NOT_FOUND'
-    InternalServerError:
+    Common500:
       description: 'Internal Server Error'
       content:
         application/json:
@@ -351,7 +306,7 @@ components:
                   [
                     MALFORMED_DATA,
                     DATABASE_CONNECTION_ERROR,
-                    LAMBDA_TIMEOUT,
+                    TIMEOUT,
                     UNKNOWN_ERROR,
                   ]
               message:
@@ -361,11 +316,11 @@ components:
               $ref: '#/components/examples/MALFORMED_DATA'
             DATABASE_CONNECTION_ERROR:
               $ref: '#/components/examples/DATABASE_CONNECTION_ERROR'
-            LAMBDA_TIMEOUT:
-              $ref: '#/components/examples/LAMBDA_TIMEOUT'
+            TIMEOUT:
+              $ref: '#/components/examples/TIMEOUT'
             UNKNOWN_ERROR:
               $ref: '#/components/examples/UNKNOWN_ERROR'
-    ServiceUnavailable:
+    Common503:
       description: 'Service Unavailable'
       content:
         application/json:
@@ -382,45 +337,62 @@ components:
               $ref: '#/components/examples/SERVICE_DOWNTIME'
             EXTERNAL_SERVICE_FAILURE:
               $ref: '#/components/examples/EXTERNAL_SERVICE_FAILURE'
+    400PathPayload:
+      description: 'Bad Request'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [INVALID_PAYLOAD, INVALID_PATH_PARAMETER]
+              message:
+                type: 'string'
+          examples:
+            INVALID_PAYLOAD:
+              $ref: '#/components/examples/INVALID_PAYLOAD'
+            INVALID_PATH_PARAMETER:
+              $ref: '#/components/examples/INVALID_PATH_PARAMETER'
 
   examples:
     INVALID_PAYLOAD:
       value:
         code: 'APP001'
-        message: 'リクエストペイロードが不完全または不正'
+        message: 'Invalid or malformed request. Details: ${errorDetails}'
     TASK_NOT_FOUND:
       value:
         code: 'APP002'
-        message: '存在しないTODOのIDでの操作'
+        message: 'Task not found. TaskID: ${taskId}'
     INVALID_QUERY_PARAMETER:
       value:
         code: 'APP003'
-        message: 'クエリパラメータが不足または不正'
+        message: 'Insufficient or invalid query parameter.'
     INVALID_PATH_PARAMETER:
       value:
         code: 'APP004'
-        message: 'パスパラメータが不足または不正'
+        message: 'Invalid or missing parameters. Reference: ${errorDetails}'
     MALFORMED_DATA:
       value:
         code: 'APP101'
-        message: 'データの破損または予期しないデータ形式'
+        message: 'Failed to process data. Details: ${result.error.message}'
     DATABASE_CONNECTION_ERROR:
       value:
         code: 'SYS001'
-        message: 'データベース接続エラー（DynamoDBへの接続障害）'
+        message: 'Database connection error.'
     SERVICE_DOWNTIME:
       value:
         code: 'SYS002'
-        message: 'APIサービスダウンタイム (API GatewayやLambdaのダウンタイム)'
+        message: 'Service is currently unavailable.'
     EXTERNAL_SERVICE_FAILURE:
       value:
         code: 'SYS003'
-        message: '外部サービスの障害'
-    LAMBDA_TIMEOUT:
+        message: 'External service error.'
+    TIMEOUT:
       value:
         code: 'SYS004'
-        message: 'Lambdaのタイムアウト'
+        message: 'Processing timeout.'
     UNKNOWN_ERROR:
       value:
         code: 'SYS999'
-        message: '予期しないエラー'
+        message: 'Unexpected error.'
