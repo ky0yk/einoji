@@ -28,7 +28,7 @@ export const toTask = (item: TaskItem): Task => {
 
   if (!result.success) {
     throw new TaskConversionError(
-      `Failed to convert TaskItem to Task. Errors: ${result.error.message}`,
+      `Failed to convert data to Task. Errors: ${result.error.message}`,
     );
   }
 
