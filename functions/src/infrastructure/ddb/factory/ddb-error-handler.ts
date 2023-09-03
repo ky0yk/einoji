@@ -5,7 +5,7 @@ import {
   DdbValidationError,
 } from '../errors/ddb-errors';
 
-export const ddbErrorHandler = (error: Error) => {
+export const ddbErrorHandler = (error: Error): never => {
   switch (error.name) {
     case 'ResourceNotFoundException':
       throw new DdbResourceNotFoundError(error.message, error);

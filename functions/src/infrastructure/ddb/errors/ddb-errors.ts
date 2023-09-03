@@ -1,7 +1,7 @@
 export class DdbError extends Error {
   constructor(
-    public message: string,
-    public originalError?: Error,
+    public readonly message: string,
+    public readonly originalError?: Error,
   ) {
     super(message);
   }

@@ -4,7 +4,6 @@ import { APIGatewayEvent, Context } from 'aws-lambda';
 import { handler } from '../../../src/handlers/get-task-handler';
 import { AppError } from '../../../src/common/errors/app-errors';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { UserErrorCode } from '../../../src/handlers/http/error-response-map';
 
 jest.mock('../../../src/usecases/get-task-usecase');
 
@@ -39,28 +38,28 @@ describe('getTaskHandler', () => {
     );
   });
 
-  test('task not found should return status 404', async () => {
+  test('task not found should return status 404 with TASK_NOT_FOUND', async () => {
     (getTaskUseCase as jest.Mock).mockRejectedValueOnce(
-      new AppError(ErrorCode.TASK_NOT_FOUND),
+      new AppError(ErrorCode.TASK_NOT_FOUND, 'task not found'),
     );
     const result = await handler(mockValidEvent, dummyContext);
 
     expect(result.statusCode).toBe(404);
-    expect(JSON.parse(result.body!).code).toBe(
-      UserErrorCode.TASK_NOT_AVAILABLE,
-    );
+    expect(JSON.parse(result.body!).code).toBe(ErrorCode.TASK_NOT_FOUND);
     expect(getTaskUseCase).toHaveBeenCalledTimes(1);
     expect(getTaskUseCase).toHaveBeenCalledWith(
       mockValidEvent.pathParameters!.id,
     );
   });
 
-  test('invalid request should return status 400', async () => {
+  test('invalid request should return status 400 with INVALID_PATH_PARAMETER', async () => {
     const mockEvent = {} as unknown as APIGatewayEvent;
     const result = await handler(mockEvent, dummyContext);
 
     expect(result.statusCode).toBe(400);
-    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_REQUEST);
+    expect(JSON.parse(result.body!).code).toBe(
+      ErrorCode.INVALID_PATH_PARAMETER,
+    );
     expect(getTaskUseCase).toHaveBeenCalledTimes(0);
   });
 });

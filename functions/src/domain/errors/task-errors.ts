@@ -1,7 +1,7 @@
 export class TaskError extends Error {
   constructor(
-    public message: string,
-    public originalError?: Error,
+    public readonly message: string,
+    public readonly originalError?: Error,
   ) {
     super(message);
   }
@@ -14,12 +14,6 @@ export class TaskNotFoundError extends TaskError {
 }
 
 export class TaskConversionError extends TaskError {
-  constructor(message: string, originalError?: Error) {
-    super(message, originalError);
-  }
-}
-
-export class TaskUnknownError extends TaskError {
   constructor(message: string, originalError?: Error) {
     super(message, originalError);
   }

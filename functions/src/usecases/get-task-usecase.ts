@@ -6,7 +6,7 @@ import { useCaseFactory } from './factory/usecase-factory';
 const getTask = async (taskId: string): Promise<Task> => {
   const taskRecord = await getTaskItemById(taskId);
   if (!taskRecord) {
-    throw new TaskNotFoundError(`Task with taskId ${taskId} not found.`);
+    throw new TaskNotFoundError(`The task not found. Task ID: ${taskId}`);
   }
 
   return toTask(taskRecord);

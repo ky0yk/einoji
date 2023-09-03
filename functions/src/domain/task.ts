@@ -24,9 +24,13 @@ export const toTask = (item: TaskItem): Task => {
     updatedAt: item.updatedAt,
   };
 
-  try {
-    return TaskSchema.parse(interimTask);
-  } catch (error) {
-    throw new TaskConversionError('Failed to convert TaskItem to Task');
+  const result = TaskSchema.safeParse(interimTask);
+
+  if (!result.success) {
+    throw new TaskConversionError(
+      `Failed to convert data to Task. Errors: ${result.error.message}`,
+    );
   }
+
+  return result.data;
 };

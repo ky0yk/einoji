@@ -1,10 +1,16 @@
 import { z } from 'zod';
-import { ErrorCode } from '../../common/errors/error-codes';
-import { ERROR_RESPONSE_MAP } from './error-response-map';
 import { HttpStatus } from './http-status';
+import { AppError } from '../../common/errors/app-errors';
+import { errorCodetoStatus } from '../../common/errors/error-codes';
 
+// NOTE: 現状application/json以外は扱わないので、Content-Typeは固定
 export const LambdaResponseSchema = z.object({
   statusCode: z.number(),
+  headers: z
+    .object({
+      'Content-Type': z.literal('application/json'),
+    })
+    .optional(),
   body: z.string().optional(),
 });
 
@@ -26,17 +32,25 @@ export const httpResponse = (status: HttpStatus): WithBodyResponseGenerator => {
   return {
     withBody: (body: JsonSerializable) => ({
       statusCode: status,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     }),
   };
 };
 
-export const httpErrorResponse = (errorCode: ErrorCode): LambdaResponse => {
+export const httpErrorResponse = (error: AppError): LambdaResponse => {
+  const status = errorCodetoStatus(error.code);
+
   return {
-    statusCode: ERROR_RESPONSE_MAP[errorCode].statusCode,
+    statusCode: status,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
-      code: ERROR_RESPONSE_MAP[errorCode].userErrorCode,
-      message: ERROR_RESPONSE_MAP[errorCode].message,
+      code: error.code,
+      message: error.message,
     }),
   };
 };

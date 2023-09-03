@@ -17,8 +17,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TaskSummary'
+        # TODO: クエリパラメータが増えたら400系のエラーを追加する
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/Common500'
+        '503':
+          $ref: '#/components/responses/Common503'
     post:
       summary: タスク作成
       description: 新しいタスクを作成します。
@@ -27,7 +30,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskForCreate'
+              $ref: '#/components/schemas/CreateTaskRequest'
       responses:
         '201':
           description: Created
@@ -36,9 +39,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          description: 'Bad Request'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  code:
+                    type: 'string'
+                    enum: [INVALID_PAYLOAD]
+                  message:
+                    type: 'string'
+              examples:
+                INVALID_PAYLOAD_FORMAT:
+                  $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
+                INVALID_PAYLOAD_VALUE:
+                  $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/Common500'
+        '503':
+          $ref: '#/components/responses/Common503'
 
   /tasks/{id}:
     get:
@@ -58,11 +78,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          description: 'Bad Request'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  code:
+                    type: 'string'
+                    enum: [INVALID_PATH_PARAMETER]
+                  message:
+                    type: 'string'
+              examples:
+                INVALID_PATH_PARAMETER:
+                  $ref: '#/components/examples/INVALID_PATH_PARAMETER'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/Common404'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/Common500'
+        '503':
+          $ref: '#/components/responses/Common503'
+
     put:
       summary: タスク更新
       description: タスクの詳細情報を更新します。リクエストボディには、少なくとも1つのプロパティが含まれている必要があります。
@@ -77,7 +113,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskForUpdate'
+              $ref: '#/components/schemas/UpdateTaskRequest'
       responses:
         '200':
           description: OK
@@ -86,11 +122,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/400PathAndPayload'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/Common404'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/Common500'
+        '503':
+          $ref: '#/components/responses/Common503'
+
     delete:
       summary: タスク削除
       description: タスクを削除します。
@@ -104,11 +143,13 @@ paths:
         '204':
           description: No Content
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/400Path'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/Common404'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/Common500'
+        '503':
+          $ref: '#/components/responses/Common503'
 
   /tasks/{id}/complete:
     patch:
@@ -125,8 +166,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskCompletion'
-
+              $ref: '#/components/schemas/CompleteTaskRequest'
       responses:
         '200':
           description: OK
@@ -135,14 +175,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/400PathAndPayload'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/Common404'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/Common500'
+        '503':
+          $ref: '#/components/responses/Common503'
 
 components:
   schemas:
+    TaskTitle:
+      type: string
+      description: タスクのタイトル
+      minLength: 1
+      maxLength: 100
+      example: 'コーヒーを淹れる'
+    TaskDescription:
+      type: string
+      description: タスクの説明
+      maxLength: 1000
+      example: '濃いめで'
     Task:
       type: object
       properties:
@@ -152,17 +205,13 @@ components:
           description: タスクの一意の識別子(UUID)
           example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
         title:
-          type: string
-          description: タスクのタイトル。
-          example: 'スーパーに買い物に行く'
+          $ref: '#/components/schemas/TaskTitle'
         completed:
           type: boolean
           description: タスクが完了したかどうか
           example: false
         description:
-          type: string
-          description: タスクの説明。
-          example: '牛乳と卵を買う'
+          $ref: '#/components/schemas/TaskDescription'
         createdAt:
           type: string
           format: date-time
@@ -182,9 +231,7 @@ components:
           description: タスクの一意の識別子(UUID)
           example: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003'
         title:
-          type: string
-          description: タスクのタイトル
-          example: 'スーパーに買い物に行く'
+          $ref: '#/components/schemas/TaskTitle'
         completed:
           type: boolean
           description: タスクが完了したかどうか
@@ -199,31 +246,24 @@ components:
           format: date-time
           description: タスクの最終更新日時（ISO 8601形式）
           example: '2021-06-22T14:24:02.071Z'
-    TaskForCreate:
+    CreateTaskRequest:
       type: object
       required:
         - title
       properties:
         title:
-          type: string
-          description: タスクのタイトル
-          example: 'コーヒーを淹れる'
+          $ref: '#/components/schemas/TaskTitle'
         description:
-          type: string
-          description: タスクの説明。
-          example: '濃いめで'
-    TaskForUpdate:
+          $ref: '#/components/schemas/TaskDescription'
+    UpdateTaskRequest:
       type: object
+      # NOTE: どちらかが含まれていればいいので必須にはしない
       properties:
         title:
-          type: string
-          description: タスクのタイトル
-          example: 'ドーナッツを買う'
+          $ref: '#/components/schemas/TaskTitle'
         description:
-          type: string
-          description: タスクの説明
-          example: 'オールドファッションを2つ'
-    TaskCompletion:
+          $ref: '#/components/schemas/TaskDescription'
+    CompleteTaskRequest:
       type: object
       required:
         - completed
@@ -231,3 +271,156 @@ components:
         completed:
           type: boolean
           description: タスクが完了したかどうか
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+  responses:
+    Common404:
+      description: 'Not Found'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [TASK_NOT_FOUND]
+              message:
+                type: 'string'
+          examples:
+            TASK_NOT_FOUND:
+              $ref: '#/components/examples/TASK_NOT_FOUND'
+    Common500:
+      description: 'Internal Server Error'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum:
+                  [
+                    MALFORMED_DATA,
+                    DATABASE_CONNECTION_ERROR,
+                    TIMEOUT,
+                    UNKNOWN_ERROR,
+                  ]
+              message:
+                type: 'string'
+          examples:
+            MALFORMED_DATA:
+              $ref: '#/components/examples/MALFORMED_DATA'
+            DATABASE_CONNECTION_ERROR:
+              $ref: '#/components/examples/DATABASE_CONNECTION_ERROR'
+            TIMEOUT:
+              $ref: '#/components/examples/TIMEOUT'
+            UNKNOWN_ERROR:
+              $ref: '#/components/examples/UNKNOWN_ERROR'
+    Common503:
+      description: 'Service Unavailable'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [SERVICE_DOWNTIME, EXTERNAL_SERVICE_FAILURE]
+              message:
+                type: 'string'
+          examples:
+            SERVICE_DOWNTIME:
+              $ref: '#/components/examples/SERVICE_DOWNTIME'
+            EXTERNAL_SERVICE_FAILURE:
+              $ref: '#/components/examples/EXTERNAL_SERVICE_FAILURE'
+    400Path:
+      description: 'Bad Request'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [INVALID_PATH_PARAMETER]
+              message:
+                type: 'string'
+          examples:
+            INVALID_PATH_PARAMETER:
+              $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+    400PathAndPayload:
+      description: 'Bad Request'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum:
+                  [
+                    INVALID_PAYLOAD_FORMAT,
+                    INVALID_PAYLOAD_VALUE,
+                    INVALID_PATH_PARAMETER,
+                  ]
+              message:
+                type: 'string'
+          examples:
+            INVALID_PAYLOAD_FORMAT:
+              $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
+            INVALID_PAYLOAD_VALUE:
+              $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
+            INVALID_PATH_PARAMETER:
+              $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+
+  examples:
+    INVALID_PAYLOAD_FORMAT:
+      value:
+        code: 'REQ001'
+        message: 'Payload format is incorrect. Details: ${errorDetails}'
+    INVALID_PAYLOAD_VALUE:
+      value:
+        code: 'REQ002'
+        message: 'Invalid value in the request payload. Details: ${errorDetails}'
+    INVALID_QUERY_PARAMETER:
+      value:
+        code: 'REQ003'
+        message: 'Insufficient or invalid query parameter.'
+    INVALID_PATH_PARAMETER:
+      value:
+        code: 'REQ004'
+        message: 'Invalid or missing parameters. Details: ${errorDetails}'
+    TASK_NOT_FOUND:
+      value:
+        code: 'APP001'
+        message: 'Task not found. TaskID: ${taskId}'
+    MALFORMED_DATA:
+      value:
+        code: 'APP101'
+        message: 'Failed to process data. Details: ${errorMessage}'
+    DATABASE_CONNECTION_ERROR:
+      value:
+        code: 'SYS001'
+        message: 'Database connection error.'
+    SERVICE_DOWNTIME:
+      value:
+        code: 'SYS002'
+        message: 'Service is currently unavailable.'
+    EXTERNAL_SERVICE_FAILURE:
+      value:
+        code: 'SYS003'
+        message: 'External service error.'
+    TIMEOUT:
+      value:
+        code: 'SYS004'
+        message: 'Processing timeout.'
+    UNKNOWN_ERROR:
+      value:
+        code: 'SYS999'
+        message: 'Unexpected error.'
