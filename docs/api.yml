@@ -356,26 +356,30 @@ components:
               $ref: '#/components/examples/INVALID_PATH_PARAMETER'
 
   examples:
-    INVALID_PAYLOAD:
+    INVALID_PAYLOAD_FORMAT:
       value:
-        code: 'APP001'
-        message: 'Invalid or malformed request. Details: ${errorDetails}'
-    TASK_NOT_FOUND:
+        code: 'REQ001'
+        message: 'Payload format is incorrect. Details: ${errorDetails}'
+    INVALID_PAYLOAD_VALUE:
       value:
-        code: 'APP002'
-        message: 'Task not found. TaskID: ${taskId}'
+        code: 'REQ002'
+        message: 'Invalid value in the request payload. Details: ${errorDetails}'
     INVALID_QUERY_PARAMETER:
       value:
-        code: 'APP003'
+        code: 'REQ003'
         message: 'Insufficient or invalid query parameter.'
     INVALID_PATH_PARAMETER:
       value:
-        code: 'APP004'
-        message: 'Invalid or missing parameters. Reference: ${errorDetails}'
+        code: 'REQ004'
+        message: 'Invalid or missing parameters. Details: ${errorDetails}'
+    TASK_NOT_FOUND:
+      value:
+        code: 'APP001'
+        message: 'Task not found. TaskID: ${taskId}'
     MALFORMED_DATA:
       value:
         code: 'APP101'
-        message: 'Failed to process data. Details: ${result.error.message}'
+        message: 'Failed to process data. Details: ${errorMessage}'
     DATABASE_CONNECTION_ERROR:
       value:
         code: 'SYS001'
