@@ -62,12 +62,15 @@ export const validateEventPathParameters = (
   return eventResult.data;
 };
 
-type RelevantIssueCodes =
-  | typeof ZodIssueCode.too_big
-  | typeof ZodIssueCode.too_small;
+const RELEVANT_ISSUE_CODES = [
+  ZodIssueCode.too_big,
+  ZodIssueCode.too_small,
+] as const;
 
-const isRelevantError = (code: ZodIssueCode): code is RelevantIssueCodes => {
-  return code === ZodIssueCode.too_big || code === ZodIssueCode.too_small;
+type RelevantIssueCodes = (typeof RELEVANT_ISSUE_CODES)[number];
+
+const isRelevantError = (code: any): code is RelevantIssueCodes => {
+  return RELEVANT_ISSUE_CODES.includes(code);
 };
 
 const createValidationError = (error: z.ZodError): AppError => {
