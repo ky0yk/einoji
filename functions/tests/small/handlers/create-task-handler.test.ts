@@ -60,31 +60,83 @@ describe('Create Task Request Handler', () => {
 
   const dummyContext = {} as Context;
 
-  test.each`
-    request                         | body                           | task
-    ${validEvent}                   | ${createReq}                   | ${dummyTask}
-    ${validEventWithoutDescription} | ${createReqWithoutDescription} | ${dummyTaskWithoutDescription}
-  `(
-    'should return 201 status for a valid request',
-    async ({ request, body, task }) => {
-      (createTaskUseCase as jest.Mock).mockResolvedValueOnce(task);
+  describe('For a valid request', () => {
+    const validCases = [
+      {
+        request: validEvent,
+        body: createReq,
+        expectedTask: dummyTask,
+        description: 'with title and description',
+      },
+      {
+        request: validEventWithoutDescription,
+        body: createReqWithoutDescription,
+        expectedTask: dummyTaskWithoutDescription,
+        description: 'with only title',
+      },
+    ];
 
-      const result = await handler(request, dummyContext);
-      expect(result.statusCode).toBe(201);
-      expect(JSON.parse(result.body!)).toEqual(task);
-      expect(createTaskUseCase).toHaveBeenCalledTimes(1);
-      expect(createTaskUseCase).toHaveBeenCalledWith(body);
-    },
-  );
+    validCases.forEach(({ request, body, expectedTask, description }) => {
+      test(`should return 201 ${description}`, async () => {
+        (createTaskUseCase as jest.Mock).mockResolvedValueOnce(expectedTask);
 
-  test.each`
-    request
-    ${InvalidEventNullBody}
-    ${InvalidEventWithoutTitle}
-  `('should return 400 status for an invalid request', async ({ request }) => {
-    const result = await handler(request, dummyContext);
-    expect(result.statusCode).toBe(400);
-    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_PAYLOAD);
-    expect(createTaskUseCase).toHaveBeenCalledTimes(0);
+        const result = await handler(request as APIGatewayEvent, dummyContext);
+        expect(result.statusCode).toBe(201);
+        expect(JSON.parse(result.body!)).toEqual(expectedTask);
+        expect(createTaskUseCase).toHaveBeenCalledTimes(1);
+        expect(createTaskUseCase).toHaveBeenCalledWith(body);
+      });
+    });
+  });
+
+  describe('For an invalid request format', () => {
+    const invalidFormatCases = [
+      { request: InvalidEventNullBody, situation: 'body is null' },
+      { request: InvalidEventWithoutTitle, situation: 'title is missing' },
+    ];
+
+    invalidFormatCases.forEach(({ request, situation }) => {
+      test(`should return 400 with INVALID_PAYLOAD_FORMAT when ${situation}`, async () => {
+        const result = await handler(request as APIGatewayEvent, dummyContext);
+        expect(result.statusCode).toBe(400);
+        expect(JSON.parse(result.body!).code).toBe(
+          ErrorCode.INVALID_PAYLOAD_FORMAT,
+        );
+        expect(createTaskUseCase).toHaveBeenCalledTimes(0);
+      });
+    });
+  });
+
+  describe('For an invalid payload value but valid request format', () => {
+    const invalidValueCases = [
+      {
+        request: {
+          body: JSON.stringify({
+            title: 'a'.repeat(101),
+          } as unknown as APIGatewayEvent),
+        },
+        situation: 'title has 101 characters',
+      },
+      {
+        request: {
+          body: JSON.stringify({
+            title: 'タイトル',
+            description: 'a'.repeat(1001),
+          } as unknown as APIGatewayEvent),
+        },
+        situation: 'description has 1001 characters',
+      },
+    ];
+
+    invalidValueCases.forEach(({ request, situation }) => {
+      test(`should return 422 with INVALID_PAYLOAD_VALUE but correct format when ${situation}`, async () => {
+        const result = await handler(request as APIGatewayEvent, dummyContext);
+        expect(result.statusCode).toBe(422);
+        expect(JSON.parse(result.body!).code).toBe(
+          ErrorCode.INVALID_PAYLOAD_VALUE,
+        );
+        expect(createTaskUseCase).toHaveBeenCalledTimes(0);
+      });
+    });
   });
 });

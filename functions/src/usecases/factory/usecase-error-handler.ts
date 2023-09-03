@@ -16,8 +16,8 @@ import {
 export const useCaseErrorHandler = (error: DdbError | TaskError): AppError => {
   if (
     error instanceof DdbResourceNotFoundError ||
-    error instanceof DdbInternalServerError ||
-    error instanceof DdbProvisionedThroughputExceededError
+    error instanceof DdbProvisionedThroughputExceededError ||
+    error instanceof DdbInternalServerError
   ) {
     return new AppError(
       ErrorCode.DATABASE_CONNECTION_ERROR,
@@ -26,7 +26,7 @@ export const useCaseErrorHandler = (error: DdbError | TaskError): AppError => {
     );
   }
   if (error instanceof DdbValidationError) {
-    return new AppError(ErrorCode.INVALID_PAYLOAD, error.message, error);
+    return new AppError(ErrorCode.INVALID_PAYLOAD_VALUE, error.message, error);
   }
   if (error instanceof TaskNotFoundError) {
     return new AppError(ErrorCode.TASK_NOT_FOUND, error.message, error);

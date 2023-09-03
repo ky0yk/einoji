@@ -5,11 +5,11 @@ import { httpErrorHandler } from '../../../../src/handlers/factory/http-error-ha
 describe('httpErrorHandler', () => {
   test.each`
     errorCode                              | expected_http_status_code
-    ${ErrorCode.INVALID_PAYLOAD}           | ${400}
+    ${ErrorCode.INVALID_PAYLOAD_FORMAT}    | ${400}
+    ${ErrorCode.INVALID_PAYLOAD_VALUE}     | ${422}
     ${ErrorCode.TASK_NOT_FOUND}            | ${404}
     ${ErrorCode.MALFORMED_DATA}            | ${500}
     ${ErrorCode.DATABASE_CONNECTION_ERROR} | ${500}
-    ${ErrorCode.LAMBDA_TIMEOUT}            | ${500}
     ${ErrorCode.UNKNOWN_ERROR}             | ${500}
     ${ErrorCode.SERVICE_DOWNTIME}          | ${503}
     ${ErrorCode.EXTERNAL_SERVICE_FAILURE}  | ${503}

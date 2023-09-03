@@ -38,7 +38,7 @@ describe('getTaskHandler', () => {
     );
   });
 
-  test('task not found should return status 404', async () => {
+  test('task not found should return status 404 with TASK_NOT_FOUND', async () => {
     (getTaskUseCase as jest.Mock).mockRejectedValueOnce(
       new AppError(ErrorCode.TASK_NOT_FOUND, 'task not found'),
     );
@@ -52,12 +52,14 @@ describe('getTaskHandler', () => {
     );
   });
 
-  test('invalid request should return status 400', async () => {
+  test('invalid request should return status 400 with INVALID_PATH_PARAMETER', async () => {
     const mockEvent = {} as unknown as APIGatewayEvent;
     const result = await handler(mockEvent, dummyContext);
 
     expect(result.statusCode).toBe(400);
-    expect(JSON.parse(result.body!).code).toBe(ErrorCode.INVALID_PAYLOAD);
+    expect(JSON.parse(result.body!).code).toBe(
+      ErrorCode.INVALID_PATH_PARAMETER,
+    );
     expect(getTaskUseCase).toHaveBeenCalledTimes(0);
   });
 });

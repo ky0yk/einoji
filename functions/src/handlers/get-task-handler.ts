@@ -7,12 +7,12 @@ import {
   RequestHandlerWithoutContext,
 } from './factory/handler-factory';
 import { HttpStatus } from './http/http-status';
-import { validateEventWithPathParams } from './http/validators';
+import { validateEventPathParameters } from './http/validators';
 
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  const pathParams = validateEventWithPathParams(event).pathParameters;
+  const pathParams = validateEventPathParameters(event).pathParameters;
 
   const task = await getTaskUseCase(pathParams.id);
   return httpResponse(HttpStatus.OK).withBody(task);
