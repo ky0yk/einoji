@@ -7,7 +7,7 @@ export type CreateTaskItem = DdbOperation<string, [CreateTaskRequest]>;
 export type GetTaskItem = DdbOperation<TaskItem | null, [string]>;
 export type UpdateTaskItem = DdbOperation<
   TaskItem,
-  [string, TaskUpdatePartial]
+  [string, TaskUpdateAtLeastOne]
 >;
 
 type TaskUpdateData = {
@@ -18,4 +18,4 @@ type TaskUpdateData = {
 type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
   U[keyof U];
 
-export type TaskUpdatePartial = AtLeastOne<TaskUpdateData>;
+export type TaskUpdateAtLeastOne = AtLeastOne<TaskUpdateData>;

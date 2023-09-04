@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CreateTaskItem,
   GetTaskItem,
-  TaskUpdatePartial,
+  TaskUpdateAtLeastOne,
   UpdateTaskItem,
 } from '../../usecases/contracts/ddb-operations';
 
@@ -86,7 +86,7 @@ const getTaskItemByIdImpl: GetTaskItem = async (
 
 const updateTaskItemByIdImpl: UpdateTaskItem = async (
   taskId: string,
-  data: TaskUpdatePartial,
+  data: TaskUpdateAtLeastOne,
 ): Promise<TaskItem> => {
   const now = new Date().toISOString();
 

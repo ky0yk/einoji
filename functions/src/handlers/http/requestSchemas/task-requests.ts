@@ -16,3 +16,4 @@ export const UpdateTaskRequestSchema = z
       Object.entries(data).filter(([, value]) => value !== undefined),
     );
   });
+export type UpdateTaskRequest = z.infer<typeof UpdateTaskRequestSchema>;
