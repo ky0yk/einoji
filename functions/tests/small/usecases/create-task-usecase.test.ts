@@ -1,7 +1,7 @@
 import { Task, toTask } from '../../../src/domain/task';
 import { TaskItem } from '../../../src/domain/taskItem';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
-import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/create-task-request';
+import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/task-requests';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
 import {
   createTaskItem,

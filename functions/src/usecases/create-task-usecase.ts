@@ -1,7 +1,7 @@
 import { Task, toTask } from '../domain/task';
 import { TaskNotFoundError } from '../domain/errors/task-errors';
 import { useCaseFactory } from './factory/usecase-factory';
-import { CreateTaskRequest } from '../handlers/http/requestSchemas/create-task-request';
+import { CreateTaskRequest } from '../handlers/http/requestSchemas/task-requests';
 import {
   createTaskItem,
   getTaskItemById,

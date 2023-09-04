@@ -1,5 +1,5 @@
 import { toTask } from '../../../src/domain/task';
-import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/create-task-request';
+import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/task-requests';
 import { getTaskItemById } from '../../../src/infrastructure/ddb/tasks-table';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
 import { createTable, deleteTable } from '../../helpers/tasks-table-helpers';

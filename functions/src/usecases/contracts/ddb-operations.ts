@@ -1,5 +1,5 @@
 import { TaskItem } from '../../domain/taskItem';
-import { CreateTaskRequest } from '../../handlers/http/requestSchemas/create-task-request';
+import { CreateTaskRequest } from '../../handlers/http/requestSchemas/task-requests';
 
 export type DdbOperation<T, P extends unknown[]> = (...args: P) => Promise<T>;
 

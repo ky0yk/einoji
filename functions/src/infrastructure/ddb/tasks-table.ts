@@ -11,7 +11,7 @@ import { logger } from '../../common/logger';
 import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
 import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
-import { CreateTaskRequest } from '../../handlers/http/requestSchemas/create-task-request';
+import { CreateTaskRequest } from '../../handlers/http/requestSchemas/task-requests';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CreateTaskItem,
