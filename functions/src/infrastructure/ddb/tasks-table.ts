@@ -12,6 +12,10 @@ import { DdbInternalServerError } from './errors/ddb-errors';
 import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
 import { CreateTaskRequest } from '../../handlers/http/requestSchemas/create-task-request';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  CreateTaskItem,
+  GetTaskItem,
+} from '../../usecases/contracts/ddb-operations';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
@@ -24,7 +28,9 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-const createTaskItemImpl = async (body: CreateTaskRequest): Promise<string> => {
+const createTaskItemImpl: CreateTaskItem = async (
+  body: CreateTaskRequest,
+): Promise<string> => {
   const uuid = uuidv4();
   const now = new Date().toISOString();
 
@@ -46,7 +52,7 @@ const createTaskItemImpl = async (body: CreateTaskRequest): Promise<string> => {
   return uuid;
 };
 
-const getTaskItemByIdImpl = async (
+const getTaskItemByIdImpl: GetTaskItem = async (
   taskId: string,
 ): Promise<TaskItem | null> => {
   const commandInput = {

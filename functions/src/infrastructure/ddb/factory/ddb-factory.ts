@@ -1,8 +1,8 @@
 import { logger } from '../../../common/logger';
+import { DdbOperation } from '../../../usecases/contracts/ddb-operations';
 import { DdbError } from '../errors/ddb-errors';
 import { ddbErrorHandler } from './ddb-error-handler';
 
-type DdbOperation<T, P extends unknown[]> = (...args: P) => Promise<T>;
 type DdbOperationErrorHandler = (error: Error) => DdbError;
 
 export const ddbFactory = <T, P extends unknown[]>(
