@@ -1,4 +1,4 @@
-import { ZodIssueCode, ZodObject, ZodRawShape, z } from 'zod';
+import { ZodIssueCode, ZodType, z } from 'zod';
 import { AppError } from '../../common/errors/app-errors';
 import { ErrorCode } from '../../common/errors/error-codes';
 import { APIGatewayEvent } from 'aws-lambda';
@@ -24,10 +24,7 @@ export const validateEvent = (event: APIGatewayEvent): Event => {
   return eventResult.data;
 };
 
-export const validateBody = <T extends ZodRawShape>(
-  schema: ZodObject<T>,
-  jsonBody: string,
-): z.infer<typeof schema> => {
+export const validateBody = <T>(schema: ZodType<T>, jsonBody: string): T => {
   let body;
   try {
     body = JSON.parse(jsonBody);
