@@ -18,3 +18,9 @@ export class TaskConversionError extends TaskError {
     super(message, originalError);
   }
 }
+
+export class TaskUpdateRuleError extends TaskError {
+  constructor(message: string, originalError?: Error) {
+    super(message, originalError);
+  }
+}
