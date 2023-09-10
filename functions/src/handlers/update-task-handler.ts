@@ -6,21 +6,25 @@ import {
 import { LambdaResponse, httpResponse } from './http/http-response';
 import { HttpStatus } from './http/http-status';
 import {
-  validateBody,
-  validateEvent,
-  validateEventPathParameters,
-} from './http/validators';
-import { UpdateTaskRequestSchema } from './http/requestSchemas/task-requests';
+  TaskIdPathParamsSchema,
+  UpdateTaskRequestSchema,
+} from './http/requestSchemas/task-requests';
 import { updateTaskUsecase } from '../usecases/update-task-usecase';
+import { validateBodyAndPathParams } from './http/validators';
 
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  const validEvent = validateEvent(event);
-  const validBody = validateBody(UpdateTaskRequestSchema, validEvent.body);
-  const taskId = validateEventPathParameters(event).pathParameters.id;
+  const {
+    body: updateTaskReq,
+    pathParameters: { id: taskId },
+  } = validateBodyAndPathParams(
+    event,
+    UpdateTaskRequestSchema,
+    TaskIdPathParamsSchema,
+  );
 
-  const updatedTask = await updateTaskUsecase(taskId, validBody);
+  const updatedTask = await updateTaskUsecase(taskId, updateTaskReq);
 
   return httpResponse(HttpStatus.OK).withBody(updatedTask);
 };

@@ -17,3 +17,7 @@ export const UpdateTaskRequestSchema = z
     );
   });
 export type UpdateTaskRequest = z.infer<typeof UpdateTaskRequestSchema>;
+
+export const TaskIdPathParamsSchema = z.object({
+  id: z.string().uuid(),
+});
