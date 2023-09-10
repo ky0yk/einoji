@@ -1,14 +1,14 @@
-import { Task, toTask } from '../domain/task';
+import { CreateTaskData, Task } from '../domain/task';
 import { TaskNotFoundError } from '../domain/errors/task-errors';
 import { useCaseFactory } from './factory/usecase-factory';
-import { CreateTaskRequest } from '../handlers/http/requestSchemas/task-requests';
 import {
   createTaskItem,
   getTaskItemById,
 } from '../infrastructure/ddb/tasks-table';
+import { toTask } from '../infrastructure/ddb/schemas/taskItem';
 
-const createTask = async (body: CreateTaskRequest): Promise<Task> => {
-  const newTaskId = await createTaskItem(body);
+const createTask = async (data: CreateTaskData): Promise<Task> => {
+  const newTaskId = await createTaskItem(data);
   const newTaskRecord = await getTaskItemById(newTaskId);
   if (!newTaskRecord) {
     throw new TaskNotFoundError(

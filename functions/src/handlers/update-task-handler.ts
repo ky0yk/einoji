@@ -16,7 +16,7 @@ const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
   const {
-    body: updateTaskReq,
+    body: updateTaskData,
     pathParameters: { id: taskId },
   } = validateBodyAndPathParams(
     event,
@@ -24,7 +24,7 @@ const requestHandler: RequestHandlerWithoutContext = async (
     TaskIdPathParamsSchema,
   );
 
-  const updatedTask = await updateTaskUsecase(taskId, updateTaskReq);
+  const updatedTask = await updateTaskUsecase(taskId, updateTaskData);
 
   return httpResponse(HttpStatus.OK).withBody(updatedTask);
 };

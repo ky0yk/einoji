@@ -10,11 +10,11 @@ import {
 import { logger } from '../../common/logger';
 import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
-import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
-import { CreateTaskRequest } from '../../handlers/http/requestSchemas/task-requests';
+import { TaskItem, TaskItemSchema } from './schemas/taskItem';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CreateTaskItem,
+  CreateTaskPayload,
   GetTaskItem,
   TaskUpdateAtLeastOne,
   UpdateTaskItem,
@@ -32,7 +32,7 @@ const dynamoDBClient = new DynamoDBClient({
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
 const createTaskItemImpl: CreateTaskItem = async (
-  body: CreateTaskRequest,
+  body: CreateTaskPayload,
 ): Promise<string> => {
   const uuid = uuidv4();
   const now = new Date().toISOString();

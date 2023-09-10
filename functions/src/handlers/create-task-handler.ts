@@ -8,13 +8,14 @@ import { CreateTaskRequestSchema } from './http/requestSchemas/task-requests';
 import { LambdaResponse, httpResponse } from './http/http-response';
 import { HttpStatus } from './http/http-status';
 import { validateBody } from './http/validators';
+import { CreateTaskData } from '../domain/task';
 
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  const validBody = validateBody(CreateTaskRequestSchema, event);
+  const data: CreateTaskData = validateBody(CreateTaskRequestSchema, event);
 
-  const createdTask = await createTaskUseCase(validBody);
+  const createdTask = await createTaskUseCase(data);
 
   return httpResponse(HttpStatus.CREATED).withBody(createdTask);
 };

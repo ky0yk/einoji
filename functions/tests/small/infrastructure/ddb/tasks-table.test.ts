@@ -10,7 +10,7 @@ import {
   createTaskItem,
   getTaskItemById,
 } from '../../../../src/infrastructure/ddb/tasks-table';
-import { TaskItem } from '../../../../src/domain/taskItem';
+import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/taskItem';
 import { z } from 'zod';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);

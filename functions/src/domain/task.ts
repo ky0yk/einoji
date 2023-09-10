@@ -1,7 +1,5 @@
 import * as z from 'zod';
 import { isoDate } from './isoDate';
-import { TaskItem } from './taskItem';
-import { TaskConversionError } from './errors/task-errors';
 
 export const TaskSchema = z.object({
   id: z.string().uuid(),
@@ -14,23 +12,12 @@ export const TaskSchema = z.object({
 
 export type Task = z.infer<typeof TaskSchema>;
 
-export const toTask = (item: TaskItem): Task => {
-  const interimTask = {
-    id: item.taskId,
-    title: item.title,
-    description: item.description,
-    completed: item.completed,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-  };
+export type CreateTaskData = {
+  title: string;
+  description?: string;
+};
 
-  const result = TaskSchema.safeParse(interimTask);
-
-  if (!result.success) {
-    throw new TaskConversionError(
-      `Failed to convert data to Task. Errors: ${result.error.message}`,
-    );
-  }
-
-  return result.data;
+export type UpdateTaskData = {
+  title?: string;
+  description?: string;
 };

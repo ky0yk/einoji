@@ -1,24 +1,20 @@
 import { TaskUpdateRuleError } from '../domain/errors/task-errors';
-import { Task, toTask } from '../domain/task';
-import { UpdateTaskRequest } from '../handlers/http/requestSchemas/task-requests';
+import { Task, UpdateTaskData, toTask } from '../domain/task';
 import { updateTaskItemById } from '../infrastructure/ddb/tasks-table';
 import { TaskUpdateAtLeastOne } from './contracts/ddb-operations';
 import { useCaseFactory } from './factory/usecase-factory';
 
 const updateTask = async (
   taskId: string,
-  updateReq: UpdateTaskRequest,
+  data: UpdateTaskData,
 ): Promise<Task> => {
-  if (isEmpty(updateReq)) {
+  if (isEmpty(data)) {
     throw new TaskUpdateRuleError(
       'Provided data does not follow update rules.',
     );
   }
 
-  const result = await updateTaskItemById(
-    taskId,
-    updateReq as TaskUpdateAtLeastOne,
-  );
+  const result = await updateTaskItemById(taskId, data as TaskUpdateAtLeastOne);
 
   return toTask(result);
 };

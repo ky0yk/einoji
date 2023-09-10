@@ -1,7 +1,8 @@
-import { Task, toTask } from '../domain/task';
+import { Task } from '../domain/task';
 import { getTaskItemById } from '../infrastructure/ddb/tasks-table';
 import { TaskNotFoundError } from '../domain/errors/task-errors';
 import { useCaseFactory } from './factory/usecase-factory';
+import { toTask } from '../infrastructure/ddb/schemas/taskItem';
 
 const getTask = async (taskId: string): Promise<Task> => {
   const taskRecord = await getTaskItemById(taskId);

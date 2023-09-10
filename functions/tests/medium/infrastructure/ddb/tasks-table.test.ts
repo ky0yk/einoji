@@ -1,4 +1,4 @@
-import { TaskItem } from '../../../../src/domain/taskItem';
+import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/taskItem';
 import { CreateTaskRequest } from '../../../../src/handlers/http/requestSchemas/task-requests';
 
 import {
