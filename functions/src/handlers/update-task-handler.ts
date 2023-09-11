@@ -8,7 +8,7 @@ import { HttpStatus } from './http/http-status';
 import {
   TaskIdPathParamsSchema,
   UpdateTaskRequestSchema,
-} from './http/requestSchemas/task-requests';
+} from './schemas/task-requests';
 import { updateTaskUsecase } from '../usecases/update-task-usecase';
 import { validateBodyAndPathParams } from './http/validators';
 

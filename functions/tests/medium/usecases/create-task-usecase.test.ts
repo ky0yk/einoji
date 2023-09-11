@@ -1,4 +1,4 @@
-import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/task-requests';
+import { CreateTaskRequest } from '../../../src/handlers/schemas/task-requests';
 import { taskRepository } from '../../../src/infrastructure/ddb/task-repository';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
 import {

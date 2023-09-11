@@ -1,6 +1,6 @@
 import { Task } from '../../../src/domain/task';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
-import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/task-requests';
+import { CreateTaskRequest } from '../../../src/handlers/schemas/task-requests';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
 import { taskRepository } from '../../../src/infrastructure/ddb/task-repository';
 import { AppError } from '../../../src/common/errors/app-errors';
