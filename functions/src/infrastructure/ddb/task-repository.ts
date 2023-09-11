@@ -139,7 +139,7 @@ const updateTaskItemByIdImpl: UpdateTaskCommand = async (
 };
 
 export const taskRepository: TaskRepository = {
-  create: ddbFactory('createTask', createTaskItemImpl),
-  getById: ddbFactory('getTaskById', getTaskItemByIdImpl),
-  update: ddbFactory('updateTask', updateTaskItemByIdImpl),
+  create: ddbFactory('taskRepository.create', createTaskItemImpl),
+  getById: ddbFactory('taskRepository.getById', getTaskItemByIdImpl),
+  update: ddbFactory('taskRepository.update', updateTaskItemByIdImpl),
 };
