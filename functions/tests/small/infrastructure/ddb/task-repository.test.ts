@@ -6,17 +6,15 @@ import {
 import { mockClient } from 'aws-sdk-client-mock';
 
 import { DdbInternalServerError } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
-import {
-  createTaskItem,
-  getTaskItemById,
-} from '../../../../src/infrastructure/ddb/tasks-table';
-import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/taskItem';
+import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
+import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/task-item';
 import { z } from 'zod';
+import { Task } from '../../../../src/domain/task';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);
 const TASK_TABLE_NAME = process.env.TASKS_TABLE_NAME;
 
-describe('createTaskItem', () => {
+describe('taskRepository.create', () => {
   afterEach(() => {
     documentMockClient.reset();
   });
@@ -26,7 +24,7 @@ describe('createTaskItem', () => {
     const taskBody = { title: 'Test Task', description: 'Test Description' };
     documentMockClient.on(PutCommand).resolves({});
 
-    const createdTaskId = await createTaskItem(taskBody);
+    const createdTaskId = await taskRepository.create(taskBody);
 
     const callsOfPut = documentMockClient.commandCalls(PutCommand);
     expect(callsOfPut).toHaveLength(1);
@@ -50,7 +48,7 @@ describe('createTaskItem', () => {
     const taskBody = { title: 'Test Task' };
     documentMockClient.on(PutCommand).resolves({});
 
-    const createdTaskId = await createTaskItem(taskBody);
+    const createdTaskId = await taskRepository.create(taskBody);
 
     const callsOfPut = documentMockClient.commandCalls(PutCommand);
     expect(callsOfPut).toHaveLength(1);
@@ -71,7 +69,7 @@ describe('createTaskItem', () => {
   });
 });
 
-describe('getTaskItemById', () => {
+describe('taskRepository.getById', () => {
   beforeEach(() => {
     documentMockClient.reset();
   });
@@ -88,10 +86,18 @@ describe('getTaskItemById', () => {
       createdAt: '2021-06-22T14:24:02.071Z',
       updatedAt: '2021-06-22T14:24:02.071Z',
     };
+    const dummyTask: Task = {
+      id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+      title: 'スーパーに買い物に行く',
+      completed: false,
+      description: '牛乳と卵を買う',
+      createdAt: '2021-06-22T14:24:02.071Z',
+      updatedAt: '2021-06-22T14:24:02.071Z',
+    };
 
     documentMockClient.on(GetCommand).resolves({ Item: dummyTaskItem });
 
-    const result = await getTaskItemById(dummyTaskId);
+    const result = await taskRepository.getById(dummyTaskId);
 
     const callsOfGet = documentMockClient.commandCalls(GetCommand);
     expect(callsOfGet).toHaveLength(1);
@@ -102,12 +108,12 @@ describe('getTaskItemById', () => {
         taskId: dummyTaskId,
       },
     });
-    expect(result).toEqual(dummyTaskItem);
+    expect(result).toEqual(dummyTask);
   });
 
   test('should return null if the task is not found', async () => {
     documentMockClient.on(GetCommand).resolves({});
-    const task = await getTaskItemById('some-task-id');
+    const task = await taskRepository.getById('some-task-id');
 
     expect(task).toBeNull();
     expect(documentMockClient.calls()).toHaveLength(1);
@@ -119,7 +125,7 @@ describe('getTaskItemById', () => {
     };
 
     documentMockClient.on(GetCommand).resolves({ Item: invalidTaskItem });
-    await expect(getTaskItemById(dummyTaskId)).rejects.toThrow(
+    await expect(taskRepository.getById(dummyTaskId)).rejects.toThrow(
       DdbInternalServerError,
     );
     expect(documentMockClient.calls()).toHaveLength(1);

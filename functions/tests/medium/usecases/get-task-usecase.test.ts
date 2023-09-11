@@ -1,11 +1,11 @@
 import { Task } from '../../../src/domain/task';
-import { TaskItem } from '../../../src/infrastructure/ddb/schemas/taskItem';
+import { TaskItem } from '../../../src/infrastructure/ddb/schemas/task-item';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import {
   createTable,
   deleteTable,
   putTask,
-} from '../../helpers/tasks-table-helpers';
+} from '../../helpers/task-repository-helpers';
 
 describe('getTaskUseCase', () => {
   beforeAll(async () => {

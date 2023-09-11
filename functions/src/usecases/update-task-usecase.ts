@@ -1,7 +1,7 @@
 import { TaskUpdateRuleError } from '../domain/errors/task-errors';
-import { Task, UpdateTaskData, toTask } from '../domain/task';
-import { updateTaskItemById } from '../infrastructure/ddb/tasks-table';
-import { TaskUpdateAtLeastOne } from './contracts/ddb-operations';
+import { Task, UpdateTaskData } from '../domain/task';
+import { taskRepository } from '../infrastructure/ddb/task-repository';
+import { TaskUpdateAtLeastOne } from './contracts/task-repository-contract';
 import { useCaseFactory } from './factory/usecase-factory';
 
 const updateTask = async (
@@ -14,9 +14,7 @@ const updateTask = async (
     );
   }
 
-  const result = await updateTaskItemById(taskId, data as TaskUpdateAtLeastOne);
-
-  return toTask(result);
+  return await taskRepository.update(taskId, data as TaskUpdateAtLeastOne);
 };
 
 const isEmpty = (obj: object): boolean => {

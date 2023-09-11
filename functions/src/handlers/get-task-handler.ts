@@ -13,7 +13,6 @@ import { TaskIdPathParamsSchema } from './http/requestSchemas/task-requests';
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  console.error(event);
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
 
   const task = await getTaskUseCase(taskId);

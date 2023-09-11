@@ -1,8 +1,10 @@
-import { toTask } from '../../../src/domain/task';
 import { CreateTaskRequest } from '../../../src/handlers/http/requestSchemas/task-requests';
-import { getTaskItemById } from '../../../src/infrastructure/ddb/tasks-table';
+import { taskRepository } from '../../../src/infrastructure/ddb/task-repository';
 import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
-import { createTable, deleteTable } from '../../helpers/tasks-table-helpers';
+import {
+  createTable,
+  deleteTable,
+} from '../../helpers/task-repository-helpers';
 
 describe('createTaskUseCase', () => {
   beforeAll(async () => {
@@ -18,10 +20,8 @@ describe('createTaskUseCase', () => {
       description: '濃いめで',
     };
     const createdTask = await createTaskUseCase(createTaskReq);
+    const fetchedTaskItem = await taskRepository.getById(createdTask.id);
 
-    const fetchedTaskItem = await getTaskItemById(createdTask.id);
-    const fetchedTask = toTask(fetchedTaskItem!);
-
-    expect(fetchedTask).toEqual(createdTask);
+    expect(fetchedTaskItem).toEqual(createdTask);
   });
 });

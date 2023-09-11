@@ -1,16 +1,14 @@
-import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/taskItem';
+import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/task-item';
 import { CreateTaskRequest } from '../../../../src/handlers/http/requestSchemas/task-requests';
 
-import {
-  createTaskItem,
-  getTaskItemById,
-} from '../../../../src/infrastructure/ddb/tasks-table';
+import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
 import {
   createTable,
   deleteTable,
   deleteTask,
   putTask,
-} from '../../../helpers/tasks-table-helpers';
+} from '../../../helpers/task-repository-helpers';
+import { Task } from '../../../../src/domain/task';
 describe('createTaskItem', () => {
   beforeAll(async () => {
     await createTable();
@@ -24,15 +22,15 @@ describe('createTaskItem', () => {
       title: 'スーパーに買い物に行く',
       description: '牛乳と卵を買う',
     };
-    const newTaskId = await createTaskItem(dummyTaskBody);
+    const newTaskId = await taskRepository.create(dummyTaskBody);
 
-    const createdTask = await getTaskItemById(newTaskId);
+    const createdTask = await taskRepository.getById(newTaskId);
     if (!createdTask) {
       throw new Error('Created task not found');
     }
     expect(createdTask).toBeDefined();
 
-    expect(createdTask.taskId).toEqual(newTaskId);
+    expect(createdTask.id).toEqual(newTaskId);
 
     expect(createdTask.title).toEqual(dummyTaskBody.title);
     expect(createdTask.description).toEqual(dummyTaskBody.description);
@@ -51,7 +49,7 @@ describe('getTaskItemById', () => {
     await putTask(dummyTaskItem);
   });
   afterEach(async () => {
-    await deleteTask(dummyTaskItem.taskId);
+    await deleteTask(dummyTask.id);
   });
   const dummyTaskItem: TaskItem = {
     userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
@@ -62,16 +60,24 @@ describe('getTaskItemById', () => {
     createdAt: '2021-06-22T14:24:02.071Z',
     updatedAt: '2021-06-22T14:24:02.071Z',
   };
+  const dummyTask: Task = {
+    id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+    title: 'スーパーに買い物に行く',
+    completed: false,
+    description: '牛乳と卵を買う',
+    createdAt: '2021-06-22T14:24:02.071Z',
+    updatedAt: '2021-06-22T14:24:02.071Z',
+  };
 
   test('should return the TaskItem by correct task ID', async () => {
-    const TaskItem = await getTaskItemById(dummyTaskItem.taskId);
-    expect(TaskItem).toEqual(dummyTaskItem);
+    const Task = await taskRepository.getById(dummyTask.id);
+    expect(Task).toEqual(dummyTask);
   });
 
   test('should return null if the task ID does not exist', async () => {
     const nonExistentTaskId = 'non-existent-task-id';
 
-    const TaskItem = await getTaskItemById(nonExistentTaskId);
+    const TaskItem = await taskRepository.getById(nonExistentTaskId);
     expect(TaskItem).toBeNull();
   });
 });

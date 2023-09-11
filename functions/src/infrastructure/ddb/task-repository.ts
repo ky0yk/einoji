@@ -10,15 +10,17 @@ import {
 import { logger } from '../../common/logger';
 import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
-import { TaskItem, TaskItemSchema } from './schemas/taskItem';
+import { TaskItemSchema, toTask } from './schemas/task-item';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CreateTaskItem,
+  CreateTaskCommand,
   CreateTaskPayload,
-  GetTaskItem,
+  GetTaskCommand,
+  TaskRepository,
   TaskUpdateAtLeastOne,
-  UpdateTaskItem,
-} from '../../usecases/contracts/ddb-operations';
+  UpdateTaskCommand,
+} from '../../usecases/contracts/task-repository-contract';
+import { Task } from '../../domain/task';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
@@ -31,7 +33,7 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-const createTaskItemImpl: CreateTaskItem = async (
+const createTaskItemImpl: CreateTaskCommand = async (
   body: CreateTaskPayload,
 ): Promise<string> => {
   const uuid = uuidv4();
@@ -55,9 +57,9 @@ const createTaskItemImpl: CreateTaskItem = async (
   return uuid;
 };
 
-const getTaskItemByIdImpl: GetTaskItem = async (
+const getTaskItemByIdImpl: GetTaskCommand = async (
   taskId: string,
-): Promise<TaskItem | null> => {
+): Promise<Task | null> => {
   const commandInput = {
     TableName: TABLE_NAME,
     Key: {
@@ -81,13 +83,13 @@ const getTaskItemByIdImpl: GetTaskItem = async (
     );
   }
 
-  return parseResult.data;
+  return toTask(parseResult.data);
 };
 
-const updateTaskItemByIdImpl: UpdateTaskItem = async (
+const updateTaskItemByIdImpl: UpdateTaskCommand = async (
   taskId: string,
   data: TaskUpdateAtLeastOne,
-): Promise<TaskItem> => {
+): Promise<Task> => {
   const now = new Date().toISOString();
 
   const updateExpression = [
@@ -133,15 +135,11 @@ const updateTaskItemByIdImpl: UpdateTaskItem = async (
     );
   }
 
-  return parseResult.data;
+  return toTask(parseResult.data);
 };
 
-export const getTaskItemById = ddbFactory(
-  'getTaskItemById',
-  getTaskItemByIdImpl,
-);
-export const createTaskItem = ddbFactory('createTaskItem', createTaskItemImpl);
-export const updateTaskItemById = ddbFactory(
-  'updateTaskItemById',
-  updateTaskItemByIdImpl,
-);
+export const taskRepository: TaskRepository = {
+  create: ddbFactory('createTask', createTaskItemImpl),
+  getById: ddbFactory('getTaskById', getTaskItemByIdImpl),
+  update: ddbFactory('updateTask', updateTaskItemByIdImpl),
+};

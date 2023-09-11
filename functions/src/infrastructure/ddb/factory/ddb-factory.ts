@@ -1,15 +1,15 @@
 import { logger } from '../../../common/logger';
-import { DdbOperation } from '../../../usecases/contracts/ddb-operations';
+import { RepoCommand } from '../../../usecases/contracts/task-repository-contract';
 import { DdbError } from '../errors/ddb-errors';
 import { ddbErrorHandler } from './ddb-error-handler';
 
-type DdbOperationErrorHandler = (error: Error) => DdbError;
+type DdbOpsErrorHandler = (error: Error) => DdbError;
 
 export const ddbFactory = <T, P extends unknown[]>(
   name: string,
-  ddbOperation: DdbOperation<T, P>,
-  errorHandler: DdbOperationErrorHandler = ddbErrorHandler,
-): DdbOperation<T, P> => {
+  ddbOperation: RepoCommand<T, P>,
+  errorHandler: DdbOpsErrorHandler = ddbErrorHandler,
+): RepoCommand<T, P> => {
   return async (...args: P): Promise<T> => {
     try {
       return await ddbOperationWithLog(name, ddbOperation, ...args);
@@ -21,7 +21,7 @@ export const ddbFactory = <T, P extends unknown[]>(
 
 const ddbOperationWithLog = async <T, P extends unknown[]>(
   name: string,
-  operation: DdbOperation<T, P>,
+  operation: RepoCommand<T, P>,
   ...args: P
 ): Promise<T> => {
   logger.info(`START Dynamodb Operation: ${name}`);
@@ -32,7 +32,7 @@ const ddbOperationWithLog = async <T, P extends unknown[]>(
 
 const ddbOperationErrorHandlerWithLog = async <T>(
   name: string,
-  processError: DdbOperationErrorHandler,
+  processError: DdbOpsErrorHandler,
   e: unknown,
 ): Promise<T> => {
   logger.error(`An error occurred in Dynamodb Operation: ${name}`);
