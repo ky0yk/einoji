@@ -4,6 +4,7 @@ import {
   TaskConversionError,
   TaskError,
   TaskNotFoundError,
+  TaskUpdateRuleError,
 } from '../../domain/errors/task-errors';
 import {
   DdbError,
@@ -34,7 +35,7 @@ export const useCaseErrorHandler = (error: DdbError | TaskError): AppError => {
   if (error instanceof TaskConversionError) {
     return new AppError(ErrorCode.MALFORMED_DATA, error.message, error);
   }
-  if (error instanceof TaskError) {
+  if (error instanceof TaskUpdateRuleError) {
     return new AppError(ErrorCode.TASK_UPDATE_RULE_ERROR, error.message, error);
   }
   return new AppError(ErrorCode.UNKNOWN_ERROR, error.message, error);
