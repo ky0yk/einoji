@@ -2,6 +2,7 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
+  UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 
@@ -130,4 +131,121 @@ describe('taskRepository.getById', () => {
     );
     expect(documentMockClient.calls()).toHaveLength(1);
   });
+});
+
+describe('taskRepository.update', () => {
+  beforeEach(() => {
+    documentMockClient.reset();
+  });
+
+  const userId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
+  const taskId = 'f0f8f5a0-309d-11ec-8d3d-0242ac130003';
+  const updatedAt = '2023-09-11T12:35:45.123Z';
+
+  const tests = [
+    {
+      name: 'should generate correct update expression when both title and description are provided',
+      input: {
+        title: '新しいタイトル',
+        description: '新しい説明',
+      },
+      mockedReturnValue: {
+        userId: userId,
+        taskId: taskId,
+        title: '新しいタイトル',
+        completed: false,
+        description: '新しい説明',
+        createdAt: '2021-06-22T14:24:02.071Z',
+        updatedAt: updatedAt,
+      },
+      expectedUpdateExpression:
+        'set #title = :title, #description = :description, #updatedAt = :updatedAt',
+      expectedExpressionAttributeNames: {
+        '#title': 'title',
+        '#description': 'description',
+        '#updatedAt': 'updatedAt',
+      },
+      expectedExpressionAttributeValues: {
+        ':title': '新しいタイトル',
+        ':description': '新しい説明',
+        ':updatedAt': expect.any(String),
+      },
+      expectedTask: {
+        id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+        completed: false,
+        createdAt: '2021-06-22T14:24:02.071Z',
+        description: '新しい説明',
+        title: '新しいタイトル',
+        updatedAt: expect.any(String),
+      },
+    },
+    {
+      name: 'should generate correct update expression when only title is provided',
+      input: {
+        title: '新しいタイトル',
+      },
+      mockedReturnValue: {
+        userId: userId,
+        taskId: taskId,
+        title: '新しいタイトル',
+        completed: false,
+        description: '牛乳と卵を買う',
+        createdAt: '2021-06-22T14:24:02.071Z',
+        updatedAt: updatedAt,
+      },
+      expectedUpdateExpression: 'set #title = :title, #updatedAt = :updatedAt',
+      expectedExpressionAttributeNames: {
+        '#title': 'title',
+        '#updatedAt': 'updatedAt',
+      },
+      expectedExpressionAttributeValues: {
+        ':title': '新しいタイトル',
+        ':updatedAt': expect.any(String),
+      },
+      expectedTask: {
+        id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+        completed: false,
+        createdAt: '2021-06-22T14:24:02.071Z',
+        description: '牛乳と卵を買う',
+        title: '新しいタイトル',
+        updatedAt: expect.any(String),
+      },
+    },
+  ];
+
+  test.each(tests)(
+    '$name',
+    async ({
+      input,
+      mockedReturnValue,
+      expectedUpdateExpression,
+      expectedExpressionAttributeNames,
+      expectedExpressionAttributeValues,
+      expectedTask,
+    }) => {
+      documentMockClient
+        .on(UpdateCommand)
+        .resolves({ Attributes: mockedReturnValue });
+
+      const result = await taskRepository.update(taskId, input);
+
+      const callsOfUpdate = documentMockClient.commandCalls(UpdateCommand);
+      expect(callsOfUpdate).toHaveLength(1);
+
+      const updateParams = callsOfUpdate[0].args[0].input;
+      expect(updateParams.TableName).toBe(TASK_TABLE_NAME);
+      expect(updateParams.Key).toEqual({
+        userId: userId,
+        taskId: taskId,
+      });
+      expect(updateParams.UpdateExpression).toBe(expectedUpdateExpression);
+      expect(updateParams.ExpressionAttributeNames).toEqual(
+        expectedExpressionAttributeNames,
+      );
+      expect(updateParams.ExpressionAttributeValues).toEqual(
+        expectedExpressionAttributeValues,
+      );
+      expect(result).toEqual(expectedTask);
+    },
+  );
 });
