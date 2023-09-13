@@ -39,26 +39,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: 'Bad Request'
-          content:
-            application/json:
-              schema:
-                type: 'object'
-                properties:
-                  code:
-                    type: 'string'
-                    enum: [INVALID_PAYLOAD]
-                  message:
-                    type: 'string'
-              examples:
-                INVALID_PAYLOAD_FORMAT:
-                  $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
-                INVALID_PAYLOAD_VALUE:
-                  $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
-        '500':
-          $ref: '#/components/responses/Common500'
-        '503':
-          $ref: '#/components/responses/Common503'
+          $ref: '#/components/responses/400Path'
+        '422':
+          $ref: '#/components/responses/Common422'
 
   /tasks/{id}:
     get:
@@ -125,6 +108,8 @@ paths:
           $ref: '#/components/responses/400PathAndPayload'
         '404':
           $ref: '#/components/responses/Common404'
+        '422':
+          $ref: '#/components/responses/422PaylodAndUpdateRule'
         '500':
           $ref: '#/components/responses/Common500'
         '503':
@@ -178,6 +163,8 @@ paths:
           $ref: '#/components/responses/400PathAndPayload'
         '404':
           $ref: '#/components/responses/Common404'
+        '422':
+          $ref: '#/components/responses/422PaylodAndUpdateRule'
         '500':
           $ref: '#/components/responses/Common500'
         '503':
@@ -280,8 +267,8 @@ components:
           type: string
 
   responses:
-    Common404:
-      description: 'Not Found'
+    400Path:
+      description: 'Bad Request'
       content:
         application/json:
           schema:
@@ -289,12 +276,76 @@ components:
             properties:
               code:
                 type: 'string'
-                enum: [TASK_NOT_FOUND]
+                enum: [INVALID_PATH_PARAMETER]
               message:
                 type: 'string'
           examples:
-            TASK_NOT_FOUND:
-              $ref: '#/components/examples/TASK_NOT_FOUND'
+            INVALID_PATH_PARAMETER:
+              $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+    400PathAndPayload:
+      description: 'Bad Request'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [INVALID_PAYLOAD_FORMAT, INVALID_PATH_PARAMETER]
+              message:
+                type: 'string'
+          examples:
+            INVALID_PAYLOAD_FORMAT:
+              $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
+            INVALID_PATH_PARAMETER:
+              $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+      Common404:
+        description: 'Not Found'
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                code:
+                  type: 'string'
+                  enum: [TASK_NOT_FOUND]
+                message:
+                  type: 'string'
+            examples:
+              TASK_NOT_FOUND:
+                $ref: '#/components/examples/TASK_NOT_FOUND'
+      Common422:
+        description: 'Unprocessable Entity'
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                code:
+                  type: 'string'
+                  enum: [INVALID_PAYLOAD_VALUE]
+                message:
+                  type: 'string'
+            examples:
+              INVALID_PAYLOAD_VALUE:
+                $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
+      422PaylodAndUpdateRule:
+        description: 'Unprocessable Entity'
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                code:
+                  type: 'string'
+                  enum: [INVALID_PAYLOAD_VALUE, TASK_UPDATE_RULE_ERROR]
+                message:
+                  type: 'string'
+            examples:
+              INVALID_PAYLOAD_VALUE:
+                $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
+              TASK_UPDATE_RULE_ERROR:
+                $ref: '#/components/examples/TASK_UPDATE_RULE_ERROR'
     Common500:
       description: 'Internal Server Error'
       content:
@@ -331,45 +382,6 @@ components:
               $ref: '#/components/examples/SERVICE_DOWNTIME'
             EXTERNAL_SERVICE_FAILURE:
               $ref: '#/components/examples/EXTERNAL_SERVICE_FAILURE'
-    400Path:
-      description: 'Bad Request'
-      content:
-        application/json:
-          schema:
-            type: 'object'
-            properties:
-              code:
-                type: 'string'
-                enum: [INVALID_PATH_PARAMETER]
-              message:
-                type: 'string'
-          examples:
-            INVALID_PATH_PARAMETER:
-              $ref: '#/components/examples/INVALID_PATH_PARAMETER'
-    400PathAndPayload:
-      description: 'Bad Request'
-      content:
-        application/json:
-          schema:
-            type: 'object'
-            properties:
-              code:
-                type: 'string'
-                enum:
-                  [
-                    INVALID_PAYLOAD_FORMAT,
-                    INVALID_PAYLOAD_VALUE,
-                    INVALID_PATH_PARAMETER,
-                  ]
-              message:
-                type: 'string'
-          examples:
-            INVALID_PAYLOAD_FORMAT:
-              $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
-            INVALID_PAYLOAD_VALUE:
-              $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
-            INVALID_PATH_PARAMETER:
-              $ref: '#/components/examples/INVALID_PATH_PARAMETER'
 
   examples:
     INVALID_PAYLOAD_FORMAT:
@@ -392,6 +404,10 @@ components:
       value:
         code: 'APP001'
         message: 'Task not found. TaskID: ${taskId}'
+    TASK_UPDATE_RULE_ERROR:
+      value:
+        code: 'APP002'
+        message: 'Provided data does not follow update rules.'
     DATABASE_CONNECTION_ERROR:
       value:
         code: 'SYS001'
