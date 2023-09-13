@@ -4,6 +4,7 @@ import {
   GetCommand,
   PutCommand,
   PutCommandInput,
+  UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
 import { logger } from '../../common/logger';
@@ -15,6 +16,8 @@ import {
   CreateTaskPayload,
   GetTaskCommand,
   TaskRepository,
+  TaskUpdateAtLeastOne,
+  UpdateTaskCommand,
 } from '../../usecases/contracts/task-repository-contract';
 import { Task } from '../../domain/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
@@ -83,7 +86,60 @@ const getTaskItemByIdImpl: GetTaskCommand = async (
   return toTask(parseResult.data);
 };
 
+const updateTaskItemByIdImpl: UpdateTaskCommand = async (
+  taskId: string,
+  data: TaskUpdateAtLeastOne,
+): Promise<Task> => {
+  const now = new Date().toISOString();
+
+  const updateExpression = [
+    'set',
+    data.title ? '#title = :title,' : '',
+    data.description ? '#description = :description,' : '',
+    '#updatedAt = :updatedAt',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const expressionAttributeNames = {
+    ...(data.title && { '#title': 'title' }),
+    ...(data.description && { '#description': 'description' }),
+    '#updatedAt': 'updatedAt',
+  };
+
+  const expressionAttributeValues = {
+    ...(data.title && { ':title': data.title }),
+    ...(data.description && { ':description': data.description }),
+    ':updatedAt': now,
+  };
+
+  const commandInput = {
+    TableName: TABLE_NAME,
+    Key: {
+      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      taskId: taskId,
+    },
+    UpdateExpression: updateExpression,
+    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
+    ReturnValues: 'ALL_NEW',
+  };
+  const command = new UpdateCommand(commandInput);
+  const result = await dynamoDb.send(command);
+
+  const parseResult = TaskItemSchema.safeParse(result.Attributes);
+  if (!parseResult.success) {
+    throw new DdbInternalServerError(
+      `Retrieved item does not match the expected schema. TaskId: ${taskId}`,
+      parseResult.error,
+    );
+  }
+
+  return toTask(parseResult.data);
+};
+
 export const taskRepository: TaskRepository = {
   create: ddbFactory('taskRepository.create', createTaskItemImpl),
   getById: ddbFactory('taskRepository.getById', getTaskItemByIdImpl),
+  update: ddbFactory('taskRepository.update', updateTaskItemByIdImpl),
 };
