@@ -5,7 +5,7 @@ import { CreateTaskRequest } from '../handlers/http/requestSchemas/create-task-r
 import {
   createTaskItem,
   getTaskItemById,
-} from '../infrastructure/ddb/tasks-table';
+} from '../infrastructure/ddb/task-repository';
 
 const createTask = async (body: CreateTaskRequest): Promise<Task> => {
   const newTaskId = await createTaskItem(body);

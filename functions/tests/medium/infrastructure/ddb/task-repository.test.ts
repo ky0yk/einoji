@@ -4,7 +4,7 @@ import { CreateTaskRequest } from '../../../../src/handlers/http/requestSchemas/
 import {
   createTaskItem,
   getTaskItemById,
-} from '../../../../src/infrastructure/ddb/tasks-table';
+} from '../../../../src/infrastructure/ddb/task-repository';
 import {
   createTable,
   deleteTable,

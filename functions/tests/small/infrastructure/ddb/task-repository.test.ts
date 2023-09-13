@@ -9,7 +9,7 @@ import { DdbInternalServerError } from '../../../../src/infrastructure/ddb/error
 import {
   createTaskItem,
   getTaskItemById,
-} from '../../../../src/infrastructure/ddb/tasks-table';
+} from '../../../../src/infrastructure/ddb/task-repository';
 import { TaskItem } from '../../../../src/domain/taskItem';
 import { z } from 'zod';
 

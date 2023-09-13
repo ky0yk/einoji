@@ -3,7 +3,7 @@ import { Task } from '../../../src/domain/task';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { AppError } from '../../../src/common/errors/app-errors';
 import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { getTaskItemById } from '../../../src/infrastructure/ddb/tasks-table';
+import { getTaskItemById } from '../../../src/infrastructure/ddb/task-repository';
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');
 

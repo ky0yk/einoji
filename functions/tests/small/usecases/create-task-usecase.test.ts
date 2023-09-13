@@ -6,7 +6,7 @@ import { ErrorCode } from '../../../src/common/errors/error-codes';
 import {
   createTaskItem,
   getTaskItemById,
-} from '../../../src/infrastructure/ddb/tasks-table';
+} from '../../../src/infrastructure/ddb/task-repository';
 import { AppError } from '../../../src/common/errors/app-errors';
 
 jest.mock('../../../src/infrastructure/ddb/tasks-table');

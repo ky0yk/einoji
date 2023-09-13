@@ -1,5 +1,5 @@
 import { Task, toTask } from '../domain/task';
-import { getTaskItemById } from '../infrastructure/ddb/tasks-table';
+import { getTaskItemById } from '../infrastructure/ddb/task-repository';
 import { TaskNotFoundError } from '../domain/errors/task-errors';
 import { useCaseFactory } from './factory/usecase-factory';
 
