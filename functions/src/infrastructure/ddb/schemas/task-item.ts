@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { isoDate } from '../../../domain/isoDate';
 import { Task, TaskSchema } from '../../../domain/task';
-import { TaskConversionError } from '../../../domain/errors/task-errors';
+import { DdbInternalServerError } from '../errors/ddb-errors';
 
 export const TaskItemSchema = z.object({
   userId: z.string().uuid(),
@@ -28,7 +28,7 @@ export const toTask = (item: TaskItem): Task => {
   const result = TaskSchema.safeParse(interimTask);
 
   if (!result.success) {
-    throw new TaskConversionError(
+    throw new DdbInternalServerError(
       `Failed to convert data to Task. Errors: ${result.error.message}`,
     );
   }

@@ -8,7 +8,6 @@ describe('httpErrorHandler', () => {
     ${ErrorCode.INVALID_PAYLOAD_FORMAT}    | ${400}
     ${ErrorCode.INVALID_PAYLOAD_VALUE}     | ${422}
     ${ErrorCode.TASK_NOT_FOUND}            | ${404}
-    ${ErrorCode.MALFORMED_DATA}            | ${500}
     ${ErrorCode.DATABASE_CONNECTION_ERROR} | ${500}
     ${ErrorCode.UNKNOWN_ERROR}             | ${500}
     ${ErrorCode.SERVICE_DOWNTIME}          | ${503}
