@@ -8,6 +8,7 @@ import {
 } from './factory/handler-factory';
 import { HttpStatus } from './http/http-status';
 import { validatePathParams } from './http/validators';
+import { TaskIdPathParamsSchema } from './schemas/task-requests';
 
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
