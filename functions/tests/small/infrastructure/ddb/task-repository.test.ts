@@ -9,8 +9,13 @@ import { DdbInternalServerError } from '../../../../src/infrastructure/ddb/error
 import {
   createTaskItem,
   getTaskItemById,
+<<<<<<< Updated upstream:functions/tests/small/infrastructure/ddb/task-repository.test.ts
 } from '../../../../src/infrastructure/ddb/task-repository';
 import { TaskItem } from '../../../../src/domain/taskItem';
+=======
+} from '../../../../src/infrastructure/ddb/tasks-repository';
+import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/task-item';
+>>>>>>> Stashed changes:functions/tests/small/infrastructure/ddb/tasks-table.test.ts
 import { z } from 'zod';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);

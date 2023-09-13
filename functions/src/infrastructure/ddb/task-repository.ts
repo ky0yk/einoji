@@ -16,8 +16,8 @@ import {
   GetTaskCommand,
   TaskRepository,
 } from '../../usecases/contracts/task-repository-contract';
-import { Task, toTask } from '../../domain/task';
-import { TaskItemSchema } from '../../domain/taskItem';
+import { Task } from '../../domain/task';
+import { TaskItemSchema, toTask } from './schemas/task-item';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;

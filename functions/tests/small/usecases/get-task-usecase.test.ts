@@ -1,4 +1,4 @@
-import { TaskItem } from '../../../src/domain/taskItem';
+import { TaskItem } from '../../../src/infrastructure/ddb/schemas/task-item';
 import { Task } from '../../../src/domain/task';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import { AppError } from '../../../src/common/errors/app-errors';

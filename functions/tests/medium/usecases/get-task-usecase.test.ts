@@ -1,5 +1,5 @@
 import { Task } from '../../../src/domain/task';
-import { TaskItem } from '../../../src/domain/taskItem';
+import { TaskItem } from '../../../src/infrastructure/ddb/schemas/task-item';
 import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
 import {
   createTable,
