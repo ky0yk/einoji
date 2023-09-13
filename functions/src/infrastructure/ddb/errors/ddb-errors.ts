@@ -26,7 +26,7 @@ export class DdbValidationError extends DdbError {
 }
 
 export class DdbInternalServerError extends DdbError {
-  constructor(message: string, originalError: Error) {
+  constructor(message: string, originalError?: Error) {
     super(message, originalError);
   }
 }

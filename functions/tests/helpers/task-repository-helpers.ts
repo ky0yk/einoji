@@ -8,7 +8,7 @@ import {
   PutCommand,
   DeleteCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { TaskItem } from '../../src/domain/taskItem';
+import { TaskItem } from '../../src/infrastructure/ddb/schemas/task-item';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const REGION = process.env.AWS_REGION;

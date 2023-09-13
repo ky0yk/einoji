@@ -9,9 +9,15 @@ import {
 import { logger } from '../../common/logger';
 import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
-import { TaskItem, TaskItemSchema } from '../../domain/taskItem';
-import { CreateTaskRequest } from '../../handlers/http/requestSchemas/create-task-request';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  CreateTaskCommand,
+  CreateTaskPayload,
+  GetTaskCommand,
+  TaskRepository,
+} from '../../usecases/contracts/task-repository-contract';
+import { Task } from '../../domain/task';
+import { TaskItemSchema, toTask } from './schemas/task-item';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
@@ -24,7 +30,9 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-const createTaskItemImpl = async (body: CreateTaskRequest): Promise<string> => {
+const createTaskItemImpl: CreateTaskCommand = async (
+  body: CreateTaskPayload,
+): Promise<string> => {
   const uuid = uuidv4();
   const now = new Date().toISOString();
 
@@ -46,9 +54,9 @@ const createTaskItemImpl = async (body: CreateTaskRequest): Promise<string> => {
   return uuid;
 };
 
-const getTaskItemByIdImpl = async (
+const getTaskItemByIdImpl: GetTaskCommand = async (
   taskId: string,
-): Promise<TaskItem | null> => {
+): Promise<Task | null> => {
   const commandInput = {
     TableName: TABLE_NAME,
     Key: {
@@ -72,11 +80,10 @@ const getTaskItemByIdImpl = async (
     );
   }
 
-  return parseResult.data;
+  return toTask(parseResult.data);
 };
 
-export const getTaskItemById = ddbFactory(
-  'getTaskItemById',
-  getTaskItemByIdImpl,
-);
-export const createTaskItem = ddbFactory('createTaskItem', createTaskItemImpl);
+export const taskRepository: TaskRepository = {
+  create: ddbFactory('taskRepository.create', createTaskItemImpl),
+  getById: ddbFactory('taskRepository.getById', getTaskItemByIdImpl),
+};

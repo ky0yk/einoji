@@ -304,18 +304,10 @@ components:
             properties:
               code:
                 type: 'string'
-                enum:
-                  [
-                    MALFORMED_DATA,
-                    DATABASE_CONNECTION_ERROR,
-                    TIMEOUT,
-                    UNKNOWN_ERROR,
-                  ]
+                enum: [DATABASE_CONNECTION_ERROR, TIMEOUT, UNKNOWN_ERROR]
               message:
                 type: 'string'
           examples:
-            MALFORMED_DATA:
-              $ref: '#/components/examples/MALFORMED_DATA'
             DATABASE_CONNECTION_ERROR:
               $ref: '#/components/examples/DATABASE_CONNECTION_ERROR'
             TIMEOUT:
@@ -400,10 +392,6 @@ components:
       value:
         code: 'APP001'
         message: 'Task not found. TaskID: ${taskId}'
-    MALFORMED_DATA:
-      value:
-        code: 'APP101'
-        message: 'Failed to process data. Details: ${errorMessage}'
     DATABASE_CONNECTION_ERROR:
       value:
         code: 'SYS001'
