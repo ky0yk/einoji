@@ -2,7 +2,7 @@ import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/task-item';
 
 import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
 import { Task } from '../../../../src/domain/task';
-import { CreateTaskRequest } from '../../../../src/handlers/http/requestSchemas/create-task-request';
+import { CreateTaskRequest } from '../../../../src/handlers/schemas/task-requests';
 import {
   createTable,
   deleteTable,
