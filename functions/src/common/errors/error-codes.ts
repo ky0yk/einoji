@@ -9,6 +9,7 @@ export enum ErrorCode {
 
   // アプリケーション例外（回復可）
   TASK_NOT_FOUND = 'APP001', // 存在しないTODOのIDでの操作
+  TASK_UPDATE_RULE_ERROR = 'APP002', // TODOの更新ルール違反
 
   // アプリケーション例外（回復不可） 必要になったらAPP101から始める
 
@@ -27,6 +28,7 @@ export const errorCodetoStatus = (errorCode: ErrorCode): HttpStatus => {
       return HttpStatus.BAD_REQUEST;
 
     case ErrorCode.INVALID_PAYLOAD_VALUE:
+    case ErrorCode.TASK_UPDATE_RULE_ERROR:
       return HttpStatus.UNPROCESSABLE_ENTITY;
 
     case ErrorCode.TASK_NOT_FOUND:

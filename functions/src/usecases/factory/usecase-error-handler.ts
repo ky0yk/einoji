@@ -1,6 +1,10 @@
 import { AppError } from '../../common/errors/app-errors';
 import { ErrorCode } from '../../common/errors/error-codes';
-import { TaskError, TaskNotFoundError } from '../../domain/errors/task-errors';
+import {
+  TaskError,
+  TaskNotFoundError,
+  TaskUpdateRuleError,
+} from '../../domain/errors/task-errors';
 import {
   DdbError,
   DdbInternalServerError,
@@ -26,6 +30,9 @@ export const useCaseErrorHandler = (error: DdbError | TaskError): AppError => {
   }
   if (error instanceof TaskNotFoundError) {
     return new AppError(ErrorCode.TASK_NOT_FOUND, error.message, error);
+  }
+  if (error instanceof TaskUpdateRuleError) {
+    return new AppError(ErrorCode.TASK_UPDATE_RULE_ERROR, error.message, error);
   }
   return new AppError(ErrorCode.UNKNOWN_ERROR, error.message, error);
 };
