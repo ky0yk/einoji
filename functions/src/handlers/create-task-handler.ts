@@ -4,18 +4,18 @@ import {
   handlerFactory,
 } from './factory/handler-factory';
 import { createTaskUseCase } from '../usecases/create-task-usecase';
-import { CreateTaskRequestSchema } from './http/requestSchemas/create-task-request';
+import { CreateTaskRequestSchema } from './schemas/task-requests';
 import { LambdaResponse, httpResponse } from './http/http-response';
 import { HttpStatus } from './http/http-status';
-import { validateBody, validateEvent } from './http/validators';
+import { validateBody } from './http/validators';
+import { CreateTaskData } from '../domain/task';
 
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  const validEvent = validateEvent(event);
-  const validBody = validateBody(CreateTaskRequestSchema, validEvent.body);
+  const data: CreateTaskData = validateBody(CreateTaskRequestSchema, event);
 
-  const createdTask = await createTaskUseCase(validBody);
+  const createdTask = await createTaskUseCase(data);
 
   return httpResponse(HttpStatus.CREATED).withBody(createdTask);
 };
