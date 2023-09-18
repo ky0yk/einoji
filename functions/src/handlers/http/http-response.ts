@@ -24,7 +24,7 @@ type JsonSerializable =
   | { [key: string]: JsonSerializable }
   | JsonSerializable[];
 
-export const createResponse = (
+const createResponse = (
   statusCode: HttpStatus,
   body?: JsonSerializable,
 ): LambdaResponse => {
