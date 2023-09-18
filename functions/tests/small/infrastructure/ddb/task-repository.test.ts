@@ -1,4 +1,5 @@
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
@@ -248,4 +249,29 @@ describe('taskRepository.update', () => {
       expect(result).toEqual(expectedTask);
     },
   );
+});
+
+describe('taskRepository.delete', () => {
+  afterEach(() => {
+    documentMockClient.reset();
+  });
+
+  const dummyTaskId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
+  const userId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
+
+  test('should delete a task for a valid task ID', async () => {
+    documentMockClient.on(DeleteCommand).resolves({});
+
+    await taskRepository.delete(dummyTaskId);
+
+    const callsOfDelete = documentMockClient.commandCalls(DeleteCommand);
+    expect(callsOfDelete).toHaveLength(1);
+    expect(callsOfDelete[0].args[0].input).toEqual({
+      TableName: TASK_TABLE_NAME,
+      Key: {
+        userId: userId,
+        taskId: dummyTaskId,
+      },
+    });
+  });
 });
