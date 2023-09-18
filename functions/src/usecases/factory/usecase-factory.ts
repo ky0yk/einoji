@@ -24,7 +24,7 @@ const useCaseWithLog = async <T, P extends unknown[]>(
   useCase: UseCase<T, P>,
   ...args: P
 ): Promise<T> => {
-  logger.info(`START usecase: ${name}`);
+  logger.info(`ENTRY usecase: ${name}`);
   const result = await useCase(...args);
   logger.info(`EXIT usecase: ${name}`);
   return result;
@@ -37,7 +37,7 @@ const useCaseErrorHandlerWithLog = async <T>(
 ): Promise<T> => {
   logger.error(`An error occurred in usecase: ${name}`);
   if (e instanceof Error) {
-    logger.error(`START usecase error handling: ${name}`);
+    logger.error(`ENTRY usecase error handling: ${name}`);
     const errorResult = processError(e);
     logger.info(`EXIT usecase error handling: ${name}`, errorResult);
     throw errorResult;

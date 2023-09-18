@@ -35,7 +35,7 @@ const requestHandlerWithLog = async (
   requestHandler: RequestHandlerWithoutContext,
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
-  logger.info(`START handler: ${name}`);
+  logger.info(`ENTRY handler: ${name}`);
   const result = await requestHandler(event);
   logger.info(`EXIT handler: ${name}`);
   return result;
@@ -48,7 +48,7 @@ const requestErrorHandlerWithLog = async (
 ): Promise<LambdaResponse> => {
   logger.error(`An error occurred in handler: ${name}`);
   if (e instanceof AppError) {
-    logger.error(`START Error handling: ${name}`, e);
+    logger.error(`ENTRY Error handling: ${name}`, e);
     const errorResult = requestErrorHandler(e);
     logger.info(`EXIT Error handling: ${name}`);
     return errorResult;
