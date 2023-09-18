@@ -42,6 +42,10 @@ paths:
           $ref: '#/components/responses/400Path'
         '422':
           $ref: '#/components/responses/Common422'
+        '500':
+          $ref: '#/components/responses/Common500'
+        '503':
+          $ref: '#/components/responses/Common503'
 
   /tasks/{id}:
     get:
