@@ -12,38 +12,45 @@ describe('updateTaskUsecase', () => {
   });
 
   const validTaskId = 'valid-task-id';
-  const descriptionWithOnlyTitle = 'update with only title';
-  const descriptionWithTitleAndDesc = 'update with title and description';
-  const updateDataOnlyTitle = { title: 'スーパーに買い物に行くの更新' };
+  const situationWithOnlyTitle = 'update data contains only title';
+  const situationWithTitleAndDesc =
+    'update data contains both title and description';
+  const updateDataOnlyTitle = { title: '図書館で学習する' };
   const updateDataWithTitleAndDesc = {
-    title: 'スーパーに買い物に行くの更新',
-    description: '牛乳と卵を買うの更新',
+    title: '図書館で学習する',
+    description: '参考書とノートを持って行く',
   };
 
   test.each`
-    description                    | updateData                    | expectedDescription
-    ${descriptionWithOnlyTitle}    | ${updateDataOnlyTitle}        | ${''}
-    ${descriptionWithTitleAndDesc} | ${updateDataWithTitleAndDesc} | ${'牛乳と卵を買うの更新'}
-  `('should $description', async ({ updateData, expectedDescription }) => {
-    const dummyUpdatedTask: Task = {
-      id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
-      title: updateData.title,
-      completed: false,
-      description: expectedDescription || '',
-      createdAt: '2021-06-22T14:24:02.071Z',
-      updatedAt: '2021-06-22T14:24:02.071Z',
-    };
+    situation                    | updateData                    | expectedDescription
+    ${situationWithOnlyTitle}    | ${updateDataOnlyTitle}        | ${''}
+    ${situationWithTitleAndDesc} | ${updateDataWithTitleAndDesc} | ${'参考書とノートを持って行く'}
+  `(
+    'given $situation, should update appropriately',
+    async ({ updateData, expectedDescription }) => {
+      const dummyUpdatedTask: Task = {
+        id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+        title: updateData.title,
+        completed: false,
+        description: expectedDescription || '',
+        createdAt: '2021-06-22T14:24:02.071Z',
+        updatedAt: '2021-06-22T14:24:02.071Z',
+      };
 
-    (taskRepository.update as jest.Mock).mockResolvedValue(dummyUpdatedTask);
+      (taskRepository.update as jest.Mock).mockResolvedValue(dummyUpdatedTask);
 
-    const result = await updateTaskUsecase(validTaskId, updateData);
+      const result = await updateTaskUsecase(validTaskId, updateData);
 
-    expect(taskRepository.update).toHaveBeenCalledTimes(1);
-    expect(taskRepository.update).toHaveBeenCalledWith(validTaskId, updateData);
-    expect(result).toEqual(dummyUpdatedTask);
-  });
+      expect(taskRepository.update).toHaveBeenCalledTimes(1);
+      expect(taskRepository.update).toHaveBeenCalledWith(
+        validTaskId,
+        updateData,
+      );
+      expect(result).toEqual(dummyUpdatedTask);
+    },
+  );
 
-  test('should throw TaskUpdateRuleError if update data is empty', async () => {
+  test('given update data is empty, should throw TaskUpdateRuleError', async () => {
     const err = await updateTaskUsecase(validTaskId, {}).catch((e) => e);
 
     expect(err).toBeInstanceOf(AppError);

@@ -12,31 +12,35 @@ describe('Update Task Request Handler', () => {
   });
 
   const taskId = 'f0f8f5a0-309d-11ec-8d3d-0242ac130003';
+
   const dummyTaskWithDescription: Task = {
     id: taskId,
-    title: 'スーパーに買い物に行くの更新',
+    title: 'スーパーで買い物',
     completed: false,
-    description: '牛乳と卵を買うの更新',
+    description: '牛乳と卵を買う',
     createdAt: '2021-06-22T14:24:02.071Z',
     updatedAt: '2021-06-22T14:24:02.071Z',
   };
 
   const dummyTaskWithoutDescription: Task = {
-    ...dummyTaskWithDescription,
-    description: undefined,
+    id: taskId,
+    title: 'スーパーで買い物',
+    completed: false,
+    createdAt: '2021-06-22T14:24:02.071Z',
+    updatedAt: '2021-06-22T14:24:02.071Z',
   };
 
   const updateReqWithDescription = {
-    title: dummyTaskWithDescription.title,
-    description: dummyTaskWithDescription.description,
+    title: '図書館で本を借りる',
+    description: 'ミステリー小説と料理の本を探す',
   };
 
   const updateReqWithoutDescription = {
-    title: dummyTaskWithDescription.title,
+    title: '図書館で本を借りる',
   };
 
   const updateReqWithoutTitle = {
-    description: dummyTaskWithDescription.description,
+    description: 'ミステリー小説と料理の本を探す',
   };
 
   const dummyContext = {} as Context;
@@ -50,7 +54,7 @@ describe('Update Task Request Handler', () => {
         } as unknown as APIGatewayEvent,
         body: updateReqWithDescription,
         expectedTask: dummyTaskWithDescription,
-        description: 'with title and description',
+        situation: 'with title and description',
       },
       {
         request: {
@@ -59,7 +63,7 @@ describe('Update Task Request Handler', () => {
         } as unknown as APIGatewayEvent,
         body: updateReqWithoutDescription,
         expectedTask: dummyTaskWithoutDescription,
-        description: 'with only title',
+        situation: 'with only title',
       },
       {
         request: {
@@ -68,12 +72,12 @@ describe('Update Task Request Handler', () => {
         } as unknown as APIGatewayEvent,
         body: updateReqWithoutTitle,
         expectedTask: dummyTaskWithoutDescription,
-        description: 'with only description',
+        situation: 'with only description',
       },
     ];
 
-    validCases.forEach(({ request, body, expectedTask, description }) => {
-      test(`should return 200 ${description}`, async () => {
+    validCases.forEach(({ request, body, expectedTask, situation }) => {
+      test(`should return 200 ${situation}`, async () => {
         (updateTaskUsecase as jest.Mock).mockResolvedValueOnce(expectedTask);
 
         const result = await handler(request, dummyContext);
