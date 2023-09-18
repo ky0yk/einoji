@@ -1,15 +1,14 @@
-import { Task } from '../domain/task';
 import { TaskNotFoundError } from '../domain/errors/task-errors';
-import { useCaseFactory } from './factory/usecase-factory';
 import { taskRepository } from '../infrastructure/ddb/task-repository';
+import { useCaseFactory } from './factory/usecase-factory';
 
-const getTask = async (taskId: string): Promise<Task> => {
+const deleteTask = async (taskId: string): Promise<void> => {
   const task = await taskRepository.findById(taskId);
   if (!task) {
     throw new TaskNotFoundError(`The task not found. Task ID: ${taskId}`);
   }
 
-  return task;
+  await taskRepository.delete(taskId);
 };
 
-export const getTaskUseCase = useCaseFactory('getTask', getTask);
+export const deleteTaskUseCase = useCaseFactory('deleteTask', deleteTask);

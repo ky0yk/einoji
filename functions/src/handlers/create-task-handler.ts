@@ -17,7 +17,7 @@ const requestHandler: RequestHandlerWithoutContext = async (
 
   const createdTask = await createTaskUseCase(data);
 
-  return httpResponse(HttpStatus.CREATED).withBody(createdTask);
+  return httpResponse(HttpStatus.CREATED, createdTask);
 };
 
 export const handler = handlerFactory('createTask', requestHandler);

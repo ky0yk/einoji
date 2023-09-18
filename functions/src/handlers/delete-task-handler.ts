@@ -1,22 +1,20 @@
 import { APIGatewayEvent } from 'aws-lambda';
-import { httpResponse, LambdaResponse } from './http/http-response';
-
-import { getTaskUseCase } from '../usecases/get-task-usecase';
 import {
-  handlerFactory,
   RequestHandlerWithoutContext,
+  handlerFactory,
 } from './factory/handler-factory';
-import { HttpStatus } from './http/http-status';
+import { LambdaResponse, httpResponse } from './http/http-response';
 import { validatePathParams } from './http/validators';
 import { TaskIdPathParamsSchema } from './schemas/task-requests';
+import { HttpStatus } from './http/http-status';
+import { deleteTaskUseCase } from '../usecases/delete-task-usecase';
 
 const requestHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
-
-  const task = await getTaskUseCase(taskId);
-  return httpResponse(HttpStatus.OK, task);
+  await deleteTaskUseCase(taskId);
+  return httpResponse(HttpStatus.NO_CONTENT);
 };
 
-export const handler = handlerFactory('getTask', requestHandler);
+export const handler = handlerFactory('deleteTask', requestHandler);

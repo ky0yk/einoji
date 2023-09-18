@@ -1,4 +1,5 @@
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
@@ -70,7 +71,7 @@ describe('taskRepository.create', () => {
   });
 });
 
-describe('taskRepository.getById', () => {
+describe('taskRepository.findById', () => {
   beforeEach(() => {
     documentMockClient.reset();
   });
@@ -98,7 +99,7 @@ describe('taskRepository.getById', () => {
 
     documentMockClient.on(GetCommand).resolves({ Item: dummyTaskItem });
 
-    const result = await taskRepository.getById(dummyTaskId);
+    const result = await taskRepository.findById(dummyTaskId);
 
     const callsOfGet = documentMockClient.commandCalls(GetCommand);
     expect(callsOfGet).toHaveLength(1);
@@ -114,7 +115,7 @@ describe('taskRepository.getById', () => {
 
   test('should return null if the task is not found', async () => {
     documentMockClient.on(GetCommand).resolves({});
-    const task = await taskRepository.getById('some-task-id');
+    const task = await taskRepository.findById('some-task-id');
 
     expect(task).toBeNull();
     expect(documentMockClient.calls()).toHaveLength(1);
@@ -126,7 +127,7 @@ describe('taskRepository.getById', () => {
     };
 
     documentMockClient.on(GetCommand).resolves({ Item: invalidTaskItem });
-    await expect(taskRepository.getById(dummyTaskId)).rejects.toThrow(
+    await expect(taskRepository.findById(dummyTaskId)).rejects.toThrow(
       DdbInternalServerError,
     );
     expect(documentMockClient.calls()).toHaveLength(1);
@@ -248,4 +249,29 @@ describe('taskRepository.update', () => {
       expect(result).toEqual(expectedTask);
     },
   );
+});
+
+describe('taskRepository.delete', () => {
+  afterEach(() => {
+    documentMockClient.reset();
+  });
+
+  const dummyTaskId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
+  const userId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
+
+  test('should delete a task for a valid task ID', async () => {
+    documentMockClient.on(DeleteCommand).resolves({});
+
+    await taskRepository.delete(dummyTaskId);
+
+    const callsOfDelete = documentMockClient.commandCalls(DeleteCommand);
+    expect(callsOfDelete).toHaveLength(1);
+    expect(callsOfDelete[0].args[0].input).toEqual({
+      TableName: TASK_TABLE_NAME,
+      Key: {
+        userId: userId,
+        taskId: dummyTaskId,
+      },
+    });
+  });
 });

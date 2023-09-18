@@ -1,5 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
+  DeleteCommand,
+  DeleteCommandInput,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
@@ -14,7 +16,8 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CreateTaskCommand,
   CreateTaskPayload,
-  GetTaskCommand,
+  DeleteTaskCommand,
+  FindTaskByIdCommand,
   TaskRepository,
   UpdateTaskAtLeastOne,
   UpdateTaskCommand,
@@ -33,7 +36,7 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-const createTaskItemImpl: CreateTaskCommand = async (
+const createTaskItem: CreateTaskCommand = async (
   body: CreateTaskPayload,
 ): Promise<string> => {
   const uuid = uuidv4();
@@ -57,7 +60,7 @@ const createTaskItemImpl: CreateTaskCommand = async (
   return uuid;
 };
 
-const getTaskItemByIdImpl: GetTaskCommand = async (
+const findTaskItemById: FindTaskByIdCommand = async (
   taskId: string,
 ): Promise<Task | null> => {
   const commandInput = {
@@ -117,7 +120,7 @@ const buildUpdateTaskAttributes = (
   };
 };
 
-const updateTaskItemByIdImpl: UpdateTaskCommand = async (
+const updateTaskItem: UpdateTaskCommand = async (
   taskId: string,
   data: UpdateTaskAtLeastOne,
 ): Promise<Task> => {
@@ -152,8 +155,23 @@ const updateTaskItemByIdImpl: UpdateTaskCommand = async (
   return toTask(parseResult.data);
 };
 
+const deleteTaskItem: DeleteTaskCommand = async (
+  taskId: string,
+): Promise<void> => {
+  const commandInput: DeleteCommandInput = {
+    TableName: TABLE_NAME,
+    Key: {
+      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      taskId: taskId,
+    },
+  };
+  const command = new DeleteCommand(commandInput);
+  await dynamoDb.send(command);
+};
+
 export const taskRepository: TaskRepository = {
-  create: ddbFactory('taskRepository.create', createTaskItemImpl),
-  getById: ddbFactory('taskRepository.getById', getTaskItemByIdImpl),
-  update: ddbFactory('taskRepository.update', updateTaskItemByIdImpl),
+  create: ddbFactory('taskRepository.create', createTaskItem),
+  findById: ddbFactory('taskRepository.findById', findTaskItemById),
+  update: ddbFactory('taskRepository.update', updateTaskItem),
+  delete: ddbFactory('taskRepository.delete', deleteTaskItem),
 };

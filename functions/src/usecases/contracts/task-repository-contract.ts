@@ -3,16 +3,18 @@ import { Task } from '../../domain/task';
 export type RepoCommand<T, P extends unknown[]> = (...args: P) => Promise<T>;
 
 export type CreateTaskCommand = RepoCommand<string, [CreateTaskPayload]>;
-export type GetTaskCommand = RepoCommand<Task | null, [string]>;
+export type FindTaskByIdCommand = RepoCommand<Task | null, [string]>;
 export type UpdateTaskCommand = RepoCommand<
   Task,
   [string, UpdateTaskAtLeastOne]
 >;
+export type DeleteTaskCommand = RepoCommand<void, [string]>;
 
 export type TaskRepository = {
   create: CreateTaskCommand;
-  getById: GetTaskCommand;
+  findById: FindTaskByIdCommand;
   update: UpdateTaskCommand;
+  delete: DeleteTaskCommand;
 };
 
 export type CreateTaskPayload = {
