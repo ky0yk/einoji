@@ -9,7 +9,7 @@ import { TaskIdPathParamsSchema } from './schemas/task-requests';
 import { HttpStatus } from './http/http-status';
 import { deleteTaskUseCase } from '../usecases/delete-task-usecase';
 
-const requestHandler: RequestHandlerWithoutContext = async (
+const deleteTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
@@ -17,4 +17,4 @@ const requestHandler: RequestHandlerWithoutContext = async (
   return httpResponse(HttpStatus.NO_CONTENT);
 };
 
-export const handler = handlerFactory('deleteTask', requestHandler);
+export const handler = handlerFactory('deleteTask', deleteTaskHandler);

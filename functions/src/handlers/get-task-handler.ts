@@ -10,7 +10,7 @@ import { HttpStatus } from './http/http-status';
 import { validatePathParams } from './http/validators';
 import { TaskIdPathParamsSchema } from './schemas/task-requests';
 
-const requestHandler: RequestHandlerWithoutContext = async (
+const getTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
@@ -19,4 +19,4 @@ const requestHandler: RequestHandlerWithoutContext = async (
   return httpResponse(HttpStatus.OK, task);
 };
 
-export const handler = handlerFactory('getTask', requestHandler);
+export const handler = handlerFactory('getTask', getTaskHandler);

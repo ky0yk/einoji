@@ -10,7 +10,7 @@ import { HttpStatus } from './http/http-status';
 import { validateBody } from './http/validators';
 import { CreateTaskData } from '../domain/task';
 
-const requestHandler: RequestHandlerWithoutContext = async (
+const createTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
   const data: CreateTaskData = validateBody(CreateTaskRequestSchema, event);
@@ -20,4 +20,4 @@ const requestHandler: RequestHandlerWithoutContext = async (
   return httpResponse(HttpStatus.CREATED, createdTask);
 };
 
-export const handler = handlerFactory('createTask', requestHandler);
+export const handler = handlerFactory('createTask', createTaskHandler);
