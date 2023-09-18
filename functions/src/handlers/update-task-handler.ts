@@ -12,7 +12,7 @@ import {
 import { updateTaskUsecase } from '../usecases/update-task-usecase';
 import { validateBodyAndPathParams } from './http/validators';
 
-const requestHandler: RequestHandlerWithoutContext = async (
+const updateTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
 ): Promise<LambdaResponse> => {
   const {
@@ -29,4 +29,4 @@ const requestHandler: RequestHandlerWithoutContext = async (
   return httpResponse(HttpStatus.OK, updatedTask);
 };
 
-export const handler = handlerFactory('updateTask', requestHandler);
+export const handler = handlerFactory('updateTask', updateTaskHandler);
