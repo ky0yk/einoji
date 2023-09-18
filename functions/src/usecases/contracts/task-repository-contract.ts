@@ -6,7 +6,7 @@ export type CreateTaskCommand = RepoCommand<string, [CreateTaskPayload]>;
 export type GetTaskCommand = RepoCommand<Task | null, [string]>;
 export type UpdateTaskCommand = RepoCommand<
   Task,
-  [string, TaskUpdateAtLeastOne]
+  [string, UpdateTaskAtLeastOne]
 >;
 
 export type TaskRepository = {
@@ -28,4 +28,4 @@ type UpdateTaskPayload = {
 type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
   U[keyof U];
 
-export type TaskUpdateAtLeastOne = AtLeastOne<UpdateTaskPayload>;
+export type UpdateTaskAtLeastOne = AtLeastOne<UpdateTaskPayload>;

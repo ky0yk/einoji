@@ -1,7 +1,7 @@
 import { TaskUpdateRuleError } from '../domain/errors/task-errors';
 import { Task, UpdateTaskData } from '../domain/task';
 import { taskRepository } from '../infrastructure/ddb/task-repository';
-import { TaskUpdateAtLeastOne } from './contracts/task-repository-contract';
+import { UpdateTaskAtLeastOne } from './contracts/task-repository-contract';
 import { useCaseFactory } from './factory/usecase-factory';
 
 const updateTask = async (
@@ -14,7 +14,7 @@ const updateTask = async (
     );
   }
 
-  return await taskRepository.update(taskId, data as TaskUpdateAtLeastOne);
+  return await taskRepository.update(taskId, data as UpdateTaskAtLeastOne);
 };
 
 const isEmpty = (obj: object): boolean => {

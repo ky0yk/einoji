@@ -16,7 +16,7 @@ import {
   CreateTaskPayload,
   GetTaskCommand,
   TaskRepository,
-  TaskUpdateAtLeastOne,
+  UpdateTaskAtLeastOne,
   UpdateTaskCommand,
 } from '../../usecases/contracts/task-repository-contract';
 import { Task } from '../../domain/task';
@@ -88,7 +88,7 @@ const getTaskItemByIdImpl: GetTaskCommand = async (
 
 const updateTaskItemByIdImpl: UpdateTaskCommand = async (
   taskId: string,
-  data: TaskUpdateAtLeastOne,
+  data: UpdateTaskAtLeastOne,
 ): Promise<Task> => {
   const now = new Date().toISOString();
 
