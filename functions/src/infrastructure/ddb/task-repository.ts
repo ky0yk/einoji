@@ -86,32 +86,46 @@ const getTaskItemByIdImpl: GetTaskCommand = async (
   return toTask(parseResult.data);
 };
 
+type DdbUpdateTaskAttributes = {
+  updateExpression: string;
+  expressionAttributeNames: { [key: string]: string };
+  expressionAttributeValues: { [key: string]: string | number };
+};
+
+const buildUpdateTaskAttributes = (
+  data: UpdateTaskAtLeastOne,
+): DdbUpdateTaskAttributes => {
+  const now = new Date().toISOString();
+
+  const fields = Object.entries(data).map(([key, value]) => ({ key, value }));
+  const allFields = [...fields, { key: 'updatedAt', value: now }]; // updatedAtは必ず更新する
+
+  const expressionParts = allFields.map(
+    (field) => `#${field.key} = :${field.key}`,
+  );
+  const expressionAttributeNames = Object.fromEntries(
+    allFields.map((field) => [`#${field.key}`, field.key]),
+  );
+  const expressionAttributeValues = Object.fromEntries(
+    allFields.map((field) => [`:${field.key}`, field.value]),
+  );
+
+  return {
+    updateExpression: `SET ${expressionParts.join(', ')}`,
+    expressionAttributeNames: expressionAttributeNames,
+    expressionAttributeValues: expressionAttributeValues,
+  };
+};
+
 const updateTaskItemByIdImpl: UpdateTaskCommand = async (
   taskId: string,
   data: UpdateTaskAtLeastOne,
 ): Promise<Task> => {
-  const now = new Date().toISOString();
-
-  const updateExpression = [
-    'set',
-    data.title ? '#title = :title,' : '',
-    data.description ? '#description = :description,' : '',
-    '#updatedAt = :updatedAt',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const expressionAttributeNames = {
-    ...(data.title && { '#title': 'title' }),
-    ...(data.description && { '#description': 'description' }),
-    '#updatedAt': 'updatedAt',
-  };
-
-  const expressionAttributeValues = {
-    ...(data.title && { ':title': data.title }),
-    ...(data.description && { ':description': data.description }),
-    ':updatedAt': now,
-  };
+  const {
+    updateExpression: UpdateExpression,
+    expressionAttributeNames: ExpressionAttributeNames,
+    expressionAttributeValues: ExpressionAttributeValues,
+  } = buildUpdateTaskAttributes(data);
 
   const commandInput = {
     TableName: TABLE_NAME,
@@ -119,9 +133,9 @@ const updateTaskItemByIdImpl: UpdateTaskCommand = async (
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
       taskId: taskId,
     },
-    UpdateExpression: updateExpression,
-    ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
+    UpdateExpression: UpdateExpression,
+    ExpressionAttributeNames: ExpressionAttributeNames,
+    ExpressionAttributeValues: ExpressionAttributeValues,
     ReturnValues: 'ALL_NEW',
   };
   const command = new UpdateCommand(commandInput);

@@ -159,7 +159,7 @@ describe('taskRepository.update', () => {
         updatedAt: updatedAt,
       },
       expectedUpdateExpression:
-        'set #title = :title, #description = :description, #updatedAt = :updatedAt',
+        'SET #title = :title, #description = :description, #updatedAt = :updatedAt',
       expectedExpressionAttributeNames: {
         '#title': 'title',
         '#description': 'description',
@@ -193,7 +193,7 @@ describe('taskRepository.update', () => {
         createdAt: '2021-06-22T14:24:02.071Z',
         updatedAt: updatedAt,
       },
-      expectedUpdateExpression: 'set #title = :title, #updatedAt = :updatedAt',
+      expectedUpdateExpression: 'SET #title = :title, #updatedAt = :updatedAt',
       expectedExpressionAttributeNames: {
         '#title': 'title',
         '#updatedAt': 'updatedAt',
