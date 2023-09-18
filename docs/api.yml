@@ -299,53 +299,53 @@ components:
               $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
             INVALID_PATH_PARAMETER:
               $ref: '#/components/examples/INVALID_PATH_PARAMETER'
-      Common404:
-        description: 'Not Found'
-        content:
-          application/json:
-            schema:
-              type: 'object'
-              properties:
-                code:
-                  type: 'string'
-                  enum: [TASK_NOT_FOUND]
-                message:
-                  type: 'string'
-            examples:
-              TASK_NOT_FOUND:
-                $ref: '#/components/examples/TASK_NOT_FOUND'
-      Common422:
-        description: 'Unprocessable Entity'
-        content:
-          application/json:
-            schema:
-              type: 'object'
-              properties:
-                code:
-                  type: 'string'
-                  enum: [INVALID_PAYLOAD_VALUE]
-                message:
-                  type: 'string'
-            examples:
-              INVALID_PAYLOAD_VALUE:
-                $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
-      422PaylodAndUpdateRule:
-        description: 'Unprocessable Entity'
-        content:
-          application/json:
-            schema:
-              type: 'object'
-              properties:
-                code:
-                  type: 'string'
-                  enum: [INVALID_PAYLOAD_VALUE, TASK_UPDATE_RULE_ERROR]
-                message:
-                  type: 'string'
-            examples:
-              INVALID_PAYLOAD_VALUE:
-                $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
-              TASK_UPDATE_RULE_ERROR:
-                $ref: '#/components/examples/TASK_UPDATE_RULE_ERROR'
+    Common404:
+      description: 'Not Found'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [TASK_NOT_FOUND]
+              message:
+                type: 'string'
+          examples:
+            TASK_NOT_FOUND:
+              $ref: '#/components/examples/TASK_NOT_FOUND'
+    Common422:
+      description: 'Unprocessable Entity'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [INVALID_PAYLOAD_VALUE]
+              message:
+                type: 'string'
+          examples:
+            INVALID_PAYLOAD_VALUE:
+              $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
+    422PaylodAndUpdateRule:
+      description: 'Unprocessable Entity'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              code:
+                type: 'string'
+                enum: [INVALID_PAYLOAD_VALUE, TASK_UPDATE_RULE_ERROR]
+              message:
+                type: 'string'
+          examples:
+            INVALID_PAYLOAD_VALUE:
+              $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
+            TASK_UPDATE_RULE_ERROR:
+              $ref: '#/components/examples/TASK_UPDATE_RULE_ERROR'
     Common500:
       description: 'Internal Server Error'
       content:
