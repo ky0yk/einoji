@@ -8,11 +8,13 @@ export type UpdateTaskCommand = RepoCommand<
   Task,
   [string, UpdateTaskAtLeastOne]
 >;
+export type DeleteTaskCommand = RepoCommand<void, [string]>;
 
 export type TaskRepository = {
   create: CreateTaskCommand;
   getById: GetTaskCommand;
   update: UpdateTaskCommand;
+  delete: DeleteTaskCommand;
 };
 
 export type CreateTaskPayload = {
