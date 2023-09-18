@@ -16,7 +16,7 @@ const requestHandler: RequestHandlerWithoutContext = async (
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
 
   const task = await getTaskUseCase(taskId);
-  return httpResponse(HttpStatus.OK).withBody(task);
+  return httpResponse(HttpStatus.OK, task);
 };
 
 export const handler = handlerFactory('getTask', requestHandler);

@@ -26,7 +26,7 @@ const requestHandler: RequestHandlerWithoutContext = async (
 
   const updatedTask = await updateTaskUsecase(taskId, updateTaskData);
 
-  return httpResponse(HttpStatus.OK).withBody(updatedTask);
+  return httpResponse(HttpStatus.OK, updatedTask);
 };
 
 export const handler = handlerFactory('updateTask', requestHandler);

@@ -24,33 +24,34 @@ type JsonSerializable =
   | { [key: string]: JsonSerializable }
   | JsonSerializable[];
 
-type WithBodyResponseGenerator = {
-  withBody: (body: JsonSerializable) => LambdaResponse;
-};
-
-export const httpResponse = (status: HttpStatus): WithBodyResponseGenerator => {
-  return {
-    withBody: (body: JsonSerializable) => ({
-      statusCode: status,
+export const createResponse = (
+  statusCode: HttpStatus,
+  body?: JsonSerializable,
+): LambdaResponse => {
+  if (body) {
+    return {
+      statusCode,
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    }),
+    };
+  }
+  return {
+    statusCode,
   };
 };
 
-export const httpErrorResponse = (error: AppError): LambdaResponse => {
-  const status = errorCodetoStatus(error.code);
+export const httpResponse = (
+  statusCode: HttpStatus,
+  body?: JsonSerializable,
+): LambdaResponse => {
+  return createResponse(statusCode, body);
+};
 
-  return {
-    statusCode: status,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      code: error.code,
-      message: error.message,
-    }),
-  };
+export const httpErrorResponse = (error: AppError): LambdaResponse => {
+  return createResponse(errorCodetoStatus(error.code), {
+    code: error.code,
+    message: error.message,
+  });
 };
