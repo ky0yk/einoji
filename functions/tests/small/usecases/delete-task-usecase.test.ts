@@ -34,7 +34,7 @@ describe('deleteTaskUseCase', () => {
     expect(taskRepository.delete).toHaveBeenCalledWith(validTaskId);
   });
 
-  test('given a non-existent taskId, should throw TaskNotFoundError', async () => {
+  test('given a non-existent taskId, should throw AppError with TASK_NOT_FOUND', async () => {
     (taskRepository.findById as jest.Mock).mockResolvedValue(null);
 
     const err = await deleteTaskUseCase(validTaskId).catch((e) => e);
