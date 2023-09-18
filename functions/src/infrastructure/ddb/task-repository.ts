@@ -14,13 +14,13 @@ import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  CreateTaskCommand,
+  CreateTaskAction,
   CreateTaskPayload,
-  DeleteTaskCommand,
-  FindTaskByIdCommand,
+  DeleteTaskAction,
+  FindTaskByIdAction,
   TaskRepository,
   UpdateTaskAtLeastOne,
-  UpdateTaskCommand,
+  UpdateTaskAction,
 } from '../../usecases/contracts/task-repository-contract';
 import { Task } from '../../domain/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
@@ -36,7 +36,7 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-const createTaskItem: CreateTaskCommand = async (
+const createTaskItem: CreateTaskAction = async (
   body: CreateTaskPayload,
 ): Promise<string> => {
   const uuid = uuidv4();
@@ -60,7 +60,7 @@ const createTaskItem: CreateTaskCommand = async (
   return uuid;
 };
 
-const findTaskItemById: FindTaskByIdCommand = async (
+const findTaskItemById: FindTaskByIdAction = async (
   taskId: string,
 ): Promise<Task | null> => {
   const commandInput = {
@@ -120,7 +120,7 @@ const buildUpdateTaskAttributes = (
   };
 };
 
-const updateTaskItem: UpdateTaskCommand = async (
+const updateTaskItem: UpdateTaskAction = async (
   taskId: string,
   data: UpdateTaskAtLeastOne,
 ): Promise<Task> => {
@@ -155,7 +155,7 @@ const updateTaskItem: UpdateTaskCommand = async (
   return toTask(parseResult.data);
 };
 
-const deleteTaskItem: DeleteTaskCommand = async (
+const deleteTaskItem: DeleteTaskAction = async (
   taskId: string,
 ): Promise<void> => {
   const commandInput: DeleteCommandInput = {
