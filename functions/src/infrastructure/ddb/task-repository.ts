@@ -4,6 +4,7 @@ import {
   GetCommand,
   PutCommand,
   PutCommandInput,
+  UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
 import { logger } from '../../common/logger';
@@ -15,6 +16,8 @@ import {
   CreateTaskPayload,
   GetTaskCommand,
   TaskRepository,
+  UpdateTaskAtLeastOne,
+  UpdateTaskCommand,
 } from '../../usecases/contracts/task-repository-contract';
 import { Task } from '../../domain/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
@@ -83,7 +86,74 @@ const getTaskItemByIdImpl: GetTaskCommand = async (
   return toTask(parseResult.data);
 };
 
+type DdbUpdateTaskAttributes = {
+  updateExpression: string;
+  expressionAttributeNames: { [key: string]: string };
+  expressionAttributeValues: { [key: string]: string | number };
+};
+
+const buildUpdateTaskAttributes = (
+  data: UpdateTaskAtLeastOne,
+): DdbUpdateTaskAttributes => {
+  const now = new Date().toISOString();
+
+  const fields = Object.entries(data).map(([key, value]) => ({ key, value }));
+  const allFields = [...fields, { key: 'updatedAt', value: now }]; // updatedAtは必ず更新する
+
+  const expressionParts = allFields.map(
+    (field) => `#${field.key} = :${field.key}`,
+  );
+  const expressionAttributeNames = Object.fromEntries(
+    allFields.map((field) => [`#${field.key}`, field.key]),
+  );
+  const expressionAttributeValues = Object.fromEntries(
+    allFields.map((field) => [`:${field.key}`, field.value]),
+  );
+
+  return {
+    updateExpression: `SET ${expressionParts.join(', ')}`,
+    expressionAttributeNames: expressionAttributeNames,
+    expressionAttributeValues: expressionAttributeValues,
+  };
+};
+
+const updateTaskItemByIdImpl: UpdateTaskCommand = async (
+  taskId: string,
+  data: UpdateTaskAtLeastOne,
+): Promise<Task> => {
+  const {
+    updateExpression: UpdateExpression,
+    expressionAttributeNames: ExpressionAttributeNames,
+    expressionAttributeValues: ExpressionAttributeValues,
+  } = buildUpdateTaskAttributes(data);
+
+  const commandInput = {
+    TableName: TABLE_NAME,
+    Key: {
+      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      taskId: taskId,
+    },
+    UpdateExpression: UpdateExpression,
+    ExpressionAttributeNames: ExpressionAttributeNames,
+    ExpressionAttributeValues: ExpressionAttributeValues,
+    ReturnValues: 'ALL_NEW',
+  };
+  const command = new UpdateCommand(commandInput);
+  const result = await dynamoDb.send(command);
+
+  const parseResult = TaskItemSchema.safeParse(result.Attributes);
+  if (!parseResult.success) {
+    throw new DdbInternalServerError(
+      `Retrieved item does not match the expected schema. TaskId: ${taskId}`,
+      parseResult.error,
+    );
+  }
+
+  return toTask(parseResult.data);
+};
+
 export const taskRepository: TaskRepository = {
   create: ddbFactory('taskRepository.create', createTaskItemImpl),
   getById: ddbFactory('taskRepository.getById', getTaskItemByIdImpl),
+  update: ddbFactory('taskRepository.update', updateTaskItemByIdImpl),
 };

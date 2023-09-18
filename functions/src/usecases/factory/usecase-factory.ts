@@ -2,30 +2,30 @@ import { AppError } from '../../common/errors/app-errors';
 import { logger } from '../../common/logger';
 import { useCaseErrorHandler } from './usecase-error-handler';
 
-type UseCase<P, T> = (params: P) => Promise<T>;
+type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
 type UseCaseErrorHandler = (error: Error) => AppError;
 
-export const useCaseFactory = <P, T>(
+export const useCaseFactory = <T, P extends unknown[]>(
   name: string,
-  useCase: UseCase<P, T>,
+  useCase: UseCase<T, P>,
   errorHandler: UseCaseErrorHandler = useCaseErrorHandler,
-): UseCase<P, T> => {
-  return async (params: P) => {
+): UseCase<T, P> => {
+  return async (...args: P): Promise<T> => {
     try {
-      return await useCaseWithLog(name, useCase, params);
+      return await useCaseWithLog(name, useCase, ...args);
     } catch (e: unknown) {
       return await useCaseErrorHandlerWithLog(name, errorHandler, e);
     }
   };
 };
 
-const useCaseWithLog = async <P, T>(
+const useCaseWithLog = async <T, P extends unknown[]>(
   name: string,
-  useCase: UseCase<P, T>,
-  params: P,
+  useCase: UseCase<T, P>,
+  ...args: P
 ): Promise<T> => {
   logger.info(`START usecase: ${name}`);
-  const result = await useCase(params);
+  const result = await useCase(...args);
   logger.info(`EXIT usecase: ${name}`);
   return result;
 };
@@ -42,7 +42,7 @@ const useCaseErrorHandlerWithLog = async <T>(
     logger.info(`EXIT usecase error handling: ${name}`, errorResult);
     throw errorResult;
   } else {
-    logger.info(`unexpected error occurred in usecase: ${name}}`);
+    logger.info(`unexpected error occurred in usecase: ${name}`);
     throw new Error('Unknown error');
   }
 };

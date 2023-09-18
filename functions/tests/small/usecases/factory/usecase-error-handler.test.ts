@@ -1,7 +1,10 @@
 import { AppError } from '../../../../src/common/errors/app-errors';
 import { ErrorCode } from '../../../../src/common/errors/error-codes';
 
-import { TaskNotFoundError } from '../../../../src/domain/errors/task-errors';
+import {
+  TaskNotFoundError,
+  TaskUpdateRuleError,
+} from '../../../../src/domain/errors/task-errors';
 import {
   DdbResourceNotFoundError,
   DdbProvisionedThroughputExceededError,
@@ -16,6 +19,7 @@ describe('useCaseErrorHandler', () => {
   test.each`
     error_instance                                                  | expected_error_code
     ${new TaskNotFoundError('')}                                    | ${ErrorCode.TASK_NOT_FOUND}
+    ${new TaskUpdateRuleError('')}                                  | ${ErrorCode.TASK_UPDATE_RULE_ERROR}
     ${new DdbResourceNotFoundError('', originalError)}              | ${ErrorCode.DATABASE_CONNECTION_ERROR}
     ${new DdbProvisionedThroughputExceededError('', originalError)} | ${ErrorCode.DATABASE_CONNECTION_ERROR}
     ${new DdbValidationError('', originalError)}                    | ${ErrorCode.INVALID_PAYLOAD_VALUE}

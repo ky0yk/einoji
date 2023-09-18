@@ -16,3 +16,7 @@ export type CreateTaskData = {
   title: string;
   description?: string;
 };
+export type UpdateTaskData = {
+  title?: string;
+  description?: string;
+};

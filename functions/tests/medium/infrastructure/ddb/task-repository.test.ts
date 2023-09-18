@@ -9,7 +9,7 @@ import {
   deleteTask,
   putTask,
 } from '../../../helpers/task-repository-helpers';
-describe('createTaskItem', () => {
+describe('taskRepository.create', () => {
   beforeAll(async () => {
     await createTable();
   });
@@ -38,7 +38,7 @@ describe('createTaskItem', () => {
   });
 });
 
-describe('getTaskItemById', () => {
+describe('taskRepository.getById', () => {
   beforeAll(async () => {
     await createTable();
   });
@@ -79,5 +79,68 @@ describe('getTaskItemById', () => {
 
     const TaskItem = await taskRepository.getById(nonExistentTaskId);
     expect(TaskItem).toBeNull();
+  });
+});
+
+describe('taskRepository.update', () => {
+  beforeAll(async () => {
+    await createTable();
+  });
+
+  afterAll(async () => {
+    await deleteTable();
+  });
+
+  describe('update', () => {
+    const originalTaskItem: TaskItem = {
+      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
+      taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
+      title: 'スーパーに買い物に行く',
+      completed: false,
+      description: '牛乳と卵を買う',
+      createdAt: '2021-06-22T14:24:02.071Z',
+      updatedAt: '2021-06-22T14:24:02.071Z',
+    };
+
+    beforeEach(async () => {
+      await putTask(originalTaskItem);
+    });
+
+    afterEach(async () => {
+      await deleteTask(originalTaskItem.taskId);
+    });
+
+    test('should update a task successfully when provided with both title and description', async () => {
+      const updateData = {
+        title: '新しいタイトル',
+        description: '新しい説明',
+      };
+
+      await taskRepository.update(originalTaskItem.taskId, updateData);
+
+      const updatedTask = await taskRepository.getById(originalTaskItem.taskId);
+      if (!updatedTask) {
+        throw new Error('Updated task not found');
+      }
+
+      expect(updatedTask.title).toEqual(updateData.title);
+      expect(updatedTask.description).toEqual(updateData.description);
+    });
+
+    test('should update a task successfully when provided only with title', async () => {
+      const updateData = {
+        title: '新しいタイトルのみ',
+      };
+
+      await taskRepository.update(originalTaskItem.taskId, updateData);
+
+      const updatedTask = await taskRepository.getById(originalTaskItem.taskId);
+      if (!updatedTask) {
+        throw new Error('Updated task not found');
+      }
+
+      expect(updatedTask.title).toEqual(updateData.title);
+      expect(updatedTask.description).toEqual(originalTaskItem.description);
+    });
   });
 });
