@@ -24,7 +24,7 @@ const ddbOperationWithLog = async <T, P extends unknown[]>(
   operation: RepoCommand<T, P>,
   ...args: P
 ): Promise<T> => {
-  logger.info(`START Dynamodb Operation: ${name}`);
+  logger.info(`ENTRY Dynamodb Operation: ${name}`);
   const result = await operation(...args);
   logger.info(`EXIT Dynamodb Operation: ${name}`);
   return result;
@@ -37,7 +37,7 @@ const ddbOperationErrorHandlerWithLog = async <T>(
 ): Promise<T> => {
   logger.error(`An error occurred in Dynamodb Operation: ${name}`);
   if (e instanceof Error) {
-    logger.error(`START Dynamodb Operation error handling: ${name}`);
+    logger.error(`ENTRY Dynamodb Operation error handling: ${name}`);
     const errorResult = processError(e);
     logger.info(`EXIT Dynamodb Operation error handling: ${name}`, errorResult);
     throw errorResult;
