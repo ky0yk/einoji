@@ -10,7 +10,7 @@ jest.mock('../../../src/infrastructure/ddb/task-repository');
 describe('createTaskUseCase', () => {
   beforeEach(() => {
     (taskRepository.create as jest.Mock).mockClear();
-    (taskRepository.getById as jest.Mock).mockClear();
+    (taskRepository.findById as jest.Mock).mockClear();
   });
 
   const dummyCreateTaskRequest: CreateTaskRequest = {
@@ -46,15 +46,15 @@ describe('createTaskUseCase', () => {
     ${dummyCreateTaskRequestWithoutDescription} | ${dummyTaskWithoutDescription}
   `('should create a task successfully', async ({ request, task }) => {
     (taskRepository.create as jest.Mock).mockResolvedValue(validTaskId);
-    (taskRepository.getById as jest.Mock).mockResolvedValue(task);
+    (taskRepository.findById as jest.Mock).mockResolvedValue(task);
 
     const result = await createTaskUseCase(request);
 
     expect(taskRepository.create).toHaveBeenCalledTimes(1);
     expect(taskRepository.create).toHaveBeenCalledWith(request);
 
-    expect(taskRepository.getById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.getById).toHaveBeenCalledWith(validTaskId);
+    expect(taskRepository.findById).toHaveBeenCalledTimes(1);
+    expect(taskRepository.findById).toHaveBeenCalledWith(validTaskId);
 
     expect(result).toEqual(task);
   });
@@ -63,7 +63,7 @@ describe('createTaskUseCase', () => {
     const invalidTaskId = 'invalid-task-id';
 
     (taskRepository.create as jest.Mock).mockResolvedValue(invalidTaskId);
-    (taskRepository.getById as jest.Mock).mockResolvedValue(null);
+    (taskRepository.findById as jest.Mock).mockResolvedValue(null);
 
     const err = await createTaskUseCase(dummyCreateTaskRequest).catch((e) => e);
     expect(err).toBeInstanceOf(AppError);
@@ -72,7 +72,7 @@ describe('createTaskUseCase', () => {
     expect(taskRepository.create).toHaveBeenCalledTimes(1);
     expect(taskRepository.create).toHaveBeenCalledWith(dummyCreateTaskRequest);
 
-    expect(taskRepository.getById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.getById).toHaveBeenCalledWith(invalidTaskId);
+    expect(taskRepository.findById).toHaveBeenCalledTimes(1);
+    expect(taskRepository.findById).toHaveBeenCalledWith(invalidTaskId);
   });
 });

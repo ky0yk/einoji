@@ -24,7 +24,7 @@ describe('taskRepository.create', () => {
     };
     const newTaskId = await taskRepository.create(dummyTaskBody);
 
-    const createdTask = await taskRepository.getById(newTaskId);
+    const createdTask = await taskRepository.findById(newTaskId);
     if (!createdTask) {
       throw new Error('Created task not found');
     }
@@ -38,7 +38,7 @@ describe('taskRepository.create', () => {
   });
 });
 
-describe('taskRepository.getById', () => {
+describe('taskRepository.findById', () => {
   beforeAll(async () => {
     await createTable();
   });
@@ -70,14 +70,14 @@ describe('taskRepository.getById', () => {
   };
 
   test('should return the TaskItem by correct task ID', async () => {
-    const Task = await taskRepository.getById(dummyTask.id);
+    const Task = await taskRepository.findById(dummyTask.id);
     expect(Task).toEqual(dummyTask);
   });
 
   test('should return null if the task ID does not exist', async () => {
     const nonExistentTaskId = 'non-existent-task-id';
 
-    const TaskItem = await taskRepository.getById(nonExistentTaskId);
+    const TaskItem = await taskRepository.findById(nonExistentTaskId);
     expect(TaskItem).toBeNull();
   });
 });
@@ -118,7 +118,9 @@ describe('taskRepository.update', () => {
 
       await taskRepository.update(originalTaskItem.taskId, updateData);
 
-      const updatedTask = await taskRepository.getById(originalTaskItem.taskId);
+      const updatedTask = await taskRepository.findById(
+        originalTaskItem.taskId,
+      );
       if (!updatedTask) {
         throw new Error('Updated task not found');
       }
@@ -134,7 +136,9 @@ describe('taskRepository.update', () => {
 
       await taskRepository.update(originalTaskItem.taskId, updateData);
 
-      const updatedTask = await taskRepository.getById(originalTaskItem.taskId);
+      const updatedTask = await taskRepository.findById(
+        originalTaskItem.taskId,
+      );
       if (!updatedTask) {
         throw new Error('Updated task not found');
       }

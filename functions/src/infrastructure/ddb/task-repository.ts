@@ -16,7 +16,7 @@ import {
   CreateTaskCommand,
   CreateTaskPayload,
   DeleteTaskCommand,
-  GetTaskCommand,
+  FindTaskByIdCommand,
   TaskRepository,
   UpdateTaskAtLeastOne,
   UpdateTaskCommand,
@@ -35,7 +35,7 @@ const dynamoDBClient = new DynamoDBClient({
 
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
-const createTaskItemImpl: CreateTaskCommand = async (
+const createTaskItem: CreateTaskCommand = async (
   body: CreateTaskPayload,
 ): Promise<string> => {
   const uuid = uuidv4();
@@ -59,7 +59,7 @@ const createTaskItemImpl: CreateTaskCommand = async (
   return uuid;
 };
 
-const getTaskItemByIdImpl: GetTaskCommand = async (
+const findTaskItemById: FindTaskByIdCommand = async (
   taskId: string,
 ): Promise<Task | null> => {
   const commandInput = {
@@ -119,7 +119,7 @@ const buildUpdateTaskAttributes = (
   };
 };
 
-const updateTaskItemByIdImpl: UpdateTaskCommand = async (
+const updateTaskItem: UpdateTaskCommand = async (
   taskId: string,
   data: UpdateTaskAtLeastOne,
 ): Promise<Task> => {
@@ -154,7 +154,7 @@ const updateTaskItemByIdImpl: UpdateTaskCommand = async (
   return toTask(parseResult.data);
 };
 
-const deleteTaskItemByIdImpl: DeleteTaskCommand = async (
+const deleteTaskItem: DeleteTaskCommand = async (
   taskId: string,
 ): Promise<void> => {
   const commandInput = {
@@ -169,8 +169,8 @@ const deleteTaskItemByIdImpl: DeleteTaskCommand = async (
 };
 
 export const taskRepository: TaskRepository = {
-  create: ddbFactory('taskRepository.create', createTaskItemImpl),
-  getById: ddbFactory('taskRepository.getById', getTaskItemByIdImpl),
-  update: ddbFactory('taskRepository.update', updateTaskItemByIdImpl),
-  delete: ddbFactory('taskRepository.delete', deleteTaskItemByIdImpl),
+  create: ddbFactory('taskRepository.create', createTaskItem),
+  findById: ddbFactory('taskRepository.findById', findTaskItemById),
+  update: ddbFactory('taskRepository.update', updateTaskItem),
+  delete: ddbFactory('taskRepository.delete', deleteTaskItem),
 };

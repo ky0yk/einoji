@@ -21,23 +21,23 @@ describe('getTask', () => {
       createdAt: '2021-06-22T14:24:02.071Z',
       updatedAt: '2021-06-22T14:24:02.071Z',
     };
-    (taskRepository.getById as jest.Mock).mockResolvedValueOnce(dummyTask);
+    (taskRepository.findById as jest.Mock).mockResolvedValueOnce(dummyTask);
 
     const result = await getTaskUseCase(taskId);
 
     expect(result).toEqual(dummyTask);
-    expect(taskRepository.getById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.getById).toHaveBeenCalledWith(taskId);
+    expect(taskRepository.findById).toHaveBeenCalledTimes(1);
+    expect(taskRepository.findById).toHaveBeenCalledWith(taskId);
   });
 
   test('should throw AppError with TASK_NOT_FOUND when the task is not found', async () => {
     const taskId = 'not-found-id';
-    (taskRepository.getById as jest.Mock).mockResolvedValueOnce(null);
+    (taskRepository.findById as jest.Mock).mockResolvedValueOnce(null);
 
     const err = await getTaskUseCase(taskId).catch((e) => e);
     expect(err).toBeInstanceOf(AppError);
     expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
-    expect(taskRepository.getById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.getById).toHaveBeenCalledWith(taskId);
+    expect(taskRepository.findById).toHaveBeenCalledTimes(1);
+    expect(taskRepository.findById).toHaveBeenCalledWith(taskId);
   });
 });

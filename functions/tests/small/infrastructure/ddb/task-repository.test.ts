@@ -70,7 +70,7 @@ describe('taskRepository.create', () => {
   });
 });
 
-describe('taskRepository.getById', () => {
+describe('taskRepository.findById', () => {
   beforeEach(() => {
     documentMockClient.reset();
   });
@@ -98,7 +98,7 @@ describe('taskRepository.getById', () => {
 
     documentMockClient.on(GetCommand).resolves({ Item: dummyTaskItem });
 
-    const result = await taskRepository.getById(dummyTaskId);
+    const result = await taskRepository.findById(dummyTaskId);
 
     const callsOfGet = documentMockClient.commandCalls(GetCommand);
     expect(callsOfGet).toHaveLength(1);
@@ -114,7 +114,7 @@ describe('taskRepository.getById', () => {
 
   test('should return null if the task is not found', async () => {
     documentMockClient.on(GetCommand).resolves({});
-    const task = await taskRepository.getById('some-task-id');
+    const task = await taskRepository.findById('some-task-id');
 
     expect(task).toBeNull();
     expect(documentMockClient.calls()).toHaveLength(1);
@@ -126,7 +126,7 @@ describe('taskRepository.getById', () => {
     };
 
     documentMockClient.on(GetCommand).resolves({ Item: invalidTaskItem });
-    await expect(taskRepository.getById(dummyTaskId)).rejects.toThrow(
+    await expect(taskRepository.findById(dummyTaskId)).rejects.toThrow(
       DdbInternalServerError,
     );
     expect(documentMockClient.calls()).toHaveLength(1);
