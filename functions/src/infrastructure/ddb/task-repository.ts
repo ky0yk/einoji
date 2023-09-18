@@ -1,5 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
@@ -14,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CreateTaskCommand,
   CreateTaskPayload,
+  DeleteTaskCommand,
   GetTaskCommand,
   TaskRepository,
   UpdateTaskAtLeastOne,
@@ -152,8 +154,23 @@ const updateTaskItemByIdImpl: UpdateTaskCommand = async (
   return toTask(parseResult.data);
 };
 
+const deleteTaskItemByIdImpl: DeleteTaskCommand = async (
+  taskId: string,
+): Promise<void> => {
+  const commandInput = {
+    TableName: TABLE_NAME,
+    Key: {
+      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      taskId: taskId,
+    },
+  };
+  const command = new DeleteCommand(commandInput);
+  await dynamoDb.send(command);
+};
+
 export const taskRepository: TaskRepository = {
   create: ddbFactory('taskRepository.create', createTaskItemImpl),
   getById: ddbFactory('taskRepository.getById', getTaskItemByIdImpl),
   update: ddbFactory('taskRepository.update', updateTaskItemByIdImpl),
+  delete: ddbFactory('taskRepository.delete', deleteTaskItemByIdImpl),
 };
