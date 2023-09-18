@@ -1,6 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DeleteCommand,
+  DeleteCommandInput,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
@@ -157,7 +158,7 @@ const updateTaskItem: UpdateTaskCommand = async (
 const deleteTaskItem: DeleteTaskCommand = async (
   taskId: string,
 ): Promise<void> => {
-  const commandInput = {
+  const commandInput: DeleteCommandInput = {
     TableName: TABLE_NAME,
     Key: {
       userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
