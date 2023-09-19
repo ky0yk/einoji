@@ -100,17 +100,22 @@ const buildUpdateTaskAttributes = (
 ): DdbUpdateTaskAttributes => {
   const now = new Date().toISOString();
 
-  const fields = Object.entries(data).map(([key, value]) => ({ key, value }));
-  const allFields = [...fields, { key: 'updatedAt', value: now }]; // updatedAtは必ず更新する
+  const attributes = Object.entries(data).map(([key, value]) => ({
+    key,
+    value,
+  }));
+  const attributesWithTime = attributes.concat([
+    { key: 'updatedAt', value: now },
+  ]);
 
-  const expressionParts = allFields.map(
-    (field) => `#${field.key} = :${field.key}`,
+  const expressionParts = attributesWithTime.map(
+    (attr) => `#${attr.key} = :${attr.key}`,
   );
   const expressionAttributeNames = Object.fromEntries(
-    allFields.map((field) => [`#${field.key}`, field.key]),
+    attributesWithTime.map((attr) => [`#${attr.key}`, attr.key]),
   );
   const expressionAttributeValues = Object.fromEntries(
-    allFields.map((field) => [`:${field.key}`, field.value]),
+    attributesWithTime.map((attr) => [`:${attr.key}`, attr.value]),
   );
 
   return {
