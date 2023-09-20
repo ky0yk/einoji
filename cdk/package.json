@@ -1,11 +1,7 @@
 {
-  "name": "cdk",
+  "name": "einoji-cdk",
   "version": "0.1.0",
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "jest"
-  },
+  "scripts": {},
   "devDependencies": {
     "aws-cdk": "2.96.2"
   },
