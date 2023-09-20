@@ -10,7 +10,8 @@
     "test:path": "dotenv -e ./functions/tests/.env.test -- ts-node node_modules/.bin/jest --",
     "lint": "eslint '*/**/*.{js,ts}'",
     "lint:fix": "eslint '*/**/*.{js,ts}' --fix",
-    "format": "prettier --write '*/**/*.{js,ts,json}'"
+    "format": "prettier --write '*/**/*.{js,ts,json}'",
+    "cdk:deploy": "cd cdk && cdk deploy"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +31,7 @@
     "typescript": "^5.1.6"
   },
   "workspaces": [
-    "functions"
+    "functions",
+    "cdk"
   ]
 }

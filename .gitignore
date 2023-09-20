@@ -1,3 +1,11 @@
+*.js
+*.d.ts
+node_modules
+
+# CDK asset staging directory
+cdk/cdk.staging
+cdk/cdk.out
+
 # Logs
 logs
 *.log

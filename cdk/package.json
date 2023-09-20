@@ -1,12 +1,13 @@
 {
-  "name": "cdk",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "einoji-cdk",
+  "version": "0.1.0",
+  "scripts": {},
+  "devDependencies": {
+    "aws-cdk": "2.96.2"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "aws-cdk-lib": "2.96.2",
+    "constructs": "^10.0.0",
+    "source-map-support": "^0.5.21"
+  }
 }
