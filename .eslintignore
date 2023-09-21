@@ -1,1 +1,3 @@
 docs/swagger/*
+cdk/cdk.out/
+**/node_modules/

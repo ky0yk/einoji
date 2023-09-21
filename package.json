@@ -11,7 +11,8 @@
     "lint": "eslint '*/**/*.{js,ts}'",
     "lint:fix": "eslint '*/**/*.{js,ts}' --fix",
     "format": "prettier --write '*/**/*.{js,ts,json}'",
-    "cdk:deploy": "cd cdk && cdk deploy"
+    "cdk:deploy": "cd cdk && cdk deploy",
+    "cdk:cd": "cd cdk && cdk deploy --require-approval never"
   },
   "author": "",
   "license": "ISC",

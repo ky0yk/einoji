@@ -1,22 +1,13 @@
-name: CI
+name: CD
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      dynamodb:
-        image: amazon/dynamodb-local:2.0.0
-        ports:
-          - 8000:8000
 
     steps:
       - name: Checkout
@@ -30,11 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-northeast-1
 
-      - name: Small Test
-        run: npm run test:s
-
-      - name: Medium Test
-        run: npm run test:m
+      - name: Deploy with CDK
+        run: npm run cdk:cd
