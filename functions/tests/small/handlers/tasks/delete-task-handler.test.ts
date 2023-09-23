@@ -1,10 +1,10 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import { deleteTaskUseCase } from '../../../src/usecases/delete-task-usecase';
-import { handler } from '../../../src/handlers/delete-task-handler';
-import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { AppError } from '../../../src/common/errors/app-errors';
+import { deleteTaskUseCase } from '../../../../src/usecases/tasks/delete-task-usecase';
+import { handler } from '../../../../src/handlers/tasks/delete-task-handler';
+import { AppError } from '../../../../src/common/errors/app-errors';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
 
-jest.mock('../../../src/usecases/delete-task-usecase');
+jest.mock('../../../../src/usecases/tasks/delete-task-usecase');
 
 describe('deleteTaskHandler', () => {
   beforeEach(() => {

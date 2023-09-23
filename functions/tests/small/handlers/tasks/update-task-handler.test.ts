@@ -1,10 +1,10 @@
-import { Task } from '../../../src/domain/task';
-import { updateTaskUsecase } from '../../../src/usecases/update-task-usecase';
+import { Task } from '../../../../src/domain/task';
+import { updateTaskUsecase } from '../../../../src/usecases/tasks/update-task-usecase';
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import { handler } from '../../../src/handlers/update-task-handler';
-import { ErrorCode } from '../../../src/common/errors/error-codes';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { handler } from '../../../../src/handlers/tasks/update-task-handler';
 
-jest.mock('../../../src/usecases/update-task-usecase');
+jest.mock('../../../../src/usecases/tasks/update-task-usecase');
 
 describe('Update Task Request Handler', () => {
   beforeEach(() => {

@@ -2,12 +2,12 @@ import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
-} from './factory/handler-factory';
-import { LambdaResponse, httpResponse } from './http/http-response';
-import { validatePathParams } from './http/validators';
+} from '../factory/handler-factory';
+import { LambdaResponse, httpResponse } from '../http/http-response';
+import { validatePathParams } from '../http/validators';
 import { TaskIdPathParamsSchema } from './schemas/task-requests';
-import { HttpStatus } from './http/http-status';
-import { deleteTaskUseCase } from '../usecases/delete-task-usecase';
+import { HttpStatus } from '../http/http-status';
+import { deleteTaskUseCase } from '../../usecases/tasks/delete-task-usecase';
 
 const deleteTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,

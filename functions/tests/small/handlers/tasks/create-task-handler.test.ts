@@ -1,11 +1,11 @@
-import { handler } from '../../../src/handlers/create-task-handler';
-import { Task } from '../../../src/domain/task';
+import { handler } from '../../../../src/handlers/tasks/create-task-handler';
+import { Task } from '../../../../src/domain/task';
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
-import { CreateTaskRequest } from '../../../src/handlers/schemas/task-requests';
-import { ErrorCode } from '../../../src/common/errors/error-codes';
+import { createTaskUseCase } from '../../../../src/usecases/tasks/create-task-usecase';
+import { CreateTaskRequest } from '../../../../src/handlers/tasks/schemas/task-requests';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
 
-jest.mock('../../../src/usecases/create-task-usecase');
+jest.mock('../../../../src/usecases/tasks/create-task-usecase');
 
 describe('Create Task Request Handler', () => {
   beforeEach(() => {

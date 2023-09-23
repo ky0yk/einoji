@@ -2,13 +2,13 @@ import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
-} from './factory/handler-factory';
-import { createTaskUseCase } from '../usecases/create-task-usecase';
+} from '../factory/handler-factory';
+import { createTaskUseCase } from '../../usecases/tasks/create-task-usecase';
 import { CreateTaskRequestSchema } from './schemas/task-requests';
-import { LambdaResponse, httpResponse } from './http/http-response';
-import { HttpStatus } from './http/http-status';
-import { validateBody } from './http/validators';
-import { CreateTaskData } from '../domain/task';
+import { LambdaResponse, httpResponse } from '../http/http-response';
+import { HttpStatus } from '../http/http-status';
+import { validateBody } from '../http/validators';
+import { CreateTaskData } from '../../domain/task';
 
 const createTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,

@@ -1,8 +1,8 @@
-import { TaskUpdateRuleError } from '../domain/errors/task-errors';
-import { Task, UpdateTaskData } from '../domain/task';
-import { taskRepository } from '../infrastructure/ddb/task-repository';
+import { TaskUpdateRuleError } from '../../domain/errors/task-errors';
+import { Task, UpdateTaskData } from '../../domain/task';
+import { taskRepository } from '../../infrastructure/ddb/task-repository';
+import { useCaseFactory } from '../factory/usecase-factory';
 import { UpdateTaskAtLeastOne } from './contracts/task-repository-contract';
-import { useCaseFactory } from './factory/usecase-factory';
 
 const updateTask = async (
   taskId: string,

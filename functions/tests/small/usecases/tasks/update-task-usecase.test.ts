@@ -1,10 +1,10 @@
-import { AppError } from '../../../src/common/errors/app-errors';
-import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { Task } from '../../../src/domain/task';
-import { taskRepository } from '../../../src/infrastructure/ddb/task-repository';
-import { updateTaskUsecase } from '../../../src/usecases/update-task-usecase';
+import { AppError } from '../../../../src/common/errors/app-errors';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { Task } from '../../../../src/domain/task';
+import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
+import { updateTaskUsecase } from '../../../../src/usecases/tasks/update-task-usecase';
 
-jest.mock('../../../src/infrastructure/ddb/task-repository');
+jest.mock('../../../../src/infrastructure/ddb/task-repository');
 
 describe('updateTaskUsecase', () => {
   beforeEach(() => {

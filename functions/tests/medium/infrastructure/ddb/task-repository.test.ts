@@ -1,6 +1,6 @@
 import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/task-item';
 import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
-import { CreateTaskRequest } from '../../../../src/handlers/schemas/task-requests';
+import { CreateTaskRequest } from '../../../../src/handlers/tasks/schemas/task-requests';
 import {
   createTable,
   deleteTable,
