@@ -1,11 +1,11 @@
-import { Task } from '../../../src/domain/task';
-import { createTaskUseCase } from '../../../src/usecases/create-task-usecase';
-import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { taskRepository } from '../../../src/infrastructure/ddb/task-repository';
-import { AppError } from '../../../src/common/errors/app-errors';
-import { CreateTaskRequest } from '../../../src/handlers/schemas/task-requests';
+import { Task } from '../../../../src/domain/task';
+import { createTaskUseCase } from '../../../../src/usecases/tasks/create-task-usecase';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
+import { AppError } from '../../../../src/common/errors/app-errors';
+import { CreateTaskRequest } from '../../../../src/handlers/tasks/schemas/task-requests';
 
-jest.mock('../../../src/infrastructure/ddb/task-repository');
+jest.mock('../../../../src/infrastructure/ddb/task-repository');
 
 describe('createTaskUseCase', () => {
   beforeEach(() => {

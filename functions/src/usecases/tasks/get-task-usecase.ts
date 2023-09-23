@@ -1,7 +1,7 @@
-import { Task } from '../domain/task';
-import { TaskNotFoundError } from '../domain/errors/task-errors';
-import { useCaseFactory } from './factory/usecase-factory';
-import { taskRepository } from '../infrastructure/ddb/task-repository';
+import { TaskNotFoundError } from '../../domain/errors/task-errors';
+import { Task } from '../../domain/task';
+import { taskRepository } from '../../infrastructure/ddb/task-repository';
+import { useCaseFactory } from '../factory/usecase-factory';
 
 const getTask = async (taskId: string): Promise<Task> => {
   const task = await taskRepository.findById(taskId);

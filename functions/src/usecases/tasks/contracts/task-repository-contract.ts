@@ -1,4 +1,4 @@
-import { Task } from '../../domain/task';
+import { Task } from '../../../domain/task';
 
 export type RepositoryAction<T, P extends unknown[]> = (
   ...args: P

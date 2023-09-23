@@ -1,10 +1,10 @@
-import { Task } from '../../../src/domain/task';
-import { getTaskUseCase } from '../../../src/usecases/get-task-usecase';
-import { AppError } from '../../../src/common/errors/app-errors';
-import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { taskRepository } from '../../../src/infrastructure/ddb/task-repository';
+import { AppError } from '../../../../src/common/errors/app-errors';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { Task } from '../../../../src/domain/task';
+import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
+import { getTaskUseCase } from '../../../../src/usecases/tasks/get-task-usecase';
 
-jest.mock('../../../src/infrastructure/ddb/task-repository');
+jest.mock('../../../../src/infrastructure/ddb/task-repository');
 
 describe('getTask', () => {
   beforeEach(() => {
@@ -34,9 +34,14 @@ describe('getTask', () => {
     const taskId = 'not-found-id';
     (taskRepository.findById as jest.Mock).mockResolvedValueOnce(null);
 
-    const err = await getTaskUseCase(taskId).catch((e) => e);
+    const err = await getTaskUseCase(taskId).catch((e: AppError) => e);
+    if (!(err instanceof AppError)) {
+      fail('Error should be an instance of AppError');
+    }
+
     expect(err).toBeInstanceOf(AppError);
     expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
+
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
     expect(taskRepository.findById).toHaveBeenCalledWith(taskId);
   });

@@ -1,5 +1,5 @@
 import { logger } from '../../../common/logger';
-import { RepositoryAction } from '../../../usecases/contracts/task-repository-contract';
+import { RepositoryAction } from '../../../usecases/tasks/contracts/task-repository-contract';
 import { DdbError } from '../errors/ddb-errors';
 import { ddbErrorHandler } from './ddb-error-handler';
 

@@ -1,10 +1,10 @@
-import { AppError } from '../../../src/common/errors/app-errors';
-import { ErrorCode } from '../../../src/common/errors/error-codes';
-import { Task } from '../../../src/domain/task';
-import { taskRepository } from '../../../src/infrastructure/ddb/task-repository';
-import { deleteTaskUseCase } from '../../../src/usecases/delete-task-usecase';
+import { AppError } from '../../../../src/common/errors/app-errors';
+import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { Task } from '../../../../src/domain/task';
+import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
+import { deleteTaskUseCase } from '../../../../src/usecases/tasks/delete-task-usecase';
 
-jest.mock('../../../src/infrastructure/ddb/task-repository');
+jest.mock('../../../../src/infrastructure/ddb/task-repository');
 
 describe('deleteTaskUseCase', () => {
   beforeEach(() => {
@@ -37,9 +37,11 @@ describe('deleteTaskUseCase', () => {
   test('given a non-existent taskId, should throw AppError with TASK_NOT_FOUND', async () => {
     (taskRepository.findById as jest.Mock).mockResolvedValue(null);
 
-    const err = await deleteTaskUseCase(validTaskId).catch((e) => e);
+    const err = await deleteTaskUseCase(validTaskId).catch((e: Error) => e);
 
-    expect(err).toBeInstanceOf(AppError);
+    if (!(err instanceof AppError)) {
+      fail('Error should be an instance of AppError');
+    }
     expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
     expect(taskRepository.findById).toHaveBeenCalledWith(validTaskId);
