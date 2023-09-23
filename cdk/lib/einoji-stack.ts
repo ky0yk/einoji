@@ -1,3 +1,4 @@
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import * as apigw from '@aws-cdk/aws-apigatewayv2-alpha';
@@ -13,6 +14,24 @@ const ENV_NAME = 'dev';
 export class EinojiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    new cognito.UserPool(this, 'UserPool', {
+      userPoolName: `${SYSTEM_NAME}-${ENV_NAME}-user-pool`,
+      selfSignUpEnabled: true,
+      signInAliases: {
+        email: true,
+      },
+      autoVerify: {
+        email: true,
+      },
+      passwordPolicy: {
+        minLength: 8,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireDigits: true,
+        requireSymbols: true,
+      },
+    });
 
     const tasksTable = new ddb.Table(this, 'TasksTable', {
       tableName: `${SYSTEM_NAME}-${ENV_NAME}-tasks-table`,
