@@ -1,6 +1,6 @@
 import { CreateTaskData, Task } from '../../domain/task';
 import { TaskNotFoundError } from '../../domain/task/errors/task-errors';
-import { useCaseFactory } from '../factory/usecase-factory';
+import { taskUsecaseFactory } from './factory/task-usecase-factory';
 import { taskRepository } from '../../infrastructure/ddb/task-repository';
 
 const createTask = async (data: CreateTaskData): Promise<Task> => {
@@ -14,4 +14,4 @@ const createTask = async (data: CreateTaskData): Promise<Task> => {
   return createdTask;
 };
 
-export const createTaskUseCase = useCaseFactory('createTask', createTask);
+export const createTaskUseCase = taskUsecaseFactory('createTask', createTask);

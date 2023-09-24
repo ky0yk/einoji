@@ -1,19 +1,21 @@
-import { AppError } from '../../utils/errors/app-errors';
-import { ErrorCode } from '../../utils/errors/error-codes';
+import { AppError } from '../../../utils/errors/app-errors';
+import { ErrorCode } from '../../../utils/errors/error-codes';
 import {
   TaskError,
   TaskNotFoundError,
   TaskUpdateRuleError,
-} from '../../domain/task/errors/task-errors';
+} from '../../../domain/task/errors/task-errors';
 import {
   DdbError,
   DdbInternalServerError,
   DdbProvisionedThroughputExceededError,
   DdbResourceNotFoundError,
   DdbValidationError,
-} from '../../infrastructure/ddb/errors/ddb-errors';
+} from '../../../infrastructure/ddb/errors/ddb-errors';
 
-export const useCaseErrorHandler = (error: DdbError | TaskError): AppError => {
+export const taskUsecaseErrorHandler = (
+  error: DdbError | TaskError,
+): AppError => {
   if (
     error instanceof DdbResourceNotFoundError ||
     error instanceof DdbProvisionedThroughputExceededError ||

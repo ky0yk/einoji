@@ -21,7 +21,7 @@ import {
   TaskRepository,
   UpdateTaskAtLeastOne,
   UpdateTaskAction,
-} from '../../usecases/tasks/contracts/task-repository-contract';
+} from '../../usecases/tasks/contracts/task-repository-contracts';
 import { Task } from '../../domain/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
 

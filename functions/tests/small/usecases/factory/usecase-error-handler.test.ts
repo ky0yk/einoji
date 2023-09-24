@@ -11,7 +11,7 @@ import {
   DdbValidationError,
   DdbInternalServerError,
 } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
-import { useCaseErrorHandler } from '../../../../src/usecases/factory/usecase-error-handler';
+import { taskUsecaseErrorHandler } from '../../../../src/usecases/tasks/factory/task-usecase-error-handler';
 
 describe('useCaseErrorHandler', () => {
   const originalError = new Error('Original DDB error');
@@ -28,7 +28,7 @@ describe('useCaseErrorHandler', () => {
   `(
     'given $error_instance it should return an error with class $EXPECTED_ERROR_CLASS and code $expected_error_code',
     ({ error_instance, expected_error_code }) => {
-      const result = useCaseErrorHandler(error_instance);
+      const result = taskUsecaseErrorHandler(error_instance);
       expect(result).toBeInstanceOf(AppError);
       expect(result.code).toBe(expected_error_code);
     },
