@@ -3,11 +3,11 @@ import {
   RequestHandlerWithoutContext,
   handlerFactory,
 } from '../base/factory/handler-factory';
-import { LambdaResponse, httpResponse } from '../http/http-response';
-import { validatePathParams } from '../http/validators';
 import { TaskIdPathParamsSchema } from './schemas/task-requests';
-import { HttpStatus } from '../http/http-status';
 import { deleteTaskUseCase } from '../../usecases/tasks/delete-task-usecase';
+import { HttpStatus } from '../base/http/http-status';
+import { LambdaResponse, httpResponse } from '../base/http/http-response';
+import { validatePathParams } from '../base/http/validators';
 
 const deleteTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,

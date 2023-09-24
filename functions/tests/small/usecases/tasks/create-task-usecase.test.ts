@@ -1,4 +1,4 @@
-import { Task } from '../../../../src/domain/task';
+import { Task } from '../../../../src/domain/task/task';
 import { createTaskUseCase } from '../../../../src/usecases/tasks/create-task-usecase';
 import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';

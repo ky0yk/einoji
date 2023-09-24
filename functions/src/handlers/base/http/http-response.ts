@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { HttpStatus } from './http-status';
-import { AppError } from '../../utils/errors/app-errors';
-import { errorCodetoStatus } from '../../utils/errors/error-codes';
+import { AppError } from '../../../utils/errors/app-errors';
+import { errorCodetoStatus } from '../../../utils/errors/error-codes';
 
 // NOTE: 現状application/json以外は扱わないので、Content-Typeは固定
 export const LambdaResponseSchema = z.object({

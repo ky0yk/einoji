@@ -1,4 +1,4 @@
-import { CreateTaskData, Task } from '../../domain/task';
+import { CreateTaskData, Task } from '../../domain/task/task';
 import { TaskNotFoundError } from '../../domain/task/errors/task-errors';
 import { taskUsecaseFactory } from './factory/task-usecase-factory';
 import { taskRepository } from '../../infrastructure/ddb/task-repository';

@@ -1,4 +1,4 @@
-import { Task } from '../../../../src/domain/task';
+import { Task } from '../../../../src/domain/task/task';
 import { updateTaskUsecase } from '../../../../src/usecases/tasks/update-task-usecase';
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { ErrorCode } from '../../../../src/utils/errors/error-codes';

@@ -1,5 +1,5 @@
 import { handler } from '../../../../src/handlers/tasks/create-task-handler';
-import { Task } from '../../../../src/domain/task';
+import { Task } from '../../../../src/domain/task/task';
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { createTaskUseCase } from '../../../../src/usecases/tasks/create-task-usecase';
 import { CreateTaskRequest } from '../../../../src/handlers/tasks/schemas/task-requests';

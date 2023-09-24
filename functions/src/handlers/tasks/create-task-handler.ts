@@ -5,10 +5,10 @@ import {
 } from '../base/factory/handler-factory';
 import { createTaskUseCase } from '../../usecases/tasks/create-task-usecase';
 import { CreateTaskRequestSchema } from './schemas/task-requests';
-import { LambdaResponse, httpResponse } from '../http/http-response';
-import { HttpStatus } from '../http/http-status';
-import { validateBody } from '../http/validators';
-import { CreateTaskData } from '../../domain/task';
+import { CreateTaskData } from '../../domain/task/task';
+import { LambdaResponse, httpResponse } from '../base/http/http-response';
+import { validateBody } from '../base/http/validators';
+import { HttpStatus } from '../base/http/http-status';
 
 const createTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
