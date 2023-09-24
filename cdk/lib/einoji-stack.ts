@@ -42,7 +42,7 @@ export class EinojiStack extends cdk.Stack {
     const createTaskFn = new NodejsFunction(this, 'CreateTaskFn', {
       functionName: `${SYSTEM_NAME}-${ENV_NAME}-create-task-fn`,
       runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/create-task-handler.ts',
+      entry: '../functions/src/handlers/tasks/create-task-handler.ts',
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
@@ -53,7 +53,7 @@ export class EinojiStack extends cdk.Stack {
     const getTaskFn = new NodejsFunction(this, 'GetTaskFn', {
       functionName: `${SYSTEM_NAME}-${ENV_NAME}-get-task-fn`,
       runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/get-task-handler.ts',
+      entry: '../functions/src/handlers/tasks/get-task-handler.ts',
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
@@ -64,7 +64,7 @@ export class EinojiStack extends cdk.Stack {
     const updateTaskFn = new NodejsFunction(this, 'UpdateTaskFn', {
       functionName: `${SYSTEM_NAME}-${ENV_NAME}-update-task-fn`,
       runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/update-task-handler.ts',
+      entry: '../functions/src/handlers/tasks/update-task-handler.ts',
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
@@ -75,7 +75,7 @@ export class EinojiStack extends cdk.Stack {
     const deleteTaskFn = new NodejsFunction(this, 'DeleteTaskFn', {
       functionName: `${SYSTEM_NAME}-${ENV_NAME}-delete-task-fn`,
       runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/delete-task-handler.ts',
+      entry: '../functions/src/handlers/tasks/delete-task-handler.ts',
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
