@@ -9,7 +9,7 @@ import {
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
-import { logger } from '../../common/logger';
+import { logger } from '../../utils/logger';
 import { DdbInternalServerError } from './errors/ddb-errors';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -21,7 +21,7 @@ import {
   UpdateTaskAtLeastOne,
   UpdateTaskAction,
 } from '../../usecases/tasks/contracts/task-repository-contract';
-import { Task } from '../../domain/task';
+import { Task } from '../../domain/task/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
 import { ddbFactory } from './factory/ddb-factory';
 

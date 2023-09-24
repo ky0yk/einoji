@@ -1,7 +1,7 @@
 import * as z from 'zod';
-import { isoDate } from '../../../domain/isoDate';
-import { Task, TaskSchema } from '../../../domain/task';
+import { isoDate } from '../../../domain/task/isoDate';
 import { DdbInternalServerError } from '../errors/ddb-errors';
+import { Task, TaskSchema } from '../../../domain/task/task';
 
 export const TaskItemSchema = z.object({
   userId: z.string().uuid(),

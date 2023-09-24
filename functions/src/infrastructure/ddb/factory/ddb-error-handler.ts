@@ -1,11 +1,12 @@
 import {
+  DdbError,
   DdbInternalServerError,
   DdbProvisionedThroughputExceededError,
   DdbResourceNotFoundError,
   DdbValidationError,
 } from '../errors/ddb-errors';
 
-export const ddbErrorHandler = (error: Error): never => {
+export const ddbErrorHandler = (error: Error): DdbError => {
   switch (error.name) {
     case 'ResourceNotFoundException':
       throw new DdbResourceNotFoundError(error.message, error);

@@ -1,17 +1,17 @@
-import { AppError } from '../../../../src/common/errors/app-errors';
-import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { AppError } from '../../../../src/utils/errors/app-errors';
+import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 
 import {
   TaskNotFoundError,
   TaskUpdateRuleError,
-} from '../../../../src/domain/errors/task-errors';
+} from '../../../../src/domain/task/errors/task-errors';
 import {
   DdbResourceNotFoundError,
   DdbProvisionedThroughputExceededError,
   DdbValidationError,
   DdbInternalServerError,
 } from '../../../../src/infrastructure/ddb/errors/ddb-errors';
-import { useCaseErrorHandler } from '../../../../src/usecases/factory/usecase-error-handler';
+import { taskErrorHandler } from '../../../../src/usecases/tasks/factory/task-error-handler';
 
 describe('useCaseErrorHandler', () => {
   const originalError = new Error('Original DDB error');
@@ -28,7 +28,7 @@ describe('useCaseErrorHandler', () => {
   `(
     'given $error_instance it should return an error with class $EXPECTED_ERROR_CLASS and code $expected_error_code',
     ({ error_instance, expected_error_code }) => {
-      const result = useCaseErrorHandler(error_instance);
+      const result = taskErrorHandler(error_instance);
       expect(result).toBeInstanceOf(AppError);
       expect(result.code).toBe(expected_error_code);
     },

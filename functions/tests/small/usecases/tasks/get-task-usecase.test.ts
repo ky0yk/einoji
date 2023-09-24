@@ -1,6 +1,6 @@
-import { AppError } from '../../../../src/common/errors/app-errors';
-import { ErrorCode } from '../../../../src/common/errors/error-codes';
-import { Task } from '../../../../src/domain/task';
+import { AppError } from '../../../../src/utils/errors/app-errors';
+import { ErrorCode } from '../../../../src/utils/errors/error-codes';
+import { Task } from '../../../../src/domain/task/task';
 import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
 import { getTaskUseCase } from '../../../../src/usecases/tasks/get-task-usecase';
 

@@ -1,5 +1,5 @@
-import { logger } from '../../common/logger';
-import { RepositoryAction } from '../../usecases/contracts/base-contracts';
+import { logger } from '../../../utils/logger';
+import { RepositoryAction } from '../../../usecases/base/contracts/base-contracts';
 
 type OpsErrorHandler = (error: Error) => Error;
 

@@ -1,14 +1,13 @@
-import { AppError } from '../../common/errors/app-errors';
-import { logger } from '../../common/logger';
-import { useCaseErrorHandler } from './usecase-error-handler';
+import { AppError } from '../../../utils/errors/app-errors';
+import { logger } from '../../../utils/logger';
 
-type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
-type UseCaseErrorHandler = (error: Error) => AppError;
+export type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
+export type UseCaseErrorHandler = (error: Error) => AppError;
 
 export const useCaseFactory = <T, P extends unknown[]>(
   name: string,
   useCase: UseCase<T, P>,
-  errorHandler: UseCaseErrorHandler = useCaseErrorHandler,
+  errorHandler: UseCaseErrorHandler,
 ): UseCase<T, P> => {
   return async (...args: P): Promise<T> => {
     try {

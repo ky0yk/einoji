@@ -1,5 +1,5 @@
-import { RepositoryAction } from '../../contracts/base-contracts';
-import { Task } from '../../../domain/task';
+import { Task } from '../../../domain/task/task';
+import { RepositoryAction } from '../../base/contracts/base-contracts';
 
 export type CreateTaskAction = RepositoryAction<string, [CreateTaskPayload]>;
 export type FindTaskByIdAction = RepositoryAction<Task | null, [string]>;

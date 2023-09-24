@@ -11,7 +11,7 @@ import { DdbInternalServerError } from '../../../../src/infrastructure/ddb/error
 import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
 import { TaskItem } from '../../../../src/infrastructure/ddb/schemas/task-item';
 import { z } from 'zod';
-import { Task } from '../../../../src/domain/task';
+import { Task } from '../../../../src/domain/task/task';
 
 const documentMockClient = mockClient(DynamoDBDocumentClient);
 const TASK_TABLE_NAME = process.env.TASKS_TABLE_NAME;

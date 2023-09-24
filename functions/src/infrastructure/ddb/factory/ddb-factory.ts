@@ -1,5 +1,5 @@
-import { RepositoryAction } from '../../../usecases/tasks/contracts/task-repository-contract';
-import { infraBaseFactory } from '../../factory/infra-base-factory';
+import { RepositoryAction } from '../../../usecases/base/contracts/base-contracts';
+import { infraBaseFactory } from '../../base/factory/infra-base-factory';
 import { DdbError } from '../errors/ddb-errors';
 import { ddbErrorHandler } from './ddb-error-handler';
 
