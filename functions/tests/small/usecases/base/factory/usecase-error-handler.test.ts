@@ -1,17 +1,16 @@
-import { AppError } from '../../../../src/utils/errors/app-errors';
-import { ErrorCode } from '../../../../src/utils/errors/error-codes';
-
 import {
   TaskNotFoundError,
   TaskUpdateRuleError,
-} from '../../../../src/domain/task/errors/task-errors';
+} from '../../../../../src/domain/task/errors/task-errors';
 import {
   DdbResourceNotFoundError,
   DdbProvisionedThroughputExceededError,
   DdbValidationError,
   DdbInternalServerError,
-} from '../../../../src/infrastructure/ddb/errors/ddb-errors';
-import { taskUsecaseErrorHandler } from '../../../../src/usecases/tasks/factory/task-usecase-error-handler';
+} from '../../../../../src/infrastructure/ddb/errors/ddb-errors';
+import { taskUsecaseErrorHandler } from '../../../../../src/usecases/tasks/factory/task-usecase-error-handler';
+import { AppError } from '../../../../../src/utils/errors/app-errors';
+import { ErrorCode } from '../../../../../src/utils/errors/error-codes';
 
 describe('useCaseErrorHandler', () => {
   const originalError = new Error('Original DDB error');
