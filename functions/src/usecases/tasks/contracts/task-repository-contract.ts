@@ -1,8 +1,5 @@
+import { RepositoryAction } from '../../contracts/base-contracts';
 import { Task } from '../../../domain/task';
-
-export type RepositoryAction<T, P extends unknown[]> = (
-  ...args: P
-) => Promise<T>;
 
 export type CreateTaskAction = RepositoryAction<string, [CreateTaskPayload]>;
 export type FindTaskByIdAction = RepositoryAction<Task | null, [string]>;

@@ -10,7 +10,6 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 
 import { logger } from '../../common/logger';
-import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -24,6 +23,7 @@ import {
 } from '../../usecases/tasks/contracts/task-repository-contract';
 import { Task } from '../../domain/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
+import { ddbFactory } from './factory/ddb-factory';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
 const AWS_REGION = process.env.AWS_REGION;
