@@ -1,4 +1,4 @@
-import { TaskNotFoundError } from '../../domain/errors/task-errors';
+import { TaskNotFoundError } from '../../domain/task/errors/task-errors';
 import { taskRepository } from '../../infrastructure/ddb/task-repository';
 import { useCaseFactory } from '../factory/usecase-factory';
 

@@ -4,7 +4,7 @@ import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 import {
   TaskNotFoundError,
   TaskUpdateRuleError,
-} from '../../../../src/domain/errors/task-errors';
+} from '../../../../src/domain/task/errors/task-errors';
 import {
   DdbResourceNotFoundError,
   DdbProvisionedThroughputExceededError,

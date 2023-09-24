@@ -1,4 +1,4 @@
-import { TaskUpdateRuleError } from '../../domain/errors/task-errors';
+import { TaskUpdateRuleError } from '../../domain/task/errors/task-errors';
 import { Task, UpdateTaskData } from '../../domain/task';
 import { taskRepository } from '../../infrastructure/ddb/task-repository';
 import { useCaseFactory } from '../factory/usecase-factory';

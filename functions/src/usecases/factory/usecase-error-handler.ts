@@ -4,7 +4,7 @@ import {
   TaskError,
   TaskNotFoundError,
   TaskUpdateRuleError,
-} from '../../domain/errors/task-errors';
+} from '../../domain/task/errors/task-errors';
 import {
   DdbError,
   DdbInternalServerError,
