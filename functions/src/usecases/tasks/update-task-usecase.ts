@@ -1,8 +1,8 @@
-import { TaskUpdateRuleError } from '../../domain/errors/task-errors';
-import { Task, UpdateTaskData } from '../../domain/task';
+import { TaskUpdateRuleError } from '../../domain/task/errors/task-errors';
+import { Task, UpdateTaskData } from '../../domain/task/task';
 import { taskRepository } from '../../infrastructure/ddb/task-repository';
-import { useCaseFactory } from '../factory/usecase-factory';
-import { UpdateTaskAtLeastOne } from './contracts/task-repository-contract';
+import { taskUsecaseFactory } from './factory/task-usecase-factory';
+import { UpdateTaskAtLeastOne } from './contracts/task-repository-contracts';
 
 const updateTask = async (
   taskId: string,
@@ -21,4 +21,4 @@ const isEmpty = (obj: object): boolean => {
   return Object.keys(obj).length === 0;
 };
 
-export const updateTaskUsecase = useCaseFactory('updateTask', updateTask);
+export const updateTaskUsecase = taskUsecaseFactory('updateTask', updateTask);

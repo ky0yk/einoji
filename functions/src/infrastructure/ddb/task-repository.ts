@@ -9,7 +9,7 @@ import {
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
-import { logger } from '../../common/logger';
+import { logger } from '../../utils/logger';
 import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,8 +21,8 @@ import {
   TaskRepository,
   UpdateTaskAtLeastOne,
   UpdateTaskAction,
-} from '../../usecases/tasks/contracts/task-repository-contract';
-import { Task } from '../../domain/task';
+} from '../../usecases/tasks/contracts/task-repository-contracts';
+import { Task } from '../../domain/task/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;

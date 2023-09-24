@@ -1,25 +1,25 @@
-import { AppError } from '../../common/errors/app-errors';
-import { logger } from '../../common/logger';
-import { useCaseErrorHandler } from './usecase-error-handler';
+import { AppError } from '../../../utils/errors/app-errors';
+import { logger } from '../../../utils/logger';
+import { taskUsecaseErrorHandler } from '../../tasks/factory/task-usecase-error-handler';
 
 type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
 type UseCaseErrorHandler = (error: Error) => AppError;
 
-export const useCaseFactory = <T, P extends unknown[]>(
+export const baseUsecaseFactory = <T, P extends unknown[]>(
   name: string,
   useCase: UseCase<T, P>,
-  errorHandler: UseCaseErrorHandler = useCaseErrorHandler,
+  errorHandler: UseCaseErrorHandler = taskUsecaseErrorHandler,
 ): UseCase<T, P> => {
   return async (...args: P): Promise<T> => {
     try {
-      return await useCaseWithLog(name, useCase, ...args);
+      return await usecaseWithLog(name, useCase, ...args);
     } catch (e: unknown) {
-      return await useCaseErrorHandlerWithLog(name, errorHandler, e);
+      return await usecaseErrorHandlerWithLog(name, errorHandler, e);
     }
   };
 };
 
-const useCaseWithLog = async <T, P extends unknown[]>(
+const usecaseWithLog = async <T, P extends unknown[]>(
   name: string,
   useCase: UseCase<T, P>,
   ...args: P
@@ -30,7 +30,7 @@ const useCaseWithLog = async <T, P extends unknown[]>(
   return result;
 };
 
-const useCaseErrorHandlerWithLog = async <T>(
+const usecaseErrorHandlerWithLog = async <T>(
   name: string,
   processError: UseCaseErrorHandler,
   e: unknown,

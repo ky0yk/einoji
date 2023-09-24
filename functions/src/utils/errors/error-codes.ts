@@ -1,4 +1,4 @@
-import { HttpStatus } from '../../handlers/http/http-status';
+import { HttpStatus } from '../../handlers/base/http/http-status';
 
 export enum ErrorCode {
   // リクエスト例外

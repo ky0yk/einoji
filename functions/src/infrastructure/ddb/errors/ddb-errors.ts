@@ -1,32 +1,8 @@
-export class DdbError extends Error {
-  constructor(
-    public readonly message: string,
-    public readonly originalError?: Error,
-  ) {
-    super(message);
-  }
-}
+import { baseInfraError } from '../../base/errors/base-infra-errors';
 
-export class DdbResourceNotFoundError extends DdbError {
-  constructor(message: string, originalError: Error) {
-    super(message, originalError);
-  }
-}
+export class DdbError extends baseInfraError {}
 
-export class DdbProvisionedThroughputExceededError extends DdbError {
-  constructor(message: string, originalError: Error) {
-    super(message, originalError);
-  }
-}
-
-export class DdbValidationError extends DdbError {
-  constructor(message: string, originalError: Error) {
-    super(message, originalError);
-  }
-}
-
-export class DdbInternalServerError extends DdbError {
-  constructor(message: string, originalError?: Error) {
-    super(message, originalError);
-  }
-}
+export class DdbResourceNotFoundError extends DdbError {}
+export class DdbProvisionedThroughputExceededError extends DdbError {}
+export class DdbValidationError extends DdbError {}
+export class DdbInternalServerError extends DdbError {}

@@ -1,6 +1,6 @@
 import { ZodIssueCode, ZodSchema, ZodType, z } from 'zod';
-import { AppError } from '../../common/errors/app-errors';
-import { ErrorCode } from '../../common/errors/error-codes';
+import { AppError } from '../../../utils/errors/app-errors';
+import { ErrorCode } from '../../../utils/errors/error-codes';
 import { APIGatewayEvent } from 'aws-lambda';
 
 export const validateBody = <T>(

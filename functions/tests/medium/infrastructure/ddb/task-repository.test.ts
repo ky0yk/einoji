@@ -7,7 +7,7 @@ import {
   deleteTask,
   putTask,
 } from '../../../helpers/task-repository-helpers';
-import { Task } from '../../../../src/domain/task';
+import { Task } from '../../../../src/domain/task/task';
 
 const dummyTaskItem: TaskItem = {
   userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',

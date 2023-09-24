@@ -1,6 +1,6 @@
 import * as z from 'zod';
-import { isoDate } from '../../../domain/isoDate';
-import { Task, TaskSchema } from '../../../domain/task';
+import { isoDate } from '../../../domain/task/isoDate';
+import { Task, TaskSchema } from '../../../domain/task/task';
 import { DdbInternalServerError } from '../errors/ddb-errors';
 
 export const TaskItemSchema = z.object({

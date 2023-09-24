@@ -1,9 +1,9 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { getTaskUseCase } from '../../../../src/usecases/tasks/get-task-usecase';
-import { Task } from '../../../../src/domain/task';
+import { Task } from '../../../../src/domain/task/task';
 import { handler } from '../../../../src/handlers/tasks/get-task-handler';
-import { AppError } from '../../../../src/common/errors/app-errors';
-import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { AppError } from '../../../../src/utils/errors/app-errors';
+import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 
 jest.mock('../../../../src/usecases/tasks/get-task-usecase');
 

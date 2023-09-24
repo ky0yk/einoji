@@ -2,15 +2,16 @@ import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
-} from '../factory/handler-factory';
-import { LambdaResponse, httpResponse } from '../http/http-response';
-import { validateBodyAndPathParams } from '../http/validators';
+} from '../base/factory/handler-factory';
+
 import {
   TaskIdPathParamsSchema,
   UpdateTaskRequestSchema,
 } from './schemas/task-requests';
-import { HttpStatus } from '../http/http-status';
 import { updateTaskUsecase } from '../../usecases/tasks/update-task-usecase';
+import { LambdaResponse, httpResponse } from '../base/http/http-response';
+import { validateBodyAndPathParams } from '../base/http/validators';
+import { HttpStatus } from '../base/http/http-status';
 
 const updateTaskHandler: RequestHandlerWithoutContext = async (
   event: APIGatewayEvent,
