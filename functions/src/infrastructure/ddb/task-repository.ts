@@ -22,7 +22,7 @@ import {
   UpdateTaskAtLeastOne,
   UpdateTaskAction,
 } from '../../usecases/tasks/contracts/task-repository-contracts';
-import { Task } from '../../domain/task';
+import { Task } from '../../domain/task/task';
 import { TaskItemSchema, toTask } from './schemas/task-item';
 
 const TABLE_NAME = process.env.TASKS_TABLE_NAME;
