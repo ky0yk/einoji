@@ -1,8 +1,8 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import { logger } from '../../utils/logger';
+import { logger } from '../../../utils/logger';
 
-import { AppError } from '../../utils/errors/app-errors';
-import { ErrorCode } from '../../utils/errors/error-codes';
+import { AppError } from '../../../utils/errors/app-errors';
+import { ErrorCode } from '../../../utils/errors/error-codes';
 import { LambdaResponse, httpErrorResponse } from '../http/http-response';
 import { httpErrorHandler } from './http-error-handler';
 

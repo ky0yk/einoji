@@ -1,6 +1,6 @@
 import { AppError } from '../../../../src/utils/errors/app-errors';
 import { ErrorCode } from '../../../../src/utils/errors/error-codes';
-import { httpErrorHandler } from '../../../../src/handlers/factory/http-error-handler';
+import { httpErrorHandler } from '../../../../src/handlers/base/factory/http-error-handler';
 
 describe('httpErrorHandler', () => {
   test.each`

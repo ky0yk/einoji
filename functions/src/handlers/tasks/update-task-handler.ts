@@ -2,7 +2,7 @@ import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
-} from '../factory/handler-factory';
+} from '../base/factory/handler-factory';
 import { LambdaResponse, httpResponse } from '../http/http-response';
 import { validateBodyAndPathParams } from '../http/validators';
 import {

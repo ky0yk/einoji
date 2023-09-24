@@ -2,7 +2,7 @@ import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
-} from '../factory/handler-factory';
+} from '../base/factory/handler-factory';
 import { createTaskUseCase } from '../../usecases/tasks/create-task-usecase';
 import { CreateTaskRequestSchema } from './schemas/task-requests';
 import { LambdaResponse, httpResponse } from '../http/http-response';
