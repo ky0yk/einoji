@@ -9,7 +9,7 @@ import {
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
-import { logger } from '../../common/logger';
+import { logger } from '../../utils/logger';
 import { ddbFactory } from './factory/ddb-factory';
 import { DdbInternalServerError } from './errors/ddb-errors';
 import { v4 as uuidv4 } from 'uuid';

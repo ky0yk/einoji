@@ -1,7 +1,7 @@
 import { Task } from '../../../../src/domain/task';
 import { updateTaskUsecase } from '../../../../src/usecases/tasks/update-task-usecase';
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 import { handler } from '../../../../src/handlers/tasks/update-task-handler';
 
 jest.mock('../../../../src/usecases/tasks/update-task-usecase');

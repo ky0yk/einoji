@@ -1,5 +1,5 @@
-import { AppError } from '../../../../src/common/errors/app-errors';
-import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { AppError } from '../../../../src/utils/errors/app-errors';
+import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 import { Task } from '../../../../src/domain/task';
 import { taskRepository } from '../../../../src/infrastructure/ddb/task-repository';
 import { deleteTaskUseCase } from '../../../../src/usecases/tasks/delete-task-usecase';

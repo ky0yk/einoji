@@ -3,7 +3,7 @@ import { Task } from '../../../../src/domain/task';
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { createTaskUseCase } from '../../../../src/usecases/tasks/create-task-usecase';
 import { CreateTaskRequest } from '../../../../src/handlers/tasks/schemas/task-requests';
-import { ErrorCode } from '../../../../src/common/errors/error-codes';
+import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 
 jest.mock('../../../../src/usecases/tasks/create-task-usecase');
 

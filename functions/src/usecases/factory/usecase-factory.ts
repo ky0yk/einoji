@@ -1,5 +1,5 @@
-import { AppError } from '../../common/errors/app-errors';
-import { logger } from '../../common/logger';
+import { AppError } from '../../utils/errors/app-errors';
+import { logger } from '../../utils/logger';
 import { useCaseErrorHandler } from './usecase-error-handler';
 
 type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
