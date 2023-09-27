@@ -1,9 +1,10 @@
 import { RepositoryAction } from '../../../usecases/base/contract/base-contracts';
 import { logger } from '../../../utils/logger';
+import { InfraError } from '../errors/infra-errors';
 
-type OpsErrorHandler = (error: Error) => Error;
+type OpsErrorHandler = (error: Error) => InfraError;
 
-export const baseInfraFactory = <T, P extends unknown[]>(
+export const infraFactory = <T, P extends unknown[]>(
   name: string,
   operation: RepositoryAction<T, P>,
   errorHandler: OpsErrorHandler,
@@ -22,9 +23,9 @@ const operationWithLog = async <T, P extends unknown[]>(
   operation: RepositoryAction<T, P>,
   ...args: P
 ): Promise<T> => {
-  logger.info(`ENTRY Operation: ${name}`);
+  logger.info(`ENTRY infra: ${name}`);
   const result = await operation(...args);
-  logger.info(`EXIT Operation: ${name}`);
+  logger.info(`EXIT infra: ${name}`);
   return result;
 };
 
@@ -33,14 +34,14 @@ const operationErrorHandlerWithLog = async <T>(
   processError: OpsErrorHandler,
   e: unknown,
 ): Promise<T> => {
-  logger.error(`An error occurred in Operation: ${name}`);
+  logger.error(`An error occurred in infra: ${name}`);
   if (e instanceof Error) {
     logger.error(`ENTRY Operation error handling: ${name}`);
     const errorResult = processError(e);
     logger.info(`EXIT Operation error handling: ${name}`, errorResult);
     throw errorResult;
   } else {
-    logger.error(`unexpected error occurred in Operation: ${name}}`);
+    logger.error(`unexpected error occurred in infra: ${name}}`);
     throw new Error('Unknown error');
   }
 };
