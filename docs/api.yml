@@ -575,22 +575,26 @@ components:
       value:
         code: REQ004
         message: 'Invalid or missing parameters. Details: ${errorDetails}'
-    EMAIL_ALREADY_IN_USE:
-      value:
-        code: USER001
-        message: 'This email address is already in use.'
     INVALID_CREDENTIALS:
       value:
-        code: USER002
+        code: USER001
         message: 'Invalid email or password.'
-    INVALID_TOKEN:
+    USER_NOT_FOUND:
+      value:
+        code: USER002
+        message: 'User not found.'
+    INVALID_PASSWORD_FORMAT:
       value:
         code: USER003
-        message: 'Invalid or expired token provided.'
-    TOKEN_EXPIRED:
+        message: 'The password format is invalid. Please ensure it meets the required criteria.'
+    INVALID_EMAIL_FORMAT:
       value:
         code: USER004
-        message: 'Token has expired. Please login again or renew the token.'
+        message: 'The provided email format is invalid. Please enter a valid email address.'
+    USER_ALIAS_EXISTS:
+      value:
+        code: USER101
+        message: 'This email address is already in use.'
     TASK_NOT_FOUND:
       value:
         code: APP001

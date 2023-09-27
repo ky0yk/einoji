@@ -13,6 +13,15 @@ export enum ErrorCode {
 
   // アプリケーション例外（回復不可） 必要になったらAPP101から始める
 
+  // ユーザーに関する例外（回復可）
+  INVALID_CREDENTIALS = 'USER001', // ユーザー認証情報が不正
+  USER_NOT_FOUND = 'USER002', // ユーザーが存在しない
+  INVALID_PASSWORD_FORMAT = 'USER003', // パスワードの形式が不正
+  INVALID_EMAIL_FORMAT = 'USER004', // Eメールの形式が不正
+
+  // ユーザーに関する例外（回復不可）
+  USER_ALIAS_EXISTS = 'USER101', // ユーザーエイリアスが既に存在する
+
   // システム例外
   DATABASE_CONNECTION_ERROR = 'SYS001', // データベース接続エラー（DynamoDBへの接続障害）
   SERVICE_DOWNTIME = 'SYS002', // APIサービスダウンタイム (API GatewayやLambdaのダウンタイム)
@@ -27,12 +36,21 @@ export const errorCodetoStatus = (errorCode: ErrorCode): HttpStatus => {
     case ErrorCode.INVALID_PATH_PARAMETER:
       return HttpStatus.BAD_REQUEST;
 
-    case ErrorCode.INVALID_PAYLOAD_VALUE:
-    case ErrorCode.TASK_UPDATE_RULE_ERROR:
-      return HttpStatus.UNPROCESSABLE_ENTITY;
+    case ErrorCode.INVALID_CREDENTIALS:
+      return HttpStatus.UNAUTHORIZED;
+
+    case ErrorCode.USER_ALIAS_EXISTS:
+      return HttpStatus.CONFLICT;
 
     case ErrorCode.TASK_NOT_FOUND:
+    case ErrorCode.USER_NOT_FOUND:
       return HttpStatus.NOT_FOUND;
+
+    case ErrorCode.INVALID_PAYLOAD_VALUE:
+    case ErrorCode.TASK_UPDATE_RULE_ERROR:
+    case ErrorCode.INVALID_PASSWORD_FORMAT:
+    case ErrorCode.INVALID_EMAIL_FORMAT:
+      return HttpStatus.UNPROCESSABLE_ENTITY;
 
     case ErrorCode.DATABASE_CONNECTION_ERROR:
     case ErrorCode.UNKNOWN_ERROR:
