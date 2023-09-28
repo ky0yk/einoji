@@ -9,6 +9,7 @@ import {
 export const cognitoErrorHandler = (error: Error): CognitoError => {
   switch (error.name) {
     case 'AliasExistsException':
+    case 'UsernameExistsException':
       return new UserAliasExistsError(error.message, error);
     case 'NotAuthorizedException':
     case 'InvalidPasswordException':
