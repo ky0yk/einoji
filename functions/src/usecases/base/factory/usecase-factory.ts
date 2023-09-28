@@ -37,6 +37,7 @@ const usecaseErrorHandlerWithLog = async <T>(
 ): Promise<T> => {
   logger.error(`An error occurred in usecase: ${name}`);
   if (e instanceof Error) {
+    logger.error(`Raw error for ${name}:`, e);
     logger.error(`ENTRY usecase error handling: ${name}`);
     const errorResult = processError(e);
     logger.info(`EXIT usecase error handling: ${name}`, errorResult);

@@ -36,9 +36,10 @@ const operationErrorHandlerWithLog = async <T>(
 ): Promise<T> => {
   logger.error(`An error occurred in infra: ${name}`);
   if (e instanceof Error) {
-    logger.error(`ENTRY Operation error handling: ${name}`);
+    logger.error(`Raw error for ${name}:`, e);
+    logger.error(`ENTRY infra error handling: ${name}`);
     const errorResult = processError(e);
-    logger.info(`EXIT Operation error handling: ${name}`, errorResult);
+    logger.info(`EXIT infra error handling: ${name}`, errorResult);
     throw errorResult;
   } else {
     logger.error(`unexpected error occurred in infra: ${name}}`);
