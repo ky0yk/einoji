@@ -19,7 +19,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRegisterRequest'
+              $ref: '#/components/schemas/CreateUserRequest'
       responses:
         201:
           description: Created
@@ -59,8 +59,6 @@ paths:
                 $ref: '#/components/schemas/AccessTokenResponse'
         400:
           $ref: '#/components/responses/400PathAndPayload'
-        401:
-          $ref: '#/components/responses/401InvalidCredentials'
         500:
           $ref: '#/components/responses/500Common'
         503:
@@ -336,7 +334,7 @@ components:
         completed:
           type: boolean
           description: タスクが完了したかどうか
-    UserRegisterRequest:
+    CreateUserRequest:
       type: object
       required:
         - email
@@ -427,38 +425,6 @@ components:
               $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
             INVALID_PATH_PARAMETER:
               $ref: '#/components/examples/INVALID_PATH_PARAMETER'
-    401Common:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              code:
-                type: string
-                enum: [INVALID_TOKEN, TOKEN_EXPIRED]
-              message:
-                type: string
-          examples:
-            INVALID_TOKEN:
-              $ref: '#/components/examples/INVALID_TOKEN'
-            TOKEN_EXPIRED:
-              $ref: '#/components/examples/TOKEN_EXPIRED'
-    401InvalidCredentials:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              code:
-                type: string
-                enum: [INVALID_CREDENTIALS]
-              message:
-                type: string
-          examples:
-            INVALID_CREDENTIALS:
-              $ref: '#/components/examples/INVALID_CREDENTIALS'
     404Common:
       description: Not Found
       content:
@@ -483,12 +449,12 @@ components:
             properties:
               code:
                 type: string
-                enum: [EMAIL_ALREADY_IN_USE]
+                enum: [USER_EMAIL_EXISTS]
               message:
                 type: string
           examples:
-            EMAIL_ALREADY_IN_USE:
-              $ref: '#/components/examples/EMAIL_ALREADY_IN_USE'
+            USER_EMAIL_EXISTS:
+              $ref: '#/components/examples/USER_EMAIL_EXISTS'
     422Common:
       description: Unprocessable Entity
       content:
@@ -591,7 +557,7 @@ components:
       value:
         code: USER004
         message: 'The provided email format is invalid. Please enter a valid email address.'
-    USER_ALIAS_EXISTS:
+    USER_EMAIL_EXISTS:
       value:
         code: USER101
         message: 'This email address is already in use.'
