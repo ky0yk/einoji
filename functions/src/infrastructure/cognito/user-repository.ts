@@ -27,7 +27,7 @@ const create: CreateUserAction = async (
 
   const result = await client.send(command);
   if (!result.UserSub) {
-    throw new UserNotFoundError('User not found');
+    throw new UserNotFoundError('User not found. email: ' + email);
   }
   return result.UserSub;
 };

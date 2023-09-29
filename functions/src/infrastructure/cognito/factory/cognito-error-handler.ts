@@ -7,6 +7,9 @@ import {
 } from '../errors/cognito-errors';
 
 export const cognitoErrorHandler = (error: Error): CognitoError => {
+  if (error instanceof CognitoError) {
+    return error;
+  }
   switch (error.name) {
     case 'AliasExistsException':
     case 'UsernameExistsException':
