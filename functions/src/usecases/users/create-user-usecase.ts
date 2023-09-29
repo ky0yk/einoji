@@ -2,7 +2,7 @@ import { toEmail } from '../../domain/user/email';
 import { toPassword } from '../../domain/user/password';
 import { CreateUserData } from '../../domain/user/user';
 import { userRepository } from '../../infrastructure/cognito/user-repository';
-import { userUseCaseFactory } from './factory/user-usecaset-factory';
+import { userUseCaseFactory } from './factory/user-usecase-factory';
 
 const createUser = async (data: CreateUserData): Promise<string> => {
   const password = toPassword(data.password);
