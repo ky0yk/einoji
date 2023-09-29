@@ -20,7 +20,7 @@ export enum ErrorCode {
   INVALID_EMAIL_FORMAT = 'USER004', // Eメールの形式が不正
 
   // ユーザーに関する例外（回復不可）
-  USER_ALIAS_EXISTS = 'USER101', // ユーザーエイリアスが既に存在する
+  USER_EMAIL_EXISTS = 'USER101', // メールアドレスが既に存在する
 
   // システム例外
   DATABASE_CONNECTION_ERROR = 'SYS001', // データベース接続エラー（DynamoDBへの接続障害）
@@ -39,7 +39,7 @@ export const errorCodetoStatus = (errorCode: ErrorCode): HttpStatus => {
     case ErrorCode.INVALID_CREDENTIALS:
       return HttpStatus.UNAUTHORIZED;
 
-    case ErrorCode.USER_ALIAS_EXISTS:
+    case ErrorCode.USER_EMAIL_EXISTS:
       return HttpStatus.CONFLICT;
 
     case ErrorCode.TASK_NOT_FOUND:

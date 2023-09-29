@@ -20,7 +20,7 @@ describe('userUsecaseErrorHandler', () => {
     ${new UserInvalidPasswordError('')}            | ${ErrorCode.INVALID_PASSWORD_FORMAT}
     ${new AuthenticationError('', originalError)}  | ${ErrorCode.INVALID_CREDENTIALS}
     ${new UserNotFoundError('', originalError)}    | ${ErrorCode.USER_NOT_FOUND}
-    ${new UserAliasExistsError('', originalError)} | ${ErrorCode.USER_ALIAS_EXISTS}
+    ${new UserAliasExistsError('', originalError)} | ${ErrorCode.USER_EMAIL_EXISTS}
     ${new Error('Some other error')}               | ${ErrorCode.UNKNOWN_ERROR}
   `(
     'given $error_instance it should return an error with code $expected_error_code',

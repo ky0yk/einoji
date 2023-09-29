@@ -24,7 +24,7 @@ export const userUsecaseErrorHandler = (error: Error): AppError => {
     return new AppError(ErrorCode.USER_NOT_FOUND, error.message);
   }
   if (error instanceof UserAliasExistsError) {
-    return new AppError(ErrorCode.USER_ALIAS_EXISTS, error.message);
+    return new AppError(ErrorCode.USER_EMAIL_EXISTS, error.message);
   }
   return new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error occurred.');
 };
