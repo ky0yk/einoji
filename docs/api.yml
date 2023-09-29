@@ -181,7 +181,7 @@ paths:
         404:
           $ref: '#/components/responses/404Common'
         422:
-          $ref: '#/components/responses/422PaylodAndUpdateRule'
+          $ref: '#/components/responses/422PayloadAndUpdateRule'
         500:
           $ref: '#/components/responses/500Common'
         503:
@@ -240,7 +240,7 @@ paths:
         404:
           $ref: '#/components/responses/404Common'
         422:
-          $ref: '#/components/responses/422PaylodAndUpdateRule'
+          $ref: '#/components/responses/422PayloadAndUpdateRule'
         500:
           $ref: '#/components/responses/500Common'
         503:
@@ -470,7 +470,7 @@ components:
           examples:
             INVALID_PAYLOAD_VALUE:
               $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
-    422PaylodAndUpdateRule:
+    422PayloadAndUpdateRule:
       description: Unprocessable Entity
       content:
         application/json:

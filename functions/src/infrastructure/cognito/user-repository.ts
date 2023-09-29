@@ -16,9 +16,9 @@ const CLIENT_ID = process.env.USER_POOL_CLIENTID;
 const client = new CognitoIdentityProviderClient();
 
 const create: CreateUserAction = async (
-  paylod: CreateUserPayload,
+  payload: CreateUserPayload,
 ): Promise<string> => {
-  const { email, password } = paylod;
+  const { email, password } = payload;
   const command = new SignUpCommand({
     ClientId: CLIENT_ID,
     Username: email,
