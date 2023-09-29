@@ -9,7 +9,7 @@ import {
   CreateUserPayload,
   UserRepository,
 } from '../../usecases/users/contracts/user-repository-contract';
-import { UserNotFoundError } from './errors/cognito-errors';
+import { CognitoInternalError } from './errors/cognito-errors';
 
 const CLIENT_ID = process.env.USER_POOL_CLIENTID;
 
@@ -27,7 +27,9 @@ const create: CreateUserAction = async (
 
   const result = await client.send(command);
   if (!result.UserSub) {
-    throw new UserNotFoundError('User not found. email: ' + email);
+    throw new CognitoInternalError(
+      'Unexpected response received during user registration. email: ' + email,
+    );
   }
   return result.UserSub;
 };

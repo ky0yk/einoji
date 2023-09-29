@@ -5,8 +5,8 @@ import {
 import { mockClient } from 'aws-sdk-client-mock';
 import { userRepository } from '../../../../src/infrastructure/cognito/user-repository';
 import {
+  CognitoInternalError,
   UserAliasExistsError,
-  UserNotFoundError,
 } from '../../../../src/infrastructure/cognito/errors/cognito-errors';
 
 const USER_POOL_CLIENTID = process.env.USER_POOL_CLIENTID;
@@ -41,7 +41,7 @@ describe('userRepository.create', () => {
     cognitoMockClient.on(SignUpCommand).resolves({ UserSub: undefined });
 
     await expect(userRepository.create(dummyPayload)).rejects.toThrow(
-      UserNotFoundError,
+      CognitoInternalError,
     );
   });
 
