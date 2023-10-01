@@ -48,6 +48,7 @@ const requestErrorHandlerWithLog = async (
 ): Promise<LambdaResponse> => {
   logger.error(`An error occurred in handler: ${name}`);
   if (e instanceof AppError) {
+    logger.error(`Raw error for ${name}:`, e);
     logger.error(`ENTRY Error handling: ${name}`, e);
     const errorResult = requestErrorHandler(e);
     logger.info(`EXIT Error handling: ${name}`);

@@ -2,10 +2,10 @@ import { AppError } from '../../../utils/errors/app-errors';
 import { logger } from '../../../utils/logger';
 import { taskUsecaseErrorHandler } from '../../tasks/factory/task-usecase-error-handler';
 
-type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
-type UseCaseErrorHandler = (error: Error) => AppError;
+export type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
+export type UseCaseErrorHandler = (error: Error) => AppError;
 
-export const baseUsecaseFactory = <T, P extends unknown[]>(
+export const usecaseFactory = <T, P extends unknown[]>(
   name: string,
   useCase: UseCase<T, P>,
   errorHandler: UseCaseErrorHandler = taskUsecaseErrorHandler,
@@ -37,6 +37,7 @@ const usecaseErrorHandlerWithLog = async <T>(
 ): Promise<T> => {
   logger.error(`An error occurred in usecase: ${name}`);
   if (e instanceof Error) {
+    logger.error(`Raw error for ${name}:`, e);
     logger.error(`ENTRY usecase error handling: ${name}`);
     const errorResult = processError(e);
     logger.info(`EXIT usecase error handling: ${name}`, errorResult);
