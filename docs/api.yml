@@ -26,13 +26,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/CreateUserResponse'
         400:
           $ref: '#/components/responses/400PathAndPayload'
         409:
           $ref: '#/components/responses/409EmailAlreadyInUse'
         422:
-          $ref: '#/components/responses/422Common'
+          $ref: '#/components/responses/422PayloadEmailPassword'
         500:
           $ref: '#/components/responses/500Common'
         503:
@@ -49,14 +49,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccessTokenRequest'
+              $ref: '#/components/schemas/AuthUserRequest'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccessTokenResponse'
+                $ref: '#/components/schemas/AuthUserResponse'
         400:
           $ref: '#/components/responses/400PathAndPayload'
         500:
@@ -344,7 +344,12 @@ components:
           $ref: '#/components/schemas/Email'
         password:
           $ref: '#/components/schemas/Password'
-    AccessTokenRequest:
+    CreateUserResponse:
+      type: object
+      properties:
+        userId:
+          $ref: '#/components/schemas/UserId'
+    AuthUserRequest:
       type: object
       required:
         - email
@@ -356,23 +361,18 @@ components:
           type: string
           description: パスワード
           example: p@ssword123
-    AccessTokenResponse:
+    AuthUserResponse:
       type: object
       properties:
         token:
           type: string
           description: JWTトークン
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: ユーザーの一意の識別子(UUID)
-          example: f0f8f5a0-309d-11ec-8d3d-0242ac130004
-        email:
-          $ref: '#/components/schemas/Email'
+    UserId:
+      type: string
+      format: uuid
+      description: ユーザーの一意の識別子(UUID)
+      example: f0f8f5a0-309d-11ec-8d3d-0242ac130004
     Email:
       type: string
       format: email
@@ -382,9 +382,9 @@ components:
       type: string
       minLength: 8
       maxLength: 64
-      pattern: '^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).*$'
-      description: 8文字以上64文字以下で英語、数字、記号の組み合わせ
-      example: p@ssword123
+      pattern: ^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,64}$
+      description: 8~64文字で、大文字・小文字・数字・特殊文字をそれぞれ1つ以上含む
+      example: P@ssword123
     ErrorResponse:
       type: object
       properties:
@@ -487,6 +487,30 @@ components:
               $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
             TASK_UPDATE_RULE_ERROR:
               $ref: '#/components/examples/TASK_UPDATE_RULE_ERROR'
+    422PayloadEmailPassword:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                enum:
+                  [
+                    INVALID_PAYLOAD_VALUE,
+                    INVALID_EMAIL_FORMAT,
+                    INVALID_PASSWORD_FORMAT,
+                  ]
+              message:
+                type: string
+          examples:
+            INVALID_PAYLOAD_VALUE:
+              $ref: '#/components/examples/INVALID_PAYLOAD_VALUE'
+            INVALID_EMAIL_FORMAT:
+              $ref: '#/components/examples/INVALID_EMAIL_FORMAT'
+            INVALID_PASSWORD_FORMAT:
+              $ref: '#/components/examples/INVALID_PASSWORD_FORMAT'
     500Common:
       description: Internal Server Error
       content:
