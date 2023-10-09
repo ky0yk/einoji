@@ -43,12 +43,12 @@ export const errorCodetoStatus = (errorCode: ErrorCode): HttpStatus => {
     case ErrorCode.USER_NOT_CONFIRMED:
       return HttpStatus.FORBIDDEN;
 
-    case ErrorCode.USER_EMAIL_EXISTS:
-      return HttpStatus.CONFLICT;
-
     case ErrorCode.TASK_NOT_FOUND:
     case ErrorCode.USER_NOT_FOUND:
       return HttpStatus.NOT_FOUND;
+
+    case ErrorCode.USER_EMAIL_EXISTS:
+      return HttpStatus.CONFLICT;
 
     case ErrorCode.INVALID_PAYLOAD_VALUE:
     case ErrorCode.TASK_UPDATE_RULE_ERROR:
