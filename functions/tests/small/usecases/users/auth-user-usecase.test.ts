@@ -1,8 +1,6 @@
 import { AuthUserData } from '../../../../src/domain/user/user';
 import { userRepository } from '../../../../src/infrastructure/cognito/user-repository';
 import { authUserUsecase } from '../../../../src/usecases/users/auth-user-usecase';
-import { AppError } from '../../../../src/utils/errors/app-errors';
-import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 
 jest.mock('../../../../src/infrastructure/cognito/user-repository');
 
