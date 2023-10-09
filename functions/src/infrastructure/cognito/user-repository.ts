@@ -53,12 +53,12 @@ const auth: AuthUserAction = async (
     },
   });
   const result = await client.send(command);
-  if (!result.AuthenticationResult?.AccessToken) {
+  if (!result.AuthenticationResult?.IdToken) {
     throw new AuthenticationError(
       'Failed to retrieve an access token during user authentication. Please check your credentials and try again.',
     );
   }
-  return result.AuthenticationResult.AccessToken;
+  return result.AuthenticationResult.IdToken;
 };
 
 export const userRepository: UserRepository = {

@@ -1,9 +1,7 @@
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
-import * as apigw from '@aws-cdk/aws-apigatewayv2-alpha';
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
-import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -44,8 +42,6 @@ export class EinojiStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'UserPoolClientId', {
       value: userPoolClient.userPoolClientId,
     });
-
-    const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool);
 
     const tasksTable = new ddb.Table(this, 'TasksTable', {
       tableName: `${SYSTEM_NAME}-${ENV_NAME}-tasks-table`,
@@ -117,38 +113,45 @@ export class EinojiStack extends cdk.Stack {
       },
     });
 
-    const api = new apigw.HttpApi(this, 'TaskApiGw', {
-      apiName: `${SYSTEM_NAME}-${ENV_NAME}-task-api`,
+    const api = new apigw.RestApi(this, 'TaskApiGw', {
+      restApiName: `${SYSTEM_NAME}-${ENV_NAME}-task-api`,
+      description: 'Task API',
+      deploy: true,
     });
-    api.addRoutes({
-      path: '/tasks',
-      methods: [apigw.HttpMethod.POST],
-      integration: new HttpLambdaIntegration('CreateTaskItg', createTaskFn),
-    });
-    api.addRoutes({
-      path: '/tasks/{id}',
-      methods: [apigw.HttpMethod.GET],
-      integration: new HttpLambdaIntegration('GetTaskItg', getTaskFn),
-    });
-    api.addRoutes({
-      path: '/tasks/{id}',
-      methods: [apigw.HttpMethod.PUT],
-      integration: new HttpLambdaIntegration('UpdateTaskItg', updateTaskFn),
-    });
-    api.addRoutes({
-      path: '/tasks/{id}',
-      methods: [apigw.HttpMethod.DELETE],
-      integration: new HttpLambdaIntegration('DeleteTaskItg', deleteTaskFn),
-    });
-    api.addRoutes({
-      path: '/users',
-      methods: [apigw.HttpMethod.POST],
-      integration: new HttpLambdaIntegration('CreateUserItg', createUserFn),
-    });
-    api.addRoutes({
-      path: '/users/auth',
-      methods: [apigw.HttpMethod.POST],
-      integration: new HttpLambdaIntegration('AuthUserItg', authUserFn),
-    });
+
+    const authorizer = new apigw.CognitoUserPoolsAuthorizer(
+      this,
+      'UserPoolAuthorizer',
+      {
+        cognitoUserPools: [userPool],
+        identitySource: 'method.request.header.Authorization',
+      },
+    );
+
+    const tasksResource = api.root.addResource('tasks');
+    const singleTaskResource = tasksResource.addResource('{id}');
+
+    tasksResource.addMethod('POST', new apigw.LambdaIntegration(createTaskFn));
+    singleTaskResource.addMethod(
+      'GET',
+      new apigw.LambdaIntegration(getTaskFn),
+      {
+        authorizer: authorizer,
+      },
+    );
+    singleTaskResource.addMethod(
+      'PUT',
+      new apigw.LambdaIntegration(updateTaskFn),
+    );
+    singleTaskResource.addMethod(
+      'DELETE',
+      new apigw.LambdaIntegration(deleteTaskFn),
+    );
+
+    const usersResource = api.root.addResource('users');
+    usersResource.addMethod('POST', new apigw.LambdaIntegration(createUserFn));
+
+    const authResource = usersResource.addResource('auth');
+    authResource.addMethod('POST', new apigw.LambdaIntegration(authUserFn));
   }
 }
