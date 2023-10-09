@@ -38,6 +38,7 @@ export class EinojiStack extends cdk.Stack {
     const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
       userPool,
       generateSecret: false,
+      authFlows: { userPassword: true },
     });
 
     new cdk.CfnOutput(this, 'UserPoolClientId', {
@@ -104,6 +105,16 @@ export class EinojiStack extends cdk.Stack {
       },
     });
 
+    const authUserFn = new NodejsFunction(this, 'AuthUserFn', {
+      functionName: `${SYSTEM_NAME}-${ENV_NAME}-auth-user-fn`,
+      runtime: lambda.Runtime.NODEJS_18_X,
+      entry: '../functions/src/handlers/users/auth-user-handler.ts',
+      handler: 'handler',
+      environment: {
+        USER_POOL_CLIENTID: USER_POOL_CLIENTID,
+      },
+    });
+
     const api = new apigw.HttpApi(this, 'TaskApiGw', {
       apiName: `${SYSTEM_NAME}-${ENV_NAME}-task-api`,
     });
@@ -131,6 +142,11 @@ export class EinojiStack extends cdk.Stack {
       path: '/users',
       methods: [apigw.HttpMethod.POST],
       integration: new HttpLambdaIntegration('CreateUserItg', createUserFn),
+    });
+    api.addRoutes({
+      path: '/users/auth',
+      methods: [apigw.HttpMethod.POST],
+      integration: new HttpLambdaIntegration('AuthUserItg', authUserFn),
     });
   }
 }

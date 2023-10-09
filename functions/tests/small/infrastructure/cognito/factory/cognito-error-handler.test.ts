@@ -2,6 +2,7 @@ import {
   AuthenticationError,
   CognitoInternalError,
   UserAliasExistsError,
+  UserConfirmationRequiredError,
   UserNotFoundError,
 } from '../../../../../src/infrastructure/cognito/errors/cognito-errors';
 import { cognitoErrorHandler } from '../../../../../src/infrastructure/cognito/factory/cognito-error-handler';
@@ -24,7 +25,7 @@ describe('cognitoErrorHandler', () => {
       ${'UsernameExistsException'}   | ${UserAliasExistsError}
       ${'NotAuthorizedException'}    | ${AuthenticationError}
       ${'InvalidPasswordException'}  | ${AuthenticationError}
-      ${'UserNotConfirmedException'} | ${AuthenticationError}
+      ${'UserNotConfirmedException'} | ${UserConfirmationRequiredError}
       ${'UserNotFoundException'}     | ${UserNotFoundError}
       ${'InternalErrorException'}    | ${CognitoInternalError}
       ${'SomeUnknownException'}      | ${CognitoInternalError}

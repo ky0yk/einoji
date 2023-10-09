@@ -1,10 +1,12 @@
 import {
   CognitoIdentityProviderClient,
+  InitiateAuthCommand,
   SignUpCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { mockClient } from 'aws-sdk-client-mock';
 import { userRepository } from '../../../../src/infrastructure/cognito/user-repository';
 import {
+  AuthenticationError,
   CognitoInternalError,
   UserAliasExistsError,
 } from '../../../../src/infrastructure/cognito/errors/cognito-errors';
@@ -53,6 +55,45 @@ describe('userRepository.create', () => {
 
     await expect(userRepository.create(dummyPayload)).rejects.toThrow(
       UserAliasExistsError,
+    );
+  });
+});
+
+describe('userRepository.auth', () => {
+  afterEach(() => {
+    cognitoMockClient.reset();
+  });
+
+  test('should return AccessToken when authenticating a user with valid email and password', async () => {
+    const dummyPayload = { email: 'test@example.com', password: 'password123' };
+    const dummyAccessToken = 'dummyAccessTokenValue';
+    cognitoMockClient.on(InitiateAuthCommand).resolves({
+      AuthenticationResult: { AccessToken: dummyAccessToken },
+    });
+
+    const returnedAccessToken = await userRepository.auth(dummyPayload);
+
+    expect(returnedAccessToken).toEqual(dummyAccessToken);
+
+    const callsOfInitiateAuth =
+      cognitoMockClient.commandCalls(InitiateAuthCommand);
+    expect(callsOfInitiateAuth).toHaveLength(1);
+    expect(callsOfInitiateAuth[0].args[0].input).toEqual({
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: USER_POOL_CLIENTID,
+      AuthParameters: {
+        USERNAME: dummyPayload.email,
+        PASSWORD: dummyPayload.password,
+      },
+    });
+  });
+
+  test('should throw AuthenticationError when AccessToken is not returned from Cognito', async () => {
+    const dummyPayload = { email: 'test@example.com', password: 'password123' };
+    cognitoMockClient.on(InitiateAuthCommand).resolves({});
+
+    await expect(userRepository.auth(dummyPayload)).rejects.toThrow(
+      AuthenticationError,
     );
   });
 });

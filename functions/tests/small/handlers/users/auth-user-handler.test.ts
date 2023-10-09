@@ -1,13 +1,13 @@
-import { handler } from '../../../../src/handlers/users/create-user-handler';
+import { handler } from '../../../../src/handlers/users/auth-user-handler';
 import { APIGatewayEvent, Context } from 'aws-lambda';
-import { createUserUsecase } from '../../../../src/usecases/users/create-user-usecase';
 import { ErrorCode } from '../../../../src/utils/errors/error-codes';
+import { authUserUsecase } from '../../../../src/usecases/users/auth-user-usecase';
 
-jest.mock('../../../../src/usecases/users/create-user-usecase');
+jest.mock('../../../../src/usecases/users/auth-user-usecase');
 
-describe('Create User Handler', () => {
+describe('Auth User Handler', () => {
   beforeEach(() => {
-    (createUserUsecase as jest.Mock).mockClear();
+    (authUserUsecase as jest.Mock).mockClear();
   });
 
   const dummyContext = {} as Context;
@@ -18,17 +18,17 @@ describe('Create User Handler', () => {
   } as unknown as APIGatewayEvent;
 
   describe('For a valid request', () => {
-    test('should create a new user and return 201 status code', async () => {
-      const dummyUserId = 'dummy-user-id';
+    test('should authenticate a user and return 200 status code with token', async () => {
+      const dummyToken = 'someRandomToken';
 
-      (createUserUsecase as jest.Mock).mockResolvedValueOnce(dummyUserId);
+      (authUserUsecase as jest.Mock).mockResolvedValueOnce(dummyToken);
 
       const result = await handler(validEvent, dummyContext);
 
-      expect(result.statusCode).toBe(201);
-      expect(JSON.parse(result.body!)).toEqual({ userId: dummyUserId });
-      expect(createUserUsecase).toHaveBeenCalledTimes(1);
-      expect(createUserUsecase).toHaveBeenCalledWith(validInput);
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body!).token).toBe(dummyToken);
+      expect(authUserUsecase).toHaveBeenCalledTimes(1);
+      expect(authUserUsecase).toHaveBeenCalledWith(validInput);
     });
   });
 
@@ -52,7 +52,7 @@ describe('Create User Handler', () => {
         expect(JSON.parse(result.body!).code).toBe(
           ErrorCode.INVALID_PAYLOAD_FORMAT,
         );
-        expect(createUserUsecase).toHaveBeenCalledTimes(0);
+        expect(authUserUsecase).toHaveBeenCalledTimes(0);
       },
     );
   });

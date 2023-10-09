@@ -3,6 +3,7 @@ import {
   CognitoError,
   CognitoInternalError,
   UserAliasExistsError,
+  UserConfirmationRequiredError,
   UserNotFoundError,
 } from '../errors/cognito-errors';
 
@@ -16,8 +17,9 @@ export const cognitoErrorHandler = (error: Error): CognitoError => {
       return new UserAliasExistsError(error.message, error);
     case 'NotAuthorizedException':
     case 'InvalidPasswordException':
-    case 'UserNotConfirmedException':
       return new AuthenticationError(error.message, error);
+    case 'UserNotConfirmedException':
+      return new UserConfirmationRequiredError(error.message, error);
     case 'UserNotFoundException':
       return new UserNotFoundError(error.message, error);
     case 'InternalErrorException':
