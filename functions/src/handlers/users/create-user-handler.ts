@@ -17,7 +17,7 @@ const createUserHandler: RequestHandlerWithoutContext = async (
 
   const createdUser = await createUserUsecase(data);
 
-  return httpResponse(HttpStatus.CREATED, createdUser);
+  return httpResponse(HttpStatus.CREATED, { userId: createdUser });
 };
 
 export const handler = handlerFactory('createUser', createUserHandler);
