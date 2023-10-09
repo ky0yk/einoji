@@ -131,7 +131,9 @@ export class EinojiStack extends cdk.Stack {
     const tasksResource = api.root.addResource('tasks');
     const singleTaskResource = tasksResource.addResource('{id}');
 
-    tasksResource.addMethod('POST', new apigw.LambdaIntegration(createTaskFn));
+    tasksResource.addMethod('POST', new apigw.LambdaIntegration(createTaskFn), {
+      authorizer: authorizer,
+    });
     singleTaskResource.addMethod(
       'GET',
       new apigw.LambdaIntegration(getTaskFn),
@@ -142,10 +144,16 @@ export class EinojiStack extends cdk.Stack {
     singleTaskResource.addMethod(
       'PUT',
       new apigw.LambdaIntegration(updateTaskFn),
+      {
+        authorizer: authorizer,
+      },
     );
     singleTaskResource.addMethod(
       'DELETE',
       new apigw.LambdaIntegration(deleteTaskFn),
+      {
+        authorizer: authorizer,
+      },
     );
 
     const usersResource = api.root.addResource('users');
