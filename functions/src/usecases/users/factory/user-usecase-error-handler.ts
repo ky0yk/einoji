@@ -5,12 +5,16 @@ import {
 import {
   AuthenticationError,
   UserAliasExistsError,
+  UserConfirmationRequiredError,
   UserNotFoundError,
 } from '../../../infrastructure/cognito/errors/cognito-errors';
 import { AppError } from '../../../utils/errors/app-errors';
 import { ErrorCode } from '../../../utils/errors/error-codes';
 
 export const userUsecaseErrorHandler = (error: Error): AppError => {
+  if (error instanceof UserConfirmationRequiredError) {
+    return new AppError(ErrorCode.USER_NOT_CONFIRMED, error.message);
+  }
   if (error instanceof UserInvalidEmailError) {
     return new AppError(ErrorCode.INVALID_EMAIL_FORMAT, error.message);
   }

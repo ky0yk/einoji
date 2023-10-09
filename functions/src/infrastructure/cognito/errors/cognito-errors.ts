@@ -12,4 +12,5 @@ export class CognitoError extends InfraError {
 export class AuthenticationError extends CognitoError {}
 export class UserNotFoundError extends CognitoError {}
 export class UserAliasExistsError extends CognitoError {}
+export class UserConfirmationRequiredError extends CognitoError {}
 export class CognitoInternalError extends CognitoError {}

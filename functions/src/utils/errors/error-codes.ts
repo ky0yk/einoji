@@ -21,6 +21,7 @@ export enum ErrorCode {
 
   // ユーザーに関する例外（回復不可）
   USER_EMAIL_EXISTS = 'USER101', // メールアドレスが既に存在する
+  USER_NOT_CONFIRMED = 'USER102', // ユーザーが未確認
 
   // システム例外
   DATABASE_CONNECTION_ERROR = 'SYS001', // データベース接続エラー（DynamoDBへの接続障害）
@@ -38,6 +39,9 @@ export const errorCodetoStatus = (errorCode: ErrorCode): HttpStatus => {
 
     case ErrorCode.INVALID_CREDENTIALS:
       return HttpStatus.UNAUTHORIZED;
+
+    case ErrorCode.USER_NOT_CONFIRMED:
+      return HttpStatus.FORBIDDEN;
 
     case ErrorCode.USER_EMAIL_EXISTS:
       return HttpStatus.CONFLICT;
