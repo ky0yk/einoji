@@ -1,5 +1,4 @@
 import { handler } from '../../../../src/handlers/users/create-user-handler';
-import { CreateUserData } from '../../../../src/domain/user/user';
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { createUserUsecase } from '../../../../src/usecases/users/create-user-usecase';
 import { ErrorCode } from '../../../../src/utils/errors/error-codes';
@@ -20,17 +19,14 @@ describe('Create User Handler', () => {
 
   describe('For a valid request', () => {
     test('should create a new user and return 201 status code', async () => {
-      const dummyUser: CreateUserData = {
-        email: 'johndoe@example.com',
-        password: 'P@ssword123',
-      };
+      const dummyUserId = 'dummy-user-id';
 
-      (createUserUsecase as jest.Mock).mockResolvedValueOnce(dummyUser);
+      (createUserUsecase as jest.Mock).mockResolvedValueOnce(dummyUserId);
 
       const result = await handler(validEvent, dummyContext);
 
       expect(result.statusCode).toBe(201);
-      expect(JSON.parse(result.body!)).toEqual(dummyUser);
+      expect(JSON.parse(result.body!)).toEqual({ userId: dummyUserId });
       expect(createUserUsecase).toHaveBeenCalledTimes(1);
       expect(createUserUsecase).toHaveBeenCalledWith(validInput);
     });
