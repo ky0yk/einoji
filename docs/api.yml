@@ -38,11 +38,11 @@ paths:
         503:
           $ref: '#/components/responses/503Common'
 
-  /users/token:
+  /users/auth:
     post:
       tags:
         - users
-      summary: JWTトークンの取得 【未実装】
+      summary: JWTトークンの取得
       description: ユーザー情報を使用して認証し、成功した場合にJWTを返します。
       requestBody:
         required: true
@@ -59,6 +59,8 @@ paths:
                 $ref: '#/components/schemas/AuthUserResponse'
         400:
           $ref: '#/components/responses/400PathAndPayload'
+        403:
+          $ref: '#/components/responses/403UserNotCofirmed'
         500:
           $ref: '#/components/responses/500Common'
         503:
@@ -425,6 +427,21 @@ components:
               $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
             INVALID_PATH_PARAMETER:
               $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+    403UserNotCofirmed:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                enum: [USER_NOT_CONFIRMED]
+              message:
+                type: string
+          examples:
+            USER_NOT_CONFIRMED:
+              $ref: '#/components/examples/USER_NOT_CONFIRMED'
     404Common:
       description: Not Found
       content:
@@ -585,6 +602,10 @@ components:
       value:
         code: USER101
         message: 'This email address is already in use.'
+    USER_NOT_CONFIRMED:
+      value:
+        code: USER102
+        message: 'User is not confirmed.'
     TASK_NOT_FOUND:
       value:
         code: APP001
