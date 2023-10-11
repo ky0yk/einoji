@@ -86,6 +86,8 @@ paths:
           $ref: '#/components/responses/500Common'
         503:
           $ref: '#/components/responses/503Common'
+      security:
+        - BearerAuth: []
     post:
       tags:
         - tasks
@@ -106,12 +108,16 @@ paths:
                 $ref: '#/components/schemas/Task'
         400:
           $ref: '#/components/responses/400Path'
+        401:
+          $ref: '#/components/responses/401Common'
         422:
           $ref: '#/components/responses/422Common'
         500:
           $ref: '#/components/responses/500Common'
         503:
           $ref: '#/components/responses/503Common'
+      security:
+        - BearerAuth: []
 
   /tasks/{id}:
     get:
@@ -147,13 +153,16 @@ paths:
               examples:
                 INVALID_PATH_PARAMETER:
                   $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+        401:
+          $ref: '#/components/responses/401Common'
         404:
           $ref: '#/components/responses/404Common'
         500:
           $ref: '#/components/responses/500Common'
         503:
           $ref: '#/components/responses/503Common'
-
+      security:
+        - BearerAuth: []
     put:
       tags:
         - tasks
@@ -180,6 +189,8 @@ paths:
                 $ref: '#/components/schemas/Task'
         400:
           $ref: '#/components/responses/400PathAndPayload'
+        401:
+          $ref: '#/components/responses/401Common'
         404:
           $ref: '#/components/responses/404Common'
         422:
@@ -188,6 +199,8 @@ paths:
           $ref: '#/components/responses/500Common'
         503:
           $ref: '#/components/responses/503Common'
+      security:
+        - BearerAuth: []
 
     delete:
       tags:
@@ -205,12 +218,16 @@ paths:
           description: No Content
         400:
           $ref: '#/components/responses/400Path'
+        401:
+          $ref: '#/components/responses/401Common'
         404:
           $ref: '#/components/responses/404Common'
         500:
           $ref: '#/components/responses/500Common'
         503:
           $ref: '#/components/responses/503Common'
+      security:
+        - BearerAuth: []
 
   /tasks/{id}/complete:
     patch:
@@ -239,6 +256,8 @@ paths:
                 $ref: '#/components/schemas/Task'
         400:
           $ref: '#/components/responses/400PathAndPayload'
+        401:
+          $ref: '#/components/responses/401Common'
         404:
           $ref: '#/components/responses/404Common'
         422:
@@ -247,6 +266,8 @@ paths:
           $ref: '#/components/responses/500Common'
         503:
           $ref: '#/components/responses/503Common'
+      security:
+        - BearerAuth: []
 
 components:
   schemas:
@@ -427,6 +448,21 @@ components:
               $ref: '#/components/examples/INVALID_PAYLOAD_FORMAT'
             INVALID_PATH_PARAMETER:
               $ref: '#/components/examples/INVALID_PATH_PARAMETER'
+    401Common:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                enum: [UNAUTHORIZED]
+              message:
+                type: string
+          examples:
+            UNAUTHORIZED:
+              $ref: '#/components/examples/UNAUTHORIZED'
     403UserNotCofirmed:
       description: Forbidden
       content:
@@ -564,7 +600,11 @@ components:
               $ref: '#/components/examples/SERVICE_DOWNTIME'
             EXTERNAL_SERVICE_FAILURE:
               $ref: '#/components/examples/EXTERNAL_SERVICE_FAILURE'
-
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   examples:
     INVALID_PAYLOAD_FORMAT:
       value:
@@ -582,6 +622,10 @@ components:
       value:
         code: REQ004
         message: 'Invalid or missing parameters. Details: ${errorDetails}'
+    UNAUTHORIZED:
+      value:
+        code: REQ005
+        message: 'Unauthorized.'
     INVALID_CREDENTIALS:
       value:
         code: USER001
