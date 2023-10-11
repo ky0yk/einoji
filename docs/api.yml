@@ -455,14 +455,10 @@ components:
           schema:
             type: object
             properties:
-              code:
-                type: string
-                enum: [UNAUTHORIZED]
               message:
                 type: string
-          examples:
-            UNAUTHORIZED:
-              $ref: '#/components/examples/UNAUTHORIZED'
+                example: Unauthorized
+
     403UserNotCofirmed:
       description: Forbidden
       content:
@@ -622,10 +618,6 @@ components:
       value:
         code: REQ004
         message: 'Invalid or missing parameters. Details: ${errorDetails}'
-    UNAUTHORIZED:
-      value:
-        code: REQ005
-        message: 'Unauthorized.'
     INVALID_CREDENTIALS:
       value:
         code: USER001
