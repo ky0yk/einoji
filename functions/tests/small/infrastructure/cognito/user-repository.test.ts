@@ -64,16 +64,16 @@ describe('userRepository.auth', () => {
     cognitoMockClient.reset();
   });
 
-  test('should return AccessToken when authenticating a user with valid email and password', async () => {
+  test('should return IdToken when authenticating a user with valid email and password', async () => {
     const dummyPayload = { email: 'test@example.com', password: 'password123' };
-    const dummyAccessToken = 'dummyAccessTokenValue';
+    const dummyIdToken = 'dummyIdTokenValue';
     cognitoMockClient.on(InitiateAuthCommand).resolves({
-      AuthenticationResult: { AccessToken: dummyAccessToken },
+      AuthenticationResult: { IdToken: dummyIdToken },
     });
 
     const returnedAccessToken = await userRepository.auth(dummyPayload);
 
-    expect(returnedAccessToken).toEqual(dummyAccessToken);
+    expect(returnedAccessToken).toEqual(dummyIdToken);
 
     const callsOfInitiateAuth =
       cognitoMockClient.commandCalls(InitiateAuthCommand);
