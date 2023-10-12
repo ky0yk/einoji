@@ -5,6 +5,7 @@ import { taskUsecaseFactory } from './factory/task-usecase-factory';
 import { UpdateTaskAtLeastOne } from './contracts/task-repository-contracts';
 
 const updateTask = async (
+  userId: string,
   taskId: string,
   data: UpdateTaskData,
 ): Promise<Task> => {
@@ -14,7 +15,11 @@ const updateTask = async (
     );
   }
 
-  return await taskRepository.update(taskId, data as UpdateTaskAtLeastOne);
+  return await taskRepository.update(
+    userId,
+    taskId,
+    data as UpdateTaskAtLeastOne,
+  );
 };
 
 const isEmpty = (obj: object): boolean => {

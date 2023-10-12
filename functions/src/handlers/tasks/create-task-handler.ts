@@ -12,9 +12,10 @@ import { HttpStatus } from '../base/http/http-status';
 const createTaskHandler: RequestHandlerWithoutContext = async (
   event,
 ): Promise<LambdaResponse> => {
+  const userId: string = event.requestContext.authorizer?.claims.sub;
   const data: CreateTaskData = validateBody(CreateTaskRequestSchema, event);
 
-  const createdTask = await createTaskUseCase(data);
+  const createdTask = await createTaskUseCase(userId, data);
 
   return httpResponse(HttpStatus.CREATED, createdTask);
 };

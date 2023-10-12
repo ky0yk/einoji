@@ -24,7 +24,8 @@ const updateTaskHandler: RequestHandlerWithoutContext = async (
     TaskIdPathParamsSchema,
   );
 
-  const updatedTask = await updateTaskUsecase(taskId, updateTaskData);
+  const userId: string = event.requestContext.authorizer?.claims.sub;
+  const updatedTask = await updateTaskUsecase(userId, taskId, updateTaskData);
 
   return httpResponse(HttpStatus.OK, updatedTask);
 };

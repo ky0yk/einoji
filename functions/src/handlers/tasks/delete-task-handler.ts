@@ -11,8 +11,9 @@ import { validatePathParams } from '../base/http/validators';
 const deleteTaskHandler: RequestHandlerWithoutContext = async (
   event,
 ): Promise<LambdaResponse> => {
+  const userId: string = event.requestContext.authorizer?.claims.sub;
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
-  await deleteTaskUseCase(taskId);
+  await deleteTaskUseCase(userId, taskId);
   return httpResponse(HttpStatus.NO_CONTENT);
 };
 
