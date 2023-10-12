@@ -1,4 +1,3 @@
-import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
@@ -10,7 +9,7 @@ import { HttpStatus } from '../base/http/http-status';
 import { getTaskUseCase } from '../../usecases/tasks/get-task-usecase';
 
 const getTaskHandler: RequestHandlerWithoutContext = async (
-  event: APIGatewayEvent,
+  event,
 ): Promise<LambdaResponse> => {
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
 

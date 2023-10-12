@@ -1,4 +1,3 @@
-import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
@@ -11,7 +10,7 @@ import { validateBody } from '../base/http/validators';
 import { HttpStatus } from '../base/http/http-status';
 
 const createTaskHandler: RequestHandlerWithoutContext = async (
-  event: APIGatewayEvent,
+  event,
 ): Promise<LambdaResponse> => {
   const data: CreateTaskData = validateBody(CreateTaskRequestSchema, event);
 

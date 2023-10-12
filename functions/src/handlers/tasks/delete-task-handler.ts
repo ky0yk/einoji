@@ -1,4 +1,3 @@
-import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
@@ -10,7 +9,7 @@ import { LambdaResponse, httpResponse } from '../base/http/http-response';
 import { validatePathParams } from '../base/http/validators';
 
 const deleteTaskHandler: RequestHandlerWithoutContext = async (
-  event: APIGatewayEvent,
+  event,
 ): Promise<LambdaResponse> => {
   const { id: taskId } = validatePathParams(TaskIdPathParamsSchema, event);
   await deleteTaskUseCase(taskId);

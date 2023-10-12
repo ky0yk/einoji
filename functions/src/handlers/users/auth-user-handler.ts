@@ -1,4 +1,4 @@
-import { APIGatewayEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
@@ -9,9 +9,7 @@ import { HttpStatus } from '../base/http/http-status';
 import { authUserUsecase } from '../../usecases/users/auth-user-usecase';
 import { AuthUserRequestSchema } from './schemas/user-requests';
 
-const authUserHandler: RequestHandlerWithoutContext = async (
-  event: APIGatewayEvent,
-) => {
+const authUserHandler: RequestHandlerWithoutContext = async (event) => {
   const data = validateBody(AuthUserRequestSchema, event);
   const token = await authUserUsecase(data);
   return httpResponse(HttpStatus.OK, { token: token });

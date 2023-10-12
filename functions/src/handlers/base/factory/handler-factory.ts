@@ -1,61 +1,71 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { logger } from '../../../utils/logger';
-
 import { AppError } from '../../../utils/errors/app-errors';
 import { ErrorCode } from '../../../utils/errors/error-codes';
 import { LambdaResponse, httpErrorResponse } from '../http/http-response';
 import { httpErrorHandler } from './http-error-handler';
 
-export type RequestHandler = (
-  event: APIGatewayEvent,
+export type RequestHandler<T = APIGatewayProxyEvent> = (
+  event: T,
   context: Context,
 ) => Promise<LambdaResponse>;
-export type RequestHandlerWithoutContext = (
-  event: APIGatewayEvent,
+
+export type RequestHandlerWithoutContext<T = APIGatewayProxyEvent> = (
+  event: T,
 ) => Promise<LambdaResponse>;
+
 export type RequestErrorHandler = (error: AppError) => LambdaResponse;
 
-export const handlerFactory = (
-  name: string,
-  requestHandler: RequestHandlerWithoutContext,
-  errorHandler: RequestErrorHandler = httpErrorHandler,
-): RequestHandler => {
-  return async (event, context) => {
-    try {
-      logger.addContext(context);
-      return await requestHandlerWithLog(name, requestHandler, event);
-    } catch (e: unknown) {
-      return await requestErrorHandlerWithLog(name, errorHandler, e);
-    }
-  };
-};
+const logWrapper = (name: string, action: string) =>
+  logger.info(`${action} handler: ${name}`);
+const logErrorWrapper = (name: string, action: string, error?: unknown) =>
+  logger.error(`${action} error in handler: ${name}`, String(error));
 
-const requestHandlerWithLog = async (
+const execute = async <T = APIGatewayProxyEvent>(
   name: string,
-  requestHandler: RequestHandlerWithoutContext,
-  event: APIGatewayEvent,
-): Promise<LambdaResponse> => {
-  logger.info(`ENTRY handler: ${name}`);
-  const result = await requestHandler(event);
-  logger.info(`EXIT handler: ${name}`);
+  fn: RequestHandlerWithoutContext<T>,
+  event: T,
+) => {
+  logWrapper(name, 'ENTRY');
+  const result = await fn(event);
+  logWrapper(name, 'EXIT');
   return result;
 };
 
-const requestErrorHandlerWithLog = async (
+const handleAppError = async (
   name: string,
-  requestErrorHandler: RequestErrorHandler,
-  e: unknown,
-): Promise<LambdaResponse> => {
-  logger.error(`An error occurred in handler: ${name}`);
-  if (e instanceof AppError) {
-    logger.error(`Raw error for ${name}:`, e);
-    logger.error(`ENTRY Error handling: ${name}`, e);
-    const errorResult = requestErrorHandler(e);
-    logger.info(`EXIT Error handling: ${name}`);
-    return errorResult;
-  } else {
-    logger.error(`An unexpected error occurred in handler: ${name}`, String(e));
-    const error = new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error');
-    return httpErrorResponse(error);
-  }
+  errorHandler: RequestErrorHandler,
+  error: AppError,
+) => {
+  logErrorWrapper(name, 'ENTRY', error);
+  const result = errorHandler(error);
+  logWrapper(name, 'EXIT');
+  return result;
 };
+
+const handleOtherError = (name: string, error: unknown) => {
+  logErrorWrapper(name, 'ENTRY', error);
+  const result = httpErrorResponse(
+    new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error'),
+  );
+  logErrorWrapper(name, 'EXIT');
+  return result;
+};
+
+export const handlerFactory =
+  <T = APIGatewayProxyEvent>(
+    name: string,
+    requestHandler: RequestHandlerWithoutContext<T>,
+    errorHandler: RequestErrorHandler = httpErrorHandler,
+  ): RequestHandler<T> =>
+  async (event, context): Promise<LambdaResponse> => {
+    try {
+      logger.addContext(context);
+      return await execute(name, requestHandler, event);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        return await handleAppError(name, errorHandler, error);
+      }
+      return handleOtherError(name, error);
+    }
+  };

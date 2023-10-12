@@ -1,4 +1,4 @@
-import { APIGatewayEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { createUserUsecase } from '../../usecases/users/create-user-usecase';
 import {
   RequestHandlerWithoutContext,
@@ -11,7 +11,7 @@ import { CreateUserRequestSchema } from './schemas/user-requests';
 import { CreateUserData } from '../../domain/user/user';
 
 const createUserHandler: RequestHandlerWithoutContext = async (
-  event: APIGatewayEvent,
+  event,
 ): Promise<LambdaResponse> => {
   const data: CreateUserData = validateBody(CreateUserRequestSchema, event);
 

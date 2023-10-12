@@ -1,4 +1,3 @@
-import { APIGatewayEvent } from 'aws-lambda';
 import {
   RequestHandlerWithoutContext,
   handlerFactory,
@@ -14,7 +13,7 @@ import { validateBodyAndPathParams } from '../base/http/validators';
 import { HttpStatus } from '../base/http/http-status';
 
 const updateTaskHandler: RequestHandlerWithoutContext = async (
-  event: APIGatewayEvent,
+  event,
 ): Promise<LambdaResponse> => {
   const {
     body: updateTaskData,
