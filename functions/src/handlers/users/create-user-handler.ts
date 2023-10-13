@@ -1,4 +1,3 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
 import { createUserUsecase } from '../../usecases/users/create-user-usecase';
 import {
   RequestHandlerWithoutContext,

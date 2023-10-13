@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { deleteTaskUseCase } from '../../../../src/usecases/tasks/delete-task-usecase';
 import { handler } from '../../../../src/handlers/tasks/delete-task-handler';
 import { AppError } from '../../../../src/utils/errors/app-errors';
@@ -14,8 +14,15 @@ describe('deleteTaskHandler', () => {
   const dummyContext = {} as Context;
 
   const mockValidEvent = {
+    requestContext: {
+      authorizer: {
+        claims: {
+          sub: 'dummy-user-id',
+        },
+      },
+    },
     pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
-  } as unknown as APIGatewayEvent;
+  } as unknown as APIGatewayProxyEvent;
 
   test('valid request should return status 204 with no content', async () => {
     (deleteTaskUseCase as jest.Mock).mockResolvedValueOnce(undefined);
@@ -25,6 +32,7 @@ describe('deleteTaskHandler', () => {
     expect(result.body).toBeUndefined();
     expect(deleteTaskUseCase).toHaveBeenCalledTimes(1);
     expect(deleteTaskUseCase).toHaveBeenCalledWith(
+      mockValidEvent.requestContext.authorizer?.claims.sub,
       mockValidEvent.pathParameters!.id,
     );
   });
@@ -39,12 +47,21 @@ describe('deleteTaskHandler', () => {
     expect(JSON.parse(result.body!).code).toBe(ErrorCode.TASK_NOT_FOUND);
     expect(deleteTaskUseCase).toHaveBeenCalledTimes(1);
     expect(deleteTaskUseCase).toHaveBeenCalledWith(
+      mockValidEvent.requestContext.authorizer?.claims.sub,
       mockValidEvent.pathParameters!.id,
     );
   });
 
   test('invalid request should return status 400 with INVALID_PATH_PARAMETER', async () => {
-    const mockEvent = {} as unknown as APIGatewayEvent;
+    const mockEvent = {
+      requestContext: {
+        authorizer: {
+          claims: {
+            sub: 'dummy-user-id',
+          },
+        },
+      },
+    } as unknown as APIGatewayProxyEvent;
     const result = await handler(mockEvent, dummyContext);
 
     expect(result.statusCode).toBe(400);

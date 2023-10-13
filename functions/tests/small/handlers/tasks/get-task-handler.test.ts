@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { getTaskUseCase } from '../../../../src/usecases/tasks/get-task-usecase';
 import { Task } from '../../../../src/domain/task/task';
 import { handler } from '../../../../src/handlers/tasks/get-task-handler';
@@ -24,7 +24,14 @@ describe('getTaskHandler', () => {
 
   const mockValidEvent = {
     pathParameters: { id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003' },
-  } as unknown as APIGatewayEvent;
+    requestContext: {
+      authorizer: {
+        claims: {
+          sub: 'dummy-user-id',
+        },
+      },
+    },
+  } as unknown as APIGatewayProxyEvent;
 
   test('valid request should return the task with status 200', async () => {
     (getTaskUseCase as jest.Mock).mockResolvedValueOnce(dummyTask);
@@ -34,6 +41,7 @@ describe('getTaskHandler', () => {
     expect(JSON.parse(result.body!)).toEqual(dummyTask);
     expect(getTaskUseCase).toHaveBeenCalledTimes(1);
     expect(getTaskUseCase).toHaveBeenCalledWith(
+      mockValidEvent.requestContext.authorizer?.claims.sub,
       mockValidEvent.pathParameters!.id,
     );
   });
@@ -48,12 +56,21 @@ describe('getTaskHandler', () => {
     expect(JSON.parse(result.body!).code).toBe(ErrorCode.TASK_NOT_FOUND);
     expect(getTaskUseCase).toHaveBeenCalledTimes(1);
     expect(getTaskUseCase).toHaveBeenCalledWith(
+      mockValidEvent.requestContext.authorizer?.claims.sub,
       mockValidEvent.pathParameters!.id,
     );
   });
 
   test('invalid request should return status 400 with INVALID_PATH_PARAMETER', async () => {
-    const mockEvent = {} as unknown as APIGatewayEvent;
+    const mockEvent = {
+      requestContext: {
+        authorizer: {
+          claims: {
+            sub: 'dummy-user-id',
+          },
+        },
+      },
+    } as unknown as APIGatewayProxyEvent;
     const result = await handler(mockEvent, dummyContext);
 
     expect(result.statusCode).toBe(400);
