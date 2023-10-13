@@ -16,6 +16,8 @@ import { Task } from '../../../../src/domain/task/task';
 const documentMockClient = mockClient(DynamoDBDocumentClient);
 const TASK_TABLE_NAME = process.env.TASKS_TABLE_NAME;
 
+const userId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
+
 describe('taskRepository.create', () => {
   afterEach(() => {
     documentMockClient.reset();
@@ -26,7 +28,7 @@ describe('taskRepository.create', () => {
     const taskBody = { title: 'Test Task', description: 'Test Description' };
     documentMockClient.on(PutCommand).resolves({});
 
-    const createdTaskId = await taskRepository.create(taskBody);
+    const createdTaskId = await taskRepository.create(userId, taskBody);
 
     const callsOfPut = documentMockClient.commandCalls(PutCommand);
     expect(callsOfPut).toHaveLength(1);
@@ -50,7 +52,7 @@ describe('taskRepository.create', () => {
     const taskBody = { title: 'Test Task' };
     documentMockClient.on(PutCommand).resolves({});
 
-    const createdTaskId = await taskRepository.create(taskBody);
+    const createdTaskId = await taskRepository.create(userId, taskBody);
 
     const callsOfPut = documentMockClient.commandCalls(PutCommand);
     expect(callsOfPut).toHaveLength(1);
@@ -99,7 +101,7 @@ describe('taskRepository.findById', () => {
 
     documentMockClient.on(GetCommand).resolves({ Item: dummyTaskItem });
 
-    const result = await taskRepository.findById(dummyTaskId);
+    const result = await taskRepository.findById(userId, dummyTaskId);
 
     const callsOfGet = documentMockClient.commandCalls(GetCommand);
     expect(callsOfGet).toHaveLength(1);
@@ -115,7 +117,7 @@ describe('taskRepository.findById', () => {
 
   test('should return null if the task is not found', async () => {
     documentMockClient.on(GetCommand).resolves({});
-    const task = await taskRepository.findById('some-task-id');
+    const task = await taskRepository.findById(userId, 'some-task-id');
 
     expect(task).toBeNull();
     expect(documentMockClient.calls()).toHaveLength(1);
@@ -127,7 +129,7 @@ describe('taskRepository.findById', () => {
     };
 
     documentMockClient.on(GetCommand).resolves({ Item: invalidTaskItem });
-    await expect(taskRepository.findById(dummyTaskId)).rejects.toThrow(
+    await expect(taskRepository.findById(userId, dummyTaskId)).rejects.toThrow(
       DdbInternalServerError,
     );
     expect(documentMockClient.calls()).toHaveLength(1);
@@ -228,7 +230,7 @@ describe('taskRepository.update', () => {
         .on(UpdateCommand)
         .resolves({ Attributes: mockedReturnValue });
 
-      const result = await taskRepository.update(taskId, input);
+      const result = await taskRepository.update(userId, taskId, input);
 
       const callsOfUpdate = documentMockClient.commandCalls(UpdateCommand);
       expect(callsOfUpdate).toHaveLength(1);
@@ -262,7 +264,7 @@ describe('taskRepository.delete', () => {
   test('should delete a task for a valid task ID', async () => {
     documentMockClient.on(DeleteCommand).resolves({});
 
-    await taskRepository.delete(dummyTaskId);
+    await taskRepository.delete(userId, dummyTaskId);
 
     const callsOfDelete = documentMockClient.commandCalls(DeleteCommand);
     expect(callsOfDelete).toHaveLength(1);

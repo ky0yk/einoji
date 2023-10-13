@@ -12,6 +12,7 @@ describe('getTask', () => {
   });
 
   test('should return a task when it exists', async () => {
+    const userId = 'dummy-user-id';
     const taskId = 'some-task-id';
     const dummyTask: Task = {
       id: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
@@ -23,18 +24,19 @@ describe('getTask', () => {
     };
     (taskRepository.findById as jest.Mock).mockResolvedValueOnce(dummyTask);
 
-    const result = await getTaskUseCase(taskId);
+    const result = await getTaskUseCase(userId, taskId);
 
     expect(result).toEqual(dummyTask);
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.findById).toHaveBeenCalledWith(taskId);
+    expect(taskRepository.findById).toHaveBeenCalledWith(userId, taskId);
   });
 
   test('should throw AppError with TASK_NOT_FOUND when the task is not found', async () => {
+    const userId = 'dummy-user-id';
     const taskId = 'not-found-id';
     (taskRepository.findById as jest.Mock).mockResolvedValueOnce(null);
 
-    const err = await getTaskUseCase(taskId).catch((e: AppError) => e);
+    const err = await getTaskUseCase(userId, taskId).catch((e: AppError) => e);
     if (!(err instanceof AppError)) {
       fail('Error should be an instance of AppError');
     }
@@ -43,6 +45,6 @@ describe('getTask', () => {
     expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
 
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.findById).toHaveBeenCalledWith(taskId);
+    expect(taskRepository.findById).toHaveBeenCalledWith(userId, taskId);
   });
 });

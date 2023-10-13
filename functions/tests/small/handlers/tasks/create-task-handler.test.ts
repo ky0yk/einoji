@@ -1,6 +1,6 @@
 import { handler } from '../../../../src/handlers/tasks/create-task-handler';
 import { Task } from '../../../../src/domain/task/task';
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { createTaskUseCase } from '../../../../src/usecases/tasks/create-task-usecase';
 import { CreateTaskRequest } from '../../../../src/handlers/tasks/schemas/task-requests';
 import { ErrorCode } from '../../../../src/utils/errors/error-codes';
@@ -42,21 +42,33 @@ describe('Create Task Request Handler', () => {
     description: '牛乳と卵を買う',
   };
 
+  const requestContext = {
+    authorizer: {
+      claims: {
+        sub: 'dummy-user-id',
+      },
+    },
+  };
+
   const validEvent = {
     body: JSON.stringify(createReq),
-  } as unknown as APIGatewayEvent;
+    requestContext: requestContext,
+  } as unknown as APIGatewayProxyEvent;
 
   const validEventWithoutDescription = {
     body: JSON.stringify(createReqWithoutDescription),
-  } as unknown as APIGatewayEvent;
+    requestContext: requestContext,
+  } as unknown as APIGatewayProxyEvent;
 
   const InvalidEventWithoutTitle = {
     body: JSON.stringify(createReqWithoutTitle),
-  } as unknown as APIGatewayEvent;
+    requestContext: requestContext,
+  } as unknown as APIGatewayProxyEvent;
 
   const InvalidEventNullBody = {
     body: JSON.stringify(null),
-  } as unknown as APIGatewayEvent;
+    requestContext: requestContext,
+  } as unknown as APIGatewayProxyEvent;
 
   const dummyContext = {} as Context;
 
@@ -80,11 +92,17 @@ describe('Create Task Request Handler', () => {
       test(`should return 201 ${description}`, async () => {
         (createTaskUseCase as jest.Mock).mockResolvedValueOnce(expectedTask);
 
-        const result = await handler(request as APIGatewayEvent, dummyContext);
+        const result = await handler(
+          request as APIGatewayProxyEvent,
+          dummyContext,
+        );
         expect(result.statusCode).toBe(201);
         expect(JSON.parse(result.body!)).toEqual(expectedTask);
         expect(createTaskUseCase).toHaveBeenCalledTimes(1);
-        expect(createTaskUseCase).toHaveBeenCalledWith(body);
+        expect(createTaskUseCase).toHaveBeenCalledWith(
+          request.requestContext.authorizer?.claims.sub,
+          body,
+        );
       });
     });
   });
@@ -97,7 +115,10 @@ describe('Create Task Request Handler', () => {
 
     invalidFormatCases.forEach(({ request, situation }) => {
       test(`should return 400 with INVALID_PAYLOAD_FORMAT when ${situation}`, async () => {
-        const result = await handler(request as APIGatewayEvent, dummyContext);
+        const result = await handler(
+          request as APIGatewayProxyEvent,
+          dummyContext,
+        );
         expect(result.statusCode).toBe(400);
         expect(JSON.parse(result.body!).code).toBe(
           ErrorCode.INVALID_PAYLOAD_FORMAT,
@@ -113,8 +134,15 @@ describe('Create Task Request Handler', () => {
         request: {
           body: JSON.stringify({
             title: 'a'.repeat(101),
-          } as unknown as APIGatewayEvent),
-        },
+          }),
+          requestContext: {
+            authorizer: {
+              claims: {
+                sub: 'dummy-user-id',
+              },
+            },
+          },
+        } as unknown as APIGatewayProxyEvent,
         situation: 'title has 101 characters',
       },
       {
@@ -122,15 +150,25 @@ describe('Create Task Request Handler', () => {
           body: JSON.stringify({
             title: 'タイトル',
             description: 'a'.repeat(1001),
-          } as unknown as APIGatewayEvent),
-        },
+          }),
+          requestContext: {
+            authorizer: {
+              claims: {
+                sub: 'dummy-user-id',
+              },
+            },
+          },
+        } as unknown as APIGatewayProxyEvent,
         situation: 'description has 1001 characters',
       },
     ];
 
     invalidValueCases.forEach(({ request, situation }) => {
       test(`should return 422 with INVALID_PAYLOAD_VALUE but correct format when ${situation}`, async () => {
-        const result = await handler(request as APIGatewayEvent, dummyContext);
+        const result = await handler(
+          request as APIGatewayProxyEvent,
+          dummyContext,
+        );
         expect(result.statusCode).toBe(422);
         expect(JSON.parse(result.body!).code).toBe(
           ErrorCode.INVALID_PAYLOAD_VALUE,

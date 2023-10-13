@@ -9,6 +9,8 @@ import {
 } from '../../../helpers/task-repository-helpers';
 import { Task } from '../../../../src/domain/task/task';
 
+const dummyUserId = '1a7244c5-06d3-47e2-560e-f0b5534c8246';
+
 const dummyTaskItem: TaskItem = {
   userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246',
   taskId: 'f0f8f5a0-309d-11ec-8d3d-0242ac130003',
@@ -51,9 +53,9 @@ describe('taskRepository', () => {
         title: dummyTaskItem.title,
         description: dummyTaskItem.description,
       };
-      const newTaskId = await taskRepository.create(dummyTaskBody);
+      const newTaskId = await taskRepository.create(dummyUserId, dummyTaskBody);
 
-      const createdTask = await taskRepository.findById(newTaskId);
+      const createdTask = await taskRepository.findById(dummyUserId, newTaskId);
       expect(createdTask).toBeDefined();
 
       expect(createdTask!.id).toEqual(newTaskId);
@@ -68,14 +70,20 @@ describe('taskRepository', () => {
     afterEach(cleanupTasks);
 
     test('should return the TaskItem by correct task ID', async () => {
-      const Task = await taskRepository.findById(dummyTaskItem.taskId);
+      const Task = await taskRepository.findById(
+        dummyUserId,
+        dummyTaskItem.taskId,
+      );
       expect(Task).toEqual(dummyTask);
     });
 
     test('should return null if the task ID does not exist', async () => {
       const nonExistentTaskId = 'non-existent-task-id';
 
-      const TaskItem = await taskRepository.findById(nonExistentTaskId);
+      const TaskItem = await taskRepository.findById(
+        dummyUserId,
+        nonExistentTaskId,
+      );
       expect(TaskItem).toBeNull();
     });
   });
@@ -90,8 +98,15 @@ describe('taskRepository', () => {
         description: '新しい説明',
       };
 
-      await taskRepository.update(dummyTaskItem.taskId, updateData);
-      const updatedTask = await taskRepository.findById(dummyTaskItem.taskId);
+      await taskRepository.update(
+        dummyUserId,
+        dummyTaskItem.taskId,
+        updateData,
+      );
+      const updatedTask = await taskRepository.findById(
+        dummyUserId,
+        dummyTaskItem.taskId,
+      );
       expect(updatedTask!.title).toEqual(updateData.title);
       expect(updatedTask!.description).toEqual(updateData.description);
     });
@@ -101,8 +116,15 @@ describe('taskRepository', () => {
         title: '新しいタイトルのみ',
       };
 
-      await taskRepository.update(dummyTaskItem.taskId, updateData);
-      const updatedTask = await taskRepository.findById(dummyTaskItem.taskId);
+      await taskRepository.update(
+        dummyUserId,
+        dummyTaskItem.taskId,
+        updateData,
+      );
+      const updatedTask = await taskRepository.findById(
+        dummyUserId,
+        dummyTaskItem.taskId,
+      );
       expect(updatedTask!.title).toEqual(updateData.title);
       expect(updatedTask!.description).toEqual(dummyTaskItem.description);
     });
@@ -113,8 +135,11 @@ describe('taskRepository', () => {
     afterEach(cleanupTasks);
 
     test('should delete the task when provided a correct task ID', async () => {
-      await taskRepository.delete(dummyTaskItem.taskId);
-      const deletedTask = await taskRepository.findById(dummyTaskItem.taskId);
+      await taskRepository.delete(dummyUserId, dummyTaskItem.taskId);
+      const deletedTask = await taskRepository.findById(
+        dummyUserId,
+        dummyTaskItem.taskId,
+      );
       expect(deletedTask).toBeNull();
     });
   });

@@ -1,6 +1,6 @@
 import { Task } from '../../../../src/domain/task/task';
 import { updateTaskUsecase } from '../../../../src/usecases/tasks/update-task-usecase';
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { ErrorCode } from '../../../../src/utils/errors/error-codes';
 import { handler } from '../../../../src/handlers/tasks/update-task-handler';
 
@@ -43,6 +43,14 @@ describe('Update Task Request Handler', () => {
     description: 'ミステリー小説と料理の本を探す',
   };
 
+  const requestContext = {
+    authorizer: {
+      claims: {
+        sub: 'dummy-user-id',
+      },
+    },
+  };
+
   const dummyContext = {} as Context;
 
   describe('For a valid request', () => {
@@ -51,7 +59,8 @@ describe('Update Task Request Handler', () => {
         request: {
           body: JSON.stringify(updateReqWithDescription),
           pathParameters: { id: taskId },
-        } as unknown as APIGatewayEvent,
+          requestContext: requestContext,
+        } as unknown as APIGatewayProxyEvent,
         body: updateReqWithDescription,
         expectedTask: dummyTaskWithDescription,
         situation: 'with title and description',
@@ -60,7 +69,8 @@ describe('Update Task Request Handler', () => {
         request: {
           body: JSON.stringify(updateReqWithoutDescription),
           pathParameters: { id: taskId },
-        } as unknown as APIGatewayEvent,
+          requestContext: requestContext,
+        } as unknown as APIGatewayProxyEvent,
         body: updateReqWithoutDescription,
         expectedTask: dummyTaskWithoutDescription,
         situation: 'with only title',
@@ -69,7 +79,8 @@ describe('Update Task Request Handler', () => {
         request: {
           body: JSON.stringify(updateReqWithoutTitle),
           pathParameters: { id: taskId },
-        } as unknown as APIGatewayEvent,
+          requestContext: requestContext,
+        } as unknown as APIGatewayProxyEvent,
         body: updateReqWithoutTitle,
         expectedTask: dummyTaskWithoutDescription,
         situation: 'with only description',
@@ -84,7 +95,11 @@ describe('Update Task Request Handler', () => {
         expect(result.statusCode).toBe(200);
         expect(JSON.parse(result.body!)).toEqual(expectedTask);
         expect(updateTaskUsecase).toHaveBeenCalledTimes(1);
-        expect(updateTaskUsecase).toHaveBeenCalledWith(taskId, body);
+        expect(updateTaskUsecase).toHaveBeenCalledWith(
+          request.requestContext.authorizer?.claims.sub,
+          taskId,
+          body,
+        );
       });
     });
   });
@@ -95,14 +110,16 @@ describe('Update Task Request Handler', () => {
         request: {
           body: JSON.stringify(null),
           pathParameters: { id: taskId },
-        } as unknown as APIGatewayEvent,
+          requestContext: requestContext,
+        } as unknown as APIGatewayProxyEvent,
         expectedErrorCode: ErrorCode.INVALID_PAYLOAD_FORMAT,
         situation: 'body is null',
       },
       {
         request: {
           body: JSON.stringify(updateReqWithDescription),
-        } as unknown as APIGatewayEvent,
+          requestContext: requestContext,
+        } as unknown as APIGatewayProxyEvent,
         expectedErrorCode: ErrorCode.INVALID_PATH_PARAMETER,
         situation: 'path parameter is missing',
       },
@@ -127,7 +144,8 @@ describe('Update Task Request Handler', () => {
             description: dummyTaskWithDescription.description,
           }),
           pathParameters: { id: taskId },
-        } as unknown as APIGatewayEvent,
+          requestContext: requestContext,
+        } as unknown as APIGatewayProxyEvent,
         situation: 'title has 101 characters',
       },
       {
@@ -137,7 +155,8 @@ describe('Update Task Request Handler', () => {
             description: 'a'.repeat(1001),
           }),
           pathParameters: { id: taskId },
-        } as unknown as APIGatewayEvent,
+          requestContext: requestContext,
+        } as unknown as APIGatewayProxyEvent,
         situation: 'description has 1001 characters',
       },
     ];

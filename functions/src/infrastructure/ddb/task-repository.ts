@@ -37,6 +37,7 @@ const dynamoDBClient = new DynamoDBClient({
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDBClient);
 
 const createTaskItem: CreateTaskAction = async (
+  userId: string,
   body: CreateTaskPayload,
 ): Promise<string> => {
   const uuid = uuidv4();
@@ -45,7 +46,7 @@ const createTaskItem: CreateTaskAction = async (
   const putCommandInput: PutCommandInput = {
     TableName: TABLE_NAME,
     Item: {
-      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      userId: userId,
       taskId: uuid,
       title: body.title,
       description: body.description ? body.description : '',
@@ -61,12 +62,13 @@ const createTaskItem: CreateTaskAction = async (
 };
 
 const findTaskItemById: FindTaskByIdAction = async (
+  userId: string,
   taskId: string,
 ): Promise<Task | null> => {
   const commandInput = {
     TableName: TABLE_NAME,
     Key: {
-      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      userId: userId,
       taskId: taskId,
     },
   };
@@ -126,6 +128,7 @@ const buildUpdateTaskAttributes = (
 };
 
 const updateTaskItem: UpdateTaskAction = async (
+  userId: string,
   taskId: string,
   data: UpdateTaskAtLeastOne,
 ): Promise<Task> => {
@@ -138,7 +141,7 @@ const updateTaskItem: UpdateTaskAction = async (
   const commandInput = {
     TableName: TABLE_NAME,
     Key: {
-      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      userId: userId,
       taskId: taskId,
     },
     UpdateExpression: UpdateExpression,
@@ -161,12 +164,13 @@ const updateTaskItem: UpdateTaskAction = async (
 };
 
 const deleteTaskItem: DeleteTaskAction = async (
+  userId: string,
   taskId: string,
 ): Promise<void> => {
   const commandInput: DeleteCommandInput = {
     TableName: TABLE_NAME,
     Key: {
-      userId: '1a7244c5-06d3-47e2-560e-f0b5534c8246', // fixme 認証を導入するまでは固定値を使う
+      userId: userId,
       taskId: taskId,
     },
   };
