@@ -12,6 +12,7 @@ describe('deleteTaskUseCase', () => {
     (taskRepository.delete as jest.Mock).mockClear();
   });
 
+  const userId = 'dummy-user-id';
   const validTaskId = 'valid-task-id';
 
   test('given a valid taskId, should delete the task', async () => {
@@ -26,25 +27,27 @@ describe('deleteTaskUseCase', () => {
 
     (taskRepository.findById as jest.Mock).mockResolvedValue(dummyTask);
 
-    await deleteTaskUseCase(validTaskId);
+    await deleteTaskUseCase(userId, validTaskId);
 
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.findById).toHaveBeenCalledWith(validTaskId);
+    expect(taskRepository.findById).toHaveBeenCalledWith(userId, validTaskId);
     expect(taskRepository.delete).toHaveBeenCalledTimes(1);
-    expect(taskRepository.delete).toHaveBeenCalledWith(validTaskId);
+    expect(taskRepository.delete).toHaveBeenCalledWith(userId, validTaskId);
   });
 
   test('given a non-existent taskId, should throw AppError with TASK_NOT_FOUND', async () => {
     (taskRepository.findById as jest.Mock).mockResolvedValue(null);
 
-    const err = await deleteTaskUseCase(validTaskId).catch((e: Error) => e);
+    const err = await deleteTaskUseCase(userId, validTaskId).catch(
+      (e: Error) => e,
+    );
 
     if (!(err instanceof AppError)) {
       fail('Error should be an instance of AppError');
     }
     expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.findById).toHaveBeenCalledWith(validTaskId);
+    expect(taskRepository.findById).toHaveBeenCalledWith(userId, validTaskId);
     expect(taskRepository.delete).not.toHaveBeenCalled();
   });
 });

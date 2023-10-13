@@ -11,6 +11,7 @@ describe('updateTaskUsecase', () => {
     (taskRepository.update as jest.Mock).mockClear();
   });
 
+  const userId = 'dummy-user-id';
   const validTaskId = 'valid-task-id';
   const situationWithOnlyTitle = 'update data contains only title';
   const situationWithTitleAndDesc =
@@ -39,10 +40,11 @@ describe('updateTaskUsecase', () => {
 
       (taskRepository.update as jest.Mock).mockResolvedValue(dummyUpdatedTask);
 
-      const result = await updateTaskUsecase(validTaskId, updateData);
+      const result = await updateTaskUsecase(userId, validTaskId, updateData);
 
       expect(taskRepository.update).toHaveBeenCalledTimes(1);
       expect(taskRepository.update).toHaveBeenCalledWith(
+        userId,
         validTaskId,
         updateData,
       );
@@ -51,7 +53,9 @@ describe('updateTaskUsecase', () => {
   );
 
   test('given update data is empty, should throw TaskUpdateRuleError', async () => {
-    const err = await updateTaskUsecase(validTaskId, {}).catch((e) => e);
+    const err = await updateTaskUsecase(userId, validTaskId, {}).catch(
+      (e) => e,
+    );
 
     expect(err).toBeInstanceOf(AppError);
     expect(err.code).toEqual(ErrorCode.TASK_UPDATE_RULE_ERROR);

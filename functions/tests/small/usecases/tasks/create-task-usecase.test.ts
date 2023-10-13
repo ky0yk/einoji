@@ -38,6 +38,7 @@ describe('createTaskUseCase', () => {
     updatedAt: '2021-06-22T14:24:02.071Z',
   };
 
+  const userId = 'dummy-user-id';
   const validTaskId = 'valid-task-id';
 
   test.each`
@@ -48,13 +49,13 @@ describe('createTaskUseCase', () => {
     (taskRepository.create as jest.Mock).mockResolvedValue(validTaskId);
     (taskRepository.findById as jest.Mock).mockResolvedValue(task);
 
-    const result = await createTaskUseCase(request);
+    const result = await createTaskUseCase(userId, request);
 
     expect(taskRepository.create).toHaveBeenCalledTimes(1);
-    expect(taskRepository.create).toHaveBeenCalledWith(request);
+    expect(taskRepository.create).toHaveBeenCalledWith(userId, request);
 
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.findById).toHaveBeenCalledWith(validTaskId);
+    expect(taskRepository.findById).toHaveBeenCalledWith(userId, validTaskId);
 
     expect(result).toEqual(task);
   });
@@ -65,14 +66,19 @@ describe('createTaskUseCase', () => {
     (taskRepository.create as jest.Mock).mockResolvedValue(invalidTaskId);
     (taskRepository.findById as jest.Mock).mockResolvedValue(null);
 
-    const err = await createTaskUseCase(dummyCreateTaskRequest).catch((e) => e);
+    const err = await createTaskUseCase(userId, dummyCreateTaskRequest).catch(
+      (e) => e,
+    );
     expect(err).toBeInstanceOf(AppError);
     expect(err.code).toBe(ErrorCode.TASK_NOT_FOUND);
 
     expect(taskRepository.create).toHaveBeenCalledTimes(1);
-    expect(taskRepository.create).toHaveBeenCalledWith(dummyCreateTaskRequest);
+    expect(taskRepository.create).toHaveBeenCalledWith(
+      userId,
+      dummyCreateTaskRequest,
+    );
 
     expect(taskRepository.findById).toHaveBeenCalledTimes(1);
-    expect(taskRepository.findById).toHaveBeenCalledWith(invalidTaskId);
+    expect(taskRepository.findById).toHaveBeenCalledWith(userId, invalidTaskId);
   });
 });
