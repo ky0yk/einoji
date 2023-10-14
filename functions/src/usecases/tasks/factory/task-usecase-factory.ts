@@ -1,5 +1,5 @@
 import { AppError } from '../../../utils/errors/app-errors';
-import { usecaseFactory } from '../../base/factory/usecase-factory';
+import { useCaseFactory } from '../../base/factory/usecase-factory';
 import { taskUsecaseErrorHandler } from './task-usecase-error-handler';
 
 type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
@@ -10,5 +10,5 @@ export const taskUsecaseFactory = <T, P extends unknown[]>(
   useCase: UseCase<T, P>,
   errorHandler: UseCaseErrorHandler = taskUsecaseErrorHandler,
 ): UseCase<T, P> => {
-  return usecaseFactory(name, useCase, errorHandler);
+  return useCaseFactory(name, useCase, errorHandler);
 };

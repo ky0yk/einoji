@@ -1,30 +1,29 @@
 import { AppError } from '../../../utils/errors/app-errors';
 import { logger } from '../../../utils/logger';
-import { taskUsecaseErrorHandler } from '../../tasks/factory/task-usecase-error-handler';
 import { ErrorCode } from '../../../utils/errors/error-codes';
 
 export type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
 export type UseCaseErrorHandler = (error: Error) => AppError;
 
-export const usecaseFactory = <T, P extends unknown[]>(
+export const useCaseFactory = <T, P extends unknown[]>(
   name: string,
   useCase: UseCase<T, P>,
-  errorHandler: UseCaseErrorHandler = taskUsecaseErrorHandler,
+  errorHandler: UseCaseErrorHandler,
 ): UseCase<T, P> => {
   return async (...args: P): Promise<T> => {
     try {
-      return await execute(name, useCase, ...args);
+      return await executeUseCase(name, useCase, ...args);
     } catch (e: unknown) {
       if (e instanceof Error) {
         logger.error(`Raw error for ${name}:`, e);
-        throw handleError(name, errorHandler, e);
+        throw handleKnownError(name, errorHandler, e);
       }
-      throw handleUnexpectedError(name, e);
+      throw handleUnknownError(name, e);
     }
   };
 };
 
-const execute = async <T, P extends unknown[]>(
+const executeUseCase = async <T, P extends unknown[]>(
   name: string,
   useCase: UseCase<T, P>,
   ...args: P
@@ -35,7 +34,7 @@ const execute = async <T, P extends unknown[]>(
   return result;
 };
 
-const handleError = (
+const handleKnownError = (
   name: string,
   errorHandler: UseCaseErrorHandler,
   error: Error,
@@ -46,7 +45,7 @@ const handleError = (
   return result;
 };
 
-const handleUnexpectedError = (name: string, error: unknown): AppError => {
+const handleUnknownError = (name: string, error: unknown): AppError => {
   logErrorWrapper(name, 'ENTRY', error);
   const result = new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error');
   logErrorWrapper(name, 'EXIT');

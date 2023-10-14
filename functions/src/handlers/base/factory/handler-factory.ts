@@ -25,16 +25,16 @@ export const handlerFactory =
   async (event, context): Promise<LambdaResponse> => {
     try {
       logger.addContext(context);
-      return await execute(name, requestHandler, event);
+      return await handleRequest(name, requestHandler, event);
     } catch (error: unknown) {
       if (error instanceof AppError) {
-        return handleAppError(name, errorHandler, error);
+        return handleKnownError(name, errorHandler, error);
       }
-      return handleUnexpectedError(name, error);
+      return handlerUnknownError(name, error);
     }
   };
 
-const execute = async <T = APIGatewayProxyEvent>(
+const handleRequest = async <T = APIGatewayProxyEvent>(
   name: string,
   fn: RequestHandlerWithoutContext<T>,
   event: T,
@@ -45,7 +45,7 @@ const execute = async <T = APIGatewayProxyEvent>(
   return result;
 };
 
-const handleAppError = (
+const handleKnownError = (
   name: string,
   errorHandler: RequestErrorHandler,
   error: AppError,
@@ -56,10 +56,7 @@ const handleAppError = (
   return result;
 };
 
-const handleUnexpectedError = (
-  name: string,
-  error: unknown,
-): LambdaResponse => {
+const handlerUnknownError = (name: string, error: unknown): LambdaResponse => {
   logErrorWrapper(name, 'ENTRY', error);
   const result = httpErrorResponse(
     new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error'),

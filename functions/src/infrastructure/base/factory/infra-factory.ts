@@ -1,30 +1,30 @@
-import { RepositoryAction } from '../../../usecases/base/contract/base-contracts';
+import { InfraAction } from '../../../usecases/base/contract/base-contracts';
 import { logger } from '../../../utils/logger';
 import { InfraError } from '../errors/infra-errors';
 
-type OpsErrorHandler = (error: Error) => InfraError;
+type InfraErrorHandler = (error: Error) => InfraError;
 
 export const infraFactory = <T, P extends unknown[]>(
   name: string,
-  operation: RepositoryAction<T, P>,
-  errorHandler: OpsErrorHandler,
-): RepositoryAction<T, P> => {
+  action: InfraAction<T, P>,
+  errorHandler: InfraErrorHandler,
+): InfraAction<T, P> => {
   return async (...args: P): Promise<T> => {
     try {
-      return await execute(name, operation, ...args);
+      return await executeAction(name, action, ...args);
     } catch (e: unknown) {
       if (e instanceof Error) {
         logger.error(`Raw error for ${name}:`, e);
-        throw handleError(name, errorHandler, e);
+        throw handleKnownError(name, errorHandler, e);
       }
-      throw handleUnexpectedError(name, e);
+      throw handleUnknownError(name, e);
     }
   };
 };
 
-const execute = async <T, P extends unknown[]>(
+const executeAction = async <T, P extends unknown[]>(
   name: string,
-  operation: RepositoryAction<T, P>,
+  operation: InfraAction<T, P>,
   ...args: P
 ): Promise<T> => {
   logWrapper(name, 'ENTRY');
@@ -33,9 +33,9 @@ const execute = async <T, P extends unknown[]>(
   return result;
 };
 
-const handleError = (
+const handleKnownError = (
   name: string,
-  processError: OpsErrorHandler,
+  processError: InfraErrorHandler,
   error: Error,
 ): InfraError => {
   logErrorWrapper(name, 'ENTRY', error);
@@ -44,7 +44,7 @@ const handleError = (
   return result;
 };
 
-const handleUnexpectedError = (name: string, error: unknown): Error => {
+const handleUnknownError = (name: string, error: unknown): Error => {
   logErrorWrapper(name, 'ENTRY', error);
   const result = new Error('An unexpected error');
   logErrorWrapper(name, 'EXIT');
@@ -52,6 +52,6 @@ const handleUnexpectedError = (name: string, error: unknown): Error => {
 };
 
 const logWrapper = (name: string, action: string) =>
-  logger.info(`${action} usecase: ${name}`);
+  logger.info(`${action} infra: ${name}`);
 const logErrorWrapper = (name: string, action: string, error?: unknown) =>
-  logger.error(`${action} error in usecase: ${name}`, String(error));
+  logger.error(`${action} error in infra: ${name}`, String(error));

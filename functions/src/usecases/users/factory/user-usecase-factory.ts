@@ -1,7 +1,7 @@
 import {
   UseCase,
   UseCaseErrorHandler,
-  usecaseFactory,
+  useCaseFactory,
 } from '../../base/factory/usecase-factory';
 import { userUsecaseErrorHandler } from './user-usecase-error-handler';
 
@@ -10,5 +10,5 @@ export const userUseCaseFactory = <T, P extends unknown[]>(
   useCase: UseCase<T, P>,
   errorHandler: UseCaseErrorHandler = userUsecaseErrorHandler,
 ): UseCase<T, P> => {
-  return usecaseFactory(name, useCase, errorHandler);
+  return useCaseFactory(name, useCase, errorHandler);
 };
