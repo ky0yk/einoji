@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
-import { logger } from '../../../utils/logger';
+import { createLoggerFunctionsForLayer, logger } from '../../../utils/logger';
 import { AppError } from '../../../utils/errors/app-errors';
 import { ErrorCode } from '../../../utils/errors/error-codes';
 import { LambdaResponse, httpErrorResponse } from '../http/http-response';
@@ -34,14 +34,16 @@ export const handlerFactory =
     }
   };
 
+const { log, logError } = createLoggerFunctionsForLayer('handler');
+
 const handleRequest = async <T = APIGatewayProxyEvent>(
   name: string,
   fn: RequestHandlerWithoutContext<T>,
   event: T,
 ): Promise<LambdaResponse> => {
-  logWrapper(name, 'ENTRY');
+  log('ENTRY', name);
   const result = await fn(event);
-  logWrapper(name, 'EXIT');
+  logError('ENTRY', name);
   return result;
 };
 
@@ -50,22 +52,17 @@ const handleKnownError = (
   errorHandler: RequestErrorHandler,
   error: AppError,
 ): LambdaResponse => {
-  logErrorWrapper(name, 'ENTRY', error);
+  logError('ENTRY', name, error);
   const result = errorHandler(error);
-  logWrapper(name, 'EXIT');
+  log('ENTRY', name);
   return result;
 };
 
 const handlerUnknownError = (name: string, error: unknown): LambdaResponse => {
-  logErrorWrapper(name, 'ENTRY', error);
+  logError('ENTRY', name, error);
   const result = httpErrorResponse(
     new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error'),
   );
-  logErrorWrapper(name, 'EXIT');
+  logError('ENTRY', name);
   return result;
 };
-
-const logWrapper = (name: string, action: string) =>
-  logger.info(`${action} handler: ${name}`);
-const logErrorWrapper = (name: string, action: string, error?: unknown) =>
-  logger.error(`${action} error in handler: ${name}`, String(error));

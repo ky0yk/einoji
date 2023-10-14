@@ -1,8 +1,10 @@
 import { InfraAction } from '../../../usecases/base/contract/base-contracts';
-import { logger } from '../../../utils/logger';
+import { createLoggerFunctionsForLayer, logger } from '../../../utils/logger';
 import { InfraError } from '../errors/infra-errors';
 
 type InfraErrorHandler = (error: Error) => InfraError;
+
+const { log, logError } = createLoggerFunctionsForLayer('infra');
 
 export const infraFactory = <T, P extends unknown[]>(
   name: string,
@@ -27,9 +29,9 @@ const executeAction = async <T, P extends unknown[]>(
   operation: InfraAction<T, P>,
   ...args: P
 ): Promise<T> => {
-  logWrapper(name, 'ENTRY');
+  log('ENTRY', name);
   const result = await operation(...args);
-  logWrapper(name, 'EXIT');
+  log('EXIT', name);
   return result;
 };
 
@@ -38,20 +40,15 @@ const handleKnownError = (
   processError: InfraErrorHandler,
   error: Error,
 ): InfraError => {
-  logErrorWrapper(name, 'ENTRY', error);
+  logError('ENTRY', name, error);
   const result = processError(error);
-  logWrapper(name, 'EXIT');
+  log('EXIT', name);
   return result;
 };
 
 const handleUnknownError = (name: string, error: unknown): Error => {
-  logErrorWrapper(name, 'ENTRY', error);
+  logError('ENTRY', name, error);
   const result = new Error('An unexpected error');
-  logErrorWrapper(name, 'EXIT');
+  logError('EXIT', name);
   return result;
 };
-
-const logWrapper = (name: string, action: string) =>
-  logger.info(`${action} infra: ${name}`);
-const logErrorWrapper = (name: string, action: string, error?: unknown) =>
-  logger.error(`${action} error in infra: ${name}`, String(error));

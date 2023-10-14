@@ -1,9 +1,11 @@
 import { AppError } from '../../../utils/errors/app-errors';
-import { logger } from '../../../utils/logger';
+import { createLoggerFunctionsForLayer, logger } from '../../../utils/logger';
 import { ErrorCode } from '../../../utils/errors/error-codes';
 
 export type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
 export type UseCaseErrorHandler = (error: Error) => AppError;
+
+const { log, logError } = createLoggerFunctionsForLayer('usecase');
 
 export const useCaseFactory = <T, P extends unknown[]>(
   name: string,
@@ -28,9 +30,9 @@ const executeUseCase = async <T, P extends unknown[]>(
   useCase: UseCase<T, P>,
   ...args: P
 ): Promise<T> => {
-  logWrapper(name, 'ENTRY');
+  log('ENTRY', name);
   const result = await useCase(...args);
-  logWrapper(name, 'EXIT');
+  log('EXIT', name);
   return result;
 };
 
@@ -39,20 +41,15 @@ const handleKnownError = (
   errorHandler: UseCaseErrorHandler,
   error: Error,
 ): AppError => {
-  logErrorWrapper(name, 'ENTRY', error);
+  logError('ENTRY', name, error);
   const result = errorHandler(error);
-  logWrapper(name, 'EXIT');
+  log('EXIT', name);
   return result;
 };
 
 const handleUnknownError = (name: string, error: unknown): AppError => {
-  logErrorWrapper(name, 'ENTRY', error);
+  logError('ENTRY', name, error);
   const result = new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error');
-  logErrorWrapper(name, 'EXIT');
+  logError('EXIT', name);
   return result;
 };
-
-const logWrapper = (name: string, action: string) =>
-  logger.info(`${action} usecase: ${name}`);
-const logErrorWrapper = (name: string, action: string, error?: unknown) =>
-  logger.error(`${action} error in usecase: ${name}`, String(error));
