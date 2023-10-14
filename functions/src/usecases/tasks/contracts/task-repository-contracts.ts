@@ -1,19 +1,13 @@
 import { Task } from '../../../domain/task/task';
-import { RepositoryAction } from '../../base/contract/base-contracts';
+import { InfraAction } from '../../base/contract/base-contracts';
 
-export type CreateTaskAction = RepositoryAction<
-  string,
-  [string, CreateTaskPayload]
->;
-export type FindTaskByIdAction = RepositoryAction<
-  Task | null,
-  [string, string]
->;
-export type UpdateTaskAction = RepositoryAction<
+export type CreateTaskAction = InfraAction<string, [string, CreateTaskPayload]>;
+export type FindTaskByIdAction = InfraAction<Task | null, [string, string]>;
+export type UpdateTaskAction = InfraAction<
   Task,
   [string, string, UpdateTaskAtLeastOne]
 >;
-export type DeleteTaskAction = RepositoryAction<void, [string, string]>;
+export type DeleteTaskAction = InfraAction<void, [string, string]>;
 
 export type TaskRepository = {
   create: CreateTaskAction;

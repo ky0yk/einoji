@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
-import { logger } from '../../../utils/logger';
+import { createLoggerFunctionsForLayer, logger } from '../../../utils/logger';
 import { AppError } from '../../../utils/errors/app-errors';
 import { ErrorCode } from '../../../utils/errors/error-codes';
 import { LambdaResponse, httpErrorResponse } from '../http/http-response';
@@ -16,41 +16,7 @@ export type RequestHandlerWithoutContext<T = APIGatewayProxyEvent> = (
 
 export type RequestErrorHandler = (error: AppError) => LambdaResponse;
 
-const logWrapper = (name: string, action: string) =>
-  logger.info(`${action} handler: ${name}`);
-const logErrorWrapper = (name: string, action: string, error?: unknown) =>
-  logger.error(`${action} error in handler: ${name}`, String(error));
-
-const execute = async <T = APIGatewayProxyEvent>(
-  name: string,
-  fn: RequestHandlerWithoutContext<T>,
-  event: T,
-) => {
-  logWrapper(name, 'ENTRY');
-  const result = await fn(event);
-  logWrapper(name, 'EXIT');
-  return result;
-};
-
-const handleAppError = async (
-  name: string,
-  errorHandler: RequestErrorHandler,
-  error: AppError,
-) => {
-  logErrorWrapper(name, 'ENTRY', error);
-  const result = errorHandler(error);
-  logWrapper(name, 'EXIT');
-  return result;
-};
-
-const handleOtherError = (name: string, error: unknown) => {
-  logErrorWrapper(name, 'ENTRY', error);
-  const result = httpErrorResponse(
-    new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error'),
-  );
-  logErrorWrapper(name, 'EXIT');
-  return result;
-};
+const { log, logError } = createLoggerFunctionsForLayer('HANDLER');
 
 export const handlerFactory =
   <T = APIGatewayProxyEvent>(
@@ -61,11 +27,42 @@ export const handlerFactory =
   async (event, context): Promise<LambdaResponse> => {
     try {
       logger.addContext(context);
-      return await execute(name, requestHandler, event);
+      return await handleRequest(name, requestHandler, event);
     } catch (error: unknown) {
       if (error instanceof AppError) {
-        return await handleAppError(name, errorHandler, error);
+        return handleKnownError(name, errorHandler, error);
       }
-      return handleOtherError(name, error);
+      return handlerUnknownError(name, error);
     }
   };
+
+const handleRequest = async <T = APIGatewayProxyEvent>(
+  name: string,
+  fn: RequestHandlerWithoutContext<T>,
+  event: T,
+): Promise<LambdaResponse> => {
+  log('ENTRY', name);
+  const result = await fn(event);
+  logError('ENTRY', name);
+  return result;
+};
+
+const handleKnownError = (
+  name: string,
+  errorHandler: RequestErrorHandler,
+  error: AppError,
+): LambdaResponse => {
+  logError('ENTRY', name, error);
+  const result = errorHandler(error);
+  log('ENTRY', name);
+  return result;
+};
+
+const handlerUnknownError = (name: string, error: unknown): LambdaResponse => {
+  logError('ENTRY', name, error);
+  const result = httpErrorResponse(
+    new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error'),
+  );
+  logError('ENTRY', name);
+  return result;
+};

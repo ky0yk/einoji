@@ -1,3 +1,1 @@
-export type RepositoryAction<T, P extends unknown[]> = (
-  ...args: P
-) => Promise<T>;
+export type InfraAction<T, P extends unknown[]> = (...args: P) => Promise<T>;

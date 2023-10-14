@@ -1,48 +1,54 @@
-import { RepositoryAction } from '../../../usecases/base/contract/base-contracts';
-import { logger } from '../../../utils/logger';
+import { InfraAction } from '../../../usecases/base/contract/base-contracts';
+import { createLoggerFunctionsForLayer, logger } from '../../../utils/logger';
 import { InfraError } from '../errors/infra-errors';
 
-type OpsErrorHandler = (error: Error) => InfraError;
+type InfraErrorHandler = (error: Error) => InfraError;
+
+const { log, logError } = createLoggerFunctionsForLayer('INFRA');
 
 export const infraFactory = <T, P extends unknown[]>(
   name: string,
-  operation: RepositoryAction<T, P>,
-  errorHandler: OpsErrorHandler,
-): RepositoryAction<T, P> => {
+  action: InfraAction<T, P>,
+  errorHandler: InfraErrorHandler,
+): InfraAction<T, P> => {
   return async (...args: P): Promise<T> => {
     try {
-      return await operationWithLog(name, operation, ...args);
+      return await executeAction(name, action, ...args);
     } catch (e: unknown) {
-      return await operationErrorHandlerWithLog(name, errorHandler, e);
+      if (e instanceof Error) {
+        logger.error(`Raw error for ${name}:`, e);
+        throw handleKnownError(name, errorHandler, e);
+      }
+      throw handleUnknownError(name, e);
     }
   };
 };
 
-const operationWithLog = async <T, P extends unknown[]>(
+const executeAction = async <T, P extends unknown[]>(
   name: string,
-  operation: RepositoryAction<T, P>,
+  operation: InfraAction<T, P>,
   ...args: P
 ): Promise<T> => {
-  logger.info(`ENTRY infra: ${name}`);
+  log('ENTRY', name);
   const result = await operation(...args);
-  logger.info(`EXIT infra: ${name}`);
+  log('EXIT', name);
   return result;
 };
 
-const operationErrorHandlerWithLog = async <T>(
+const handleKnownError = (
   name: string,
-  processError: OpsErrorHandler,
-  e: unknown,
-): Promise<T> => {
-  logger.error(`An error occurred in infra: ${name}`);
-  if (e instanceof Error) {
-    logger.error(`Raw error for ${name}:`, e);
-    logger.error(`ENTRY infra error handling: ${name}`);
-    const errorResult = processError(e);
-    logger.info(`EXIT infra error handling: ${name}`, errorResult);
-    throw errorResult;
-  } else {
-    logger.error(`unexpected error occurred in infra: ${name}}`);
-    throw new Error('Unknown error');
-  }
+  processError: InfraErrorHandler,
+  error: Error,
+): InfraError => {
+  logError('ENTRY', name, error);
+  const result = processError(error);
+  log('EXIT', name);
+  return result;
+};
+
+const handleUnknownError = (name: string, error: unknown): Error => {
+  logError('ENTRY', name, error);
+  const result = new Error('An unexpected error');
+  logError('EXIT', name);
+  return result;
 };
