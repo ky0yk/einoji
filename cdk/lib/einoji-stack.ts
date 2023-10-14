@@ -58,56 +58,52 @@ export class EinojiStack extends cdk.Stack {
       sortKey: { name: 'taskId', type: ddb.AttributeType.STRING },
     });
 
+    const taskFnCommonEnv = {
+      TASKS_TABLE_NAME: tasksTable.tableName,
+    };
+
+    const userFnCommonEnv = {
+      USER_POOL_CLIENTID: userPoolClientId.stringValue,
+    };
+
     const createTaskFn = this.createFunction(
       'CreateTaskFn',
       'tasks/create-task-handler.ts',
-      {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
+      taskFnCommonEnv,
     );
     tasksTable.grantReadWriteData(createTaskFn);
 
     const getTaskFn = this.createFunction(
       'GetTaskFn',
       'tasks/get-task-handler.ts',
-      {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
+      taskFnCommonEnv,
     );
     tasksTable.grantReadData(getTaskFn);
 
     const updateTaskFn = this.createFunction(
       'UpdateTaskFn',
       'tasks/update-task-handler.ts',
-      {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
+      taskFnCommonEnv,
     );
     tasksTable.grantReadWriteData(updateTaskFn);
 
     const deleteTaskFn = this.createFunction(
       'DeleteTaskFn',
       'tasks/delete-task-handler.ts',
-      {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
+      taskFnCommonEnv,
     );
     tasksTable.grantReadWriteData(deleteTaskFn);
 
     const createUserFn = this.createFunction(
       'CreateUserFn',
       'users/create-user-handler.ts',
-      {
-        USER_POOL_CLIENTID: userPoolClientId.stringValue,
-      },
+      userFnCommonEnv,
     );
 
     const authUserFn = this.createFunction(
       'AuthUserFn',
       'users/auth-user-handler.ts',
-      {
-        USER_POOL_CLIENTID: userPoolClientId.stringValue,
-      },
+      userFnCommonEnv,
     );
 
     const api = new apigw.RestApi(this, 'TaskApiGw', {
