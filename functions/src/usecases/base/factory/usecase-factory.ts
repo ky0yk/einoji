@@ -1,6 +1,7 @@
 import { AppError } from '../../../utils/errors/app-errors';
 import { logger } from '../../../utils/logger';
 import { taskUsecaseErrorHandler } from '../../tasks/factory/task-usecase-error-handler';
+import { ErrorCode } from '../../../utils/errors/error-codes';
 
 export type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
 export type UseCaseErrorHandler = (error: Error) => AppError;
@@ -12,38 +13,47 @@ export const usecaseFactory = <T, P extends unknown[]>(
 ): UseCase<T, P> => {
   return async (...args: P): Promise<T> => {
     try {
-      return await usecaseWithLog(name, useCase, ...args);
+      return await execute(name, useCase, ...args);
     } catch (e: unknown) {
-      return await usecaseErrorHandlerWithLog(name, errorHandler, e);
+      if (e instanceof Error) {
+        logger.error(`Raw error for ${name}:`, e);
+        throw handleError(name, errorHandler, e);
+      }
+      throw handleUnexpectedError(name, e);
     }
   };
 };
 
-const usecaseWithLog = async <T, P extends unknown[]>(
+const execute = async <T, P extends unknown[]>(
   name: string,
   useCase: UseCase<T, P>,
   ...args: P
 ): Promise<T> => {
-  logger.info(`ENTRY usecase: ${name}`);
+  logWrapper(name, 'ENTRY');
   const result = await useCase(...args);
-  logger.info(`EXIT usecase: ${name}`);
+  logWrapper(name, 'EXIT');
   return result;
 };
 
-const usecaseErrorHandlerWithLog = async <T>(
+const handleError = (
   name: string,
-  processError: UseCaseErrorHandler,
-  e: unknown,
-): Promise<T> => {
-  logger.error(`An error occurred in usecase: ${name}`);
-  if (e instanceof Error) {
-    logger.error(`Raw error for ${name}:`, e);
-    logger.error(`ENTRY usecase error handling: ${name}`);
-    const errorResult = processError(e);
-    logger.info(`EXIT usecase error handling: ${name}`, errorResult);
-    throw errorResult;
-  } else {
-    logger.info(`unexpected error occurred in usecase: ${name}`);
-    throw new Error('Unknown error');
-  }
+  errorHandler: UseCaseErrorHandler,
+  error: Error,
+): AppError => {
+  logErrorWrapper(name, 'ENTRY', error);
+  const result = errorHandler(error);
+  logWrapper(name, 'EXIT');
+  return result;
 };
+
+const handleUnexpectedError = (name: string, error: unknown): AppError => {
+  logErrorWrapper(name, 'ENTRY', error);
+  const result = new AppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error');
+  logErrorWrapper(name, 'EXIT');
+  return result;
+};
+
+const logWrapper = (name: string, action: string) =>
+  logger.info(`${action} usecase: ${name}`);
+const logErrorWrapper = (name: string, action: string, error?: unknown) =>
+  logger.error(`${action} error in usecase: ${name}`, String(error));
