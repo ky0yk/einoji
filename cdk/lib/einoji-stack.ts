@@ -4,6 +4,7 @@ import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib';
+import kebabCase from 'just-kebab-case';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
@@ -57,69 +58,53 @@ export class EinojiStack extends cdk.Stack {
       sortKey: { name: 'taskId', type: ddb.AttributeType.STRING },
     });
 
-    const createTaskFn = new NodejsFunction(this, 'CreateTaskFn', {
-      functionName: `${SYSTEM_NAME}-${ENV_NAME}-create-task-fn`,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/tasks/create-task-handler.ts',
-      handler: 'handler',
-      environment: {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
-    });
+    const taskFnCommonEnv = {
+      TASKS_TABLE_NAME: tasksTable.tableName,
+    };
+
+    const userFnCommonEnv = {
+      USER_POOL_CLIENTID: userPoolClientId.stringValue,
+    };
+
+    const createTaskFn = this.createFunction(
+      'CreateTaskFn',
+      'tasks/create-task-handler.ts',
+      taskFnCommonEnv,
+    );
     tasksTable.grantReadWriteData(createTaskFn);
 
-    const getTaskFn = new NodejsFunction(this, 'GetTaskFn', {
-      functionName: `${SYSTEM_NAME}-${ENV_NAME}-get-task-fn`,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/tasks/get-task-handler.ts',
-      handler: 'handler',
-      environment: {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
-    });
+    const getTaskFn = this.createFunction(
+      'GetTaskFn',
+      'tasks/get-task-handler.ts',
+      taskFnCommonEnv,
+    );
     tasksTable.grantReadData(getTaskFn);
 
-    const updateTaskFn = new NodejsFunction(this, 'UpdateTaskFn', {
-      functionName: `${SYSTEM_NAME}-${ENV_NAME}-update-task-fn`,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/tasks/update-task-handler.ts',
-      handler: 'handler',
-      environment: {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
-    });
+    const updateTaskFn = this.createFunction(
+      'UpdateTaskFn',
+      'tasks/update-task-handler.ts',
+      taskFnCommonEnv,
+    );
     tasksTable.grantReadWriteData(updateTaskFn);
 
-    const deleteTaskFn = new NodejsFunction(this, 'DeleteTaskFn', {
-      functionName: `${SYSTEM_NAME}-${ENV_NAME}-delete-task-fn`,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/tasks/delete-task-handler.ts',
-      handler: 'handler',
-      environment: {
-        TASKS_TABLE_NAME: tasksTable.tableName,
-      },
-    });
+    const deleteTaskFn = this.createFunction(
+      'DeleteTaskFn',
+      'tasks/delete-task-handler.ts',
+      taskFnCommonEnv,
+    );
     tasksTable.grantReadWriteData(deleteTaskFn);
 
-    const createUserFn = new NodejsFunction(this, 'CreateUserFn', {
-      functionName: `${SYSTEM_NAME}-${ENV_NAME}-create-user-fn`,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/users/create-user-handler.ts',
-      handler: 'handler',
-      environment: {
-        USER_POOL_CLIENTID: userPoolClientId.stringValue,
-      },
-    });
+    const createUserFn = this.createFunction(
+      'CreateUserFn',
+      'users/create-user-handler.ts',
+      userFnCommonEnv,
+    );
 
-    const authUserFn = new NodejsFunction(this, 'AuthUserFn', {
-      functionName: `${SYSTEM_NAME}-${ENV_NAME}-auth-user-fn`,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      entry: '../functions/src/handlers/users/auth-user-handler.ts',
-      handler: 'handler',
-      environment: {
-        USER_POOL_CLIENTID: userPoolClientId.stringValue,
-      },
-    });
+    const authUserFn = this.createFunction(
+      'AuthUserFn',
+      'users/auth-user-handler.ts',
+      userFnCommonEnv,
+    );
 
     const api = new apigw.RestApi(this, 'TaskApiGw', {
       restApiName: `${SYSTEM_NAME}-${ENV_NAME}-task-api`,
@@ -169,5 +154,21 @@ export class EinojiStack extends cdk.Stack {
 
     const authResource = usersResource.addResource('auth');
     authResource.addMethod('POST', new apigw.LambdaIntegration(authUserFn));
+  }
+  private createFunction(
+    name: string,
+    path: string,
+    env?: { [key: string]: string },
+  ): lambda.Function {
+    return new NodejsFunction(this, name, {
+      functionName: `${SYSTEM_NAME}-${ENV_NAME}-${kebabCase(name)}`,
+      runtime: lambda.Runtime.NODEJS_18_X,
+      entry: `../functions/src/handlers/${path}`,
+      handler: 'handler',
+      environment: {
+        POWERTOOLS_SERVICE_NAME: SYSTEM_NAME,
+        ...env,
+      },
+    });
   }
 }
