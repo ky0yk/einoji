@@ -16,6 +16,8 @@ export type RequestHandlerWithoutContext<T = APIGatewayProxyEvent> = (
 
 export type RequestErrorHandler = (error: AppError) => LambdaResponse;
 
+const { log, logError } = createLoggerFunctionsForLayer('HANDLER');
+
 export const handlerFactory =
   <T = APIGatewayProxyEvent>(
     name: string,
@@ -33,8 +35,6 @@ export const handlerFactory =
       return handlerUnknownError(name, error);
     }
   };
-
-const { log, logError } = createLoggerFunctionsForLayer('HANDLER');
 
 const handleRequest = async <T = APIGatewayProxyEvent>(
   name: string,
