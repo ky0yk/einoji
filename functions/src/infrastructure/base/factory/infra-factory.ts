@@ -4,7 +4,7 @@ import { InfraError } from '../errors/infra-errors';
 
 type InfraErrorHandler = (error: Error) => InfraError;
 
-const { log, logError } = createLoggerFunctionsForLayer('infra');
+const { log, logError } = createLoggerFunctionsForLayer('INFRA');
 
 export const infraFactory = <T, P extends unknown[]>(
   name: string,

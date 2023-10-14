@@ -1,11 +1,11 @@
 import { Logger } from '@aws-lambda-powertools/logger';
 export const logger = new Logger();
 
-type LoggingLayer = 'handler' | 'usecase' | 'infra';
+type LoggingLayer = 'HANDLER' | 'USECASE' | 'INFRA';
 type LoggingAction = 'ENTRY' | 'EXIT';
 
 const log = (layer: LoggingLayer, action: LoggingAction, name: string) =>
-  logger.info(`${action} ${layer}: ${name}`);
+  logger.info(`${action}: ${layer} ${name}`);
 
 const createLayerSpecificLogger = (layer: LoggingLayer) => {
   return (action: LoggingAction, name: string) => {

@@ -34,7 +34,7 @@ export const handlerFactory =
     }
   };
 
-const { log, logError } = createLoggerFunctionsForLayer('handler');
+const { log, logError } = createLoggerFunctionsForLayer('HANDLER');
 
 const handleRequest = async <T = APIGatewayProxyEvent>(
   name: string,

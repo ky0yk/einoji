@@ -5,7 +5,7 @@ import { ErrorCode } from '../../../utils/errors/error-codes';
 export type UseCase<T, P extends unknown[]> = (...args: P) => Promise<T>;
 export type UseCaseErrorHandler = (error: Error) => AppError;
 
-const { log, logError } = createLoggerFunctionsForLayer('usecase');
+const { log, logError } = createLoggerFunctionsForLayer('USECASE');
 
 export const useCaseFactory = <T, P extends unknown[]>(
   name: string,
