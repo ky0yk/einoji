@@ -11,38 +11,47 @@ export const infraFactory = <T, P extends unknown[]>(
 ): RepositoryAction<T, P> => {
   return async (...args: P): Promise<T> => {
     try {
-      return await operationWithLog(name, operation, ...args);
+      return await execute(name, operation, ...args);
     } catch (e: unknown) {
-      return await operationErrorHandlerWithLog(name, errorHandler, e);
+      if (e instanceof Error) {
+        logger.error(`Raw error for ${name}:`, e);
+        throw handleError(name, errorHandler, e);
+      }
+      throw handleUnexpectedError(name, e);
     }
   };
 };
 
-const operationWithLog = async <T, P extends unknown[]>(
+const execute = async <T, P extends unknown[]>(
   name: string,
   operation: RepositoryAction<T, P>,
   ...args: P
 ): Promise<T> => {
-  logger.info(`ENTRY infra: ${name}`);
+  logWrapper(name, 'ENTRY');
   const result = await operation(...args);
-  logger.info(`EXIT infra: ${name}`);
+  logWrapper(name, 'EXIT');
   return result;
 };
 
-const operationErrorHandlerWithLog = async <T>(
+const handleError = (
   name: string,
   processError: OpsErrorHandler,
-  e: unknown,
-): Promise<T> => {
-  logger.error(`An error occurred in infra: ${name}`);
-  if (e instanceof Error) {
-    logger.error(`Raw error for ${name}:`, e);
-    logger.error(`ENTRY infra error handling: ${name}`);
-    const errorResult = processError(e);
-    logger.info(`EXIT infra error handling: ${name}`, errorResult);
-    throw errorResult;
-  } else {
-    logger.error(`unexpected error occurred in infra: ${name}}`);
-    throw new Error('Unknown error');
-  }
+  error: Error,
+): InfraError => {
+  logErrorWrapper(name, 'ENTRY', error);
+  const result = processError(error);
+  logWrapper(name, 'EXIT');
+  return result;
 };
+
+const handleUnexpectedError = (name: string, error: unknown): Error => {
+  logErrorWrapper(name, 'ENTRY', error);
+  const result = new Error('An unexpected error');
+  logErrorWrapper(name, 'EXIT');
+  return result;
+};
+
+const logWrapper = (name: string, action: string) =>
+  logger.info(`${action} usecase: ${name}`);
+const logErrorWrapper = (name: string, action: string, error?: unknown) =>
+  logger.error(`${action} error in usecase: ${name}`, String(error));
