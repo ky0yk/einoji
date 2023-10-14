@@ -64,6 +64,7 @@ export class EinojiStack extends cdk.Stack {
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
+        POWERTOOLS_SERVICE_NAME: SYSTEM_NAME,
       },
     });
     tasksTable.grantReadWriteData(createTaskFn);
@@ -75,6 +76,7 @@ export class EinojiStack extends cdk.Stack {
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
+        POWERTOOLS_SERVICE_NAME: SYSTEM_NAME,
       },
     });
     tasksTable.grantReadData(getTaskFn);
@@ -86,6 +88,7 @@ export class EinojiStack extends cdk.Stack {
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
+        POWERTOOLS_SERVICE_NAME: SYSTEM_NAME,
       },
     });
     tasksTable.grantReadWriteData(updateTaskFn);
@@ -97,6 +100,7 @@ export class EinojiStack extends cdk.Stack {
       handler: 'handler',
       environment: {
         TASKS_TABLE_NAME: tasksTable.tableName,
+        POWERTOOLS_SERVICE_NAME: SYSTEM_NAME,
       },
     });
     tasksTable.grantReadWriteData(deleteTaskFn);
@@ -108,6 +112,7 @@ export class EinojiStack extends cdk.Stack {
       handler: 'handler',
       environment: {
         USER_POOL_CLIENTID: userPoolClientId.stringValue,
+        POWERTOOLS_SERVICE_NAME: SYSTEM_NAME,
       },
     });
 
@@ -118,6 +123,7 @@ export class EinojiStack extends cdk.Stack {
       handler: 'handler',
       environment: {
         USER_POOL_CLIENTID: userPoolClientId.stringValue,
+        POWERTOOLS_SERVICE_NAME: SYSTEM_NAME,
       },
     });
 
