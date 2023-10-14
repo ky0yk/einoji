@@ -2,14 +2,13 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 const SYSTEM_NAME = 'einoji';
 const ENV_NAME = 'dev';
-
-const USER_POOL_CLIENTID = process.env.USER_POOL_CLIENTID!;
 
 export class EinojiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -39,7 +38,16 @@ export class EinojiStack extends cdk.Stack {
       authFlows: { userPassword: true },
     });
 
-    new cdk.CfnOutput(this, 'UserPoolClientId', {
+    const userPoolClientId = new ssm.StringParameter(
+      this,
+      'UserPoolClientIdParam',
+      {
+        parameterName: `/${SYSTEM_NAME}/${ENV_NAME}/user-pool-client-id`,
+        stringValue: userPoolClient.userPoolClientId,
+      },
+    );
+
+    new cdk.CfnOutput(this, 'UserPoolClientIdOutput', {
       value: userPoolClient.userPoolClientId,
     });
 
@@ -99,7 +107,7 @@ export class EinojiStack extends cdk.Stack {
       entry: '../functions/src/handlers/users/create-user-handler.ts',
       handler: 'handler',
       environment: {
-        USER_POOL_CLIENTID: USER_POOL_CLIENTID,
+        USER_POOL_CLIENTID: userPoolClientId.stringValue,
       },
     });
 
@@ -109,7 +117,7 @@ export class EinojiStack extends cdk.Stack {
       entry: '../functions/src/handlers/users/auth-user-handler.ts',
       handler: 'handler',
       environment: {
-        USER_POOL_CLIENTID: USER_POOL_CLIENTID,
+        USER_POOL_CLIENTID: userPoolClientId.stringValue,
       },
     });
 
