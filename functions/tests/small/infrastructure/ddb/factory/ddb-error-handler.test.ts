@@ -1,7 +1,5 @@
 import {
   DdbInternalServerError,
-  DdbProvisionedThroughputExceededError,
-  DdbResourceNotFoundError,
   DdbValidationError,
 } from '../../../../../src/infrastructure/ddb/errors/ddb-errors';
 import { ddbErrorHandler } from '../../../../../src/infrastructure/ddb/factory/ddb-error-handler';
@@ -9,8 +7,8 @@ import { ddbErrorHandler } from '../../../../../src/infrastructure/ddb/factory/d
 describe('ddbErrorHandler', () => {
   test.each`
     original_error_name                         | expected_error_class
-    ${'ResourceNotFoundException'}              | ${DdbResourceNotFoundError}
-    ${'ProvisionedThroughputExceededException'} | ${DdbProvisionedThroughputExceededError}
+    ${'ResourceNotFoundException'}              | ${DdbInternalServerError}
+    ${'ProvisionedThroughputExceededException'} | ${DdbInternalServerError}
     ${'ValidationException'}                    | ${DdbValidationError}
     ${'SomeUnknownException'}                   | ${DdbInternalServerError}
   `(

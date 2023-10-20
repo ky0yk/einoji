@@ -8,27 +8,21 @@ import {
 import {
   DdbError,
   DdbInternalServerError,
-  DdbProvisionedThroughputExceededError,
-  DdbResourceNotFoundError,
   DdbValidationError,
 } from '../../../infrastructure/ddb/errors/ddb-errors';
 
 export const taskUsecaseErrorHandler = (
   error: DdbError | TaskError,
 ): AppError => {
-  if (
-    error instanceof DdbResourceNotFoundError ||
-    error instanceof DdbProvisionedThroughputExceededError ||
-    error instanceof DdbInternalServerError
-  ) {
+  if (error instanceof DdbValidationError) {
+    return new AppError(ErrorCode.INVALID_PAYLOAD_VALUE, error.message, error);
+  }
+  if (error instanceof DdbInternalServerError) {
     return new AppError(
       ErrorCode.EXTERNAL_SERVICE_FAILURE,
       error.message,
       error,
     );
-  }
-  if (error instanceof DdbValidationError) {
-    return new AppError(ErrorCode.INVALID_PAYLOAD_VALUE, error.message, error);
   }
   if (error instanceof TaskNotFoundError) {
     return new AppError(ErrorCode.TASK_NOT_FOUND, error.message, error);
