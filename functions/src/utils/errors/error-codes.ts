@@ -7,26 +7,24 @@ export enum ErrorCode {
   INVALID_QUERY_PARAMETER = 'REQ003', // クエリパラメータが不足または不正
   INVALID_PATH_PARAMETER = 'REQ004', // パスパラメータが不足または不正
 
-  // アプリケーション例外（回復可）
-  TASK_NOT_FOUND = 'APP001', // 存在しないTODOのIDでの操作
-  TASK_UPDATE_RULE_ERROR = 'APP002', // TODOの更新ルール違反
+  // タスクに関する例外（回復可）
+  TASK_NOT_FOUND = 'APP001', // 存在しないTASKのIDでの操作
+  TASK_UPDATE_RULE_ERROR = 'APP002', // TASKの更新ルール違反
 
-  // アプリケーション例外（回復不可） 必要になったらAPP101から始める
+  // タスクに関する例外（回復不可） 必要になったらAPP101から始める
 
   // ユーザーに関する例外（回復可）
   INVALID_CREDENTIALS = 'USER001', // ユーザー認証情報が不正
   USER_NOT_FOUND = 'USER002', // ユーザーが存在しない
   INVALID_PASSWORD_FORMAT = 'USER003', // パスワードの形式が不正
   INVALID_EMAIL_FORMAT = 'USER004', // Eメールの形式が不正
+  USER_EMAIL_EXISTS = 'USER005', // メールアドレスが既に存在する
+  USER_NOT_CONFIRMED = 'USER006', // ユーザーが未確認
 
-  // ユーザーに関する例外（回復不可）
-  USER_EMAIL_EXISTS = 'USER101', // メールアドレスが既に存在する
-  USER_NOT_CONFIRMED = 'USER102', // ユーザーが未確認
+  // ユーザーに関する例外（回復不可） 必要になったらUSER101から始める
 
   // システム例外
-  DATABASE_CONNECTION_ERROR = 'SYS001', // データベース接続エラー（DynamoDBへの接続障害）
-  SERVICE_DOWNTIME = 'SYS002', // APIサービスダウンタイム (API GatewayやLambdaのダウンタイム)
-  EXTERNAL_SERVICE_FAILURE = 'SYS003', // 外部サービスの障害
+  EXTERNAL_SERVICE_FAILURE = 'SYS001', // 外部サービスの障害
   UNKNOWN_ERROR = 'SYS999', // 予期しないエラー
 }
 
@@ -56,11 +54,9 @@ export const errorCodetoStatus = (errorCode: ErrorCode): HttpStatus => {
     case ErrorCode.INVALID_EMAIL_FORMAT:
       return HttpStatus.UNPROCESSABLE_ENTITY;
 
-    case ErrorCode.DATABASE_CONNECTION_ERROR:
     case ErrorCode.UNKNOWN_ERROR:
       return HttpStatus.INTERNAL_SERVER_ERROR;
 
-    case ErrorCode.SERVICE_DOWNTIME:
     case ErrorCode.EXTERNAL_SERVICE_FAILURE:
       return HttpStatus.SERVICE_UNAVAILABLE;
 
