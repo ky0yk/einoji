@@ -22,7 +22,7 @@ export const taskUsecaseErrorHandler = (
     error instanceof DdbInternalServerError
   ) {
     return new AppError(
-      ErrorCode.DATABASE_CONNECTION_ERROR,
+      ErrorCode.EXTERNAL_SERVICE_FAILURE,
       error.message,
       error,
     );
