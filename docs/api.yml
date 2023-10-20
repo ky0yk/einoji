@@ -569,14 +569,10 @@ components:
             properties:
               code:
                 type: string
-                enum: [DATABASE_CONNECTION_ERROR, TIMEOUT, UNKNOWN_ERROR]
+                enum: [UNKNOWN_ERROR]
               message:
                 type: string
           examples:
-            DATABASE_CONNECTION_ERROR:
-              $ref: '#/components/examples/DATABASE_CONNECTION_ERROR'
-            TIMEOUT:
-              $ref: '#/components/examples/TIMEOUT'
             UNKNOWN_ERROR:
               $ref: '#/components/examples/UNKNOWN_ERROR'
     503Common:
@@ -588,12 +584,10 @@ components:
             properties:
               code:
                 type: 'string'
-                enum: [SERVICE_DOWNTIME, EXTERNAL_SERVICE_FAILURE]
+                enum: [EXTERNAL_SERVICE_FAILURE]
               message:
                 type: 'string'
           examples:
-            SERVICE_DOWNTIME:
-              $ref: '#/components/examples/SERVICE_DOWNTIME'
             EXTERNAL_SERVICE_FAILURE:
               $ref: '#/components/examples/EXTERNAL_SERVICE_FAILURE'
   securitySchemes:
@@ -650,22 +644,10 @@ components:
       value:
         code: APP002
         message: 'Provided data does not follow update rules.'
-    DATABASE_CONNECTION_ERROR:
-      value:
-        code: SYS001
-        message: 'Database connection error.'
-    SERVICE_DOWNTIME:
-      value:
-        code: SYS002
-        message: 'Service is currently unavailable.'
     EXTERNAL_SERVICE_FAILURE:
       value:
-        code: SYS003
+        code: SYS001
         message: 'External service error.'
-    TIMEOUT:
-      value:
-        code: SYS004
-        message: 'Processing timeout.'
     UNKNOWN_ERROR:
       value:
         code: SYS999
