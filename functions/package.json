@@ -19,6 +19,6 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.421.0",
     "@aws-sdk/lib-dynamodb": "^3.388.0",
     "aws-lambda": "^1.0.7",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   }
 }
