@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.119",
+    "@types/aws-lambda": "^8.10.126",
     "@types/uuid": "^9.0.2",
     "aws-sdk-client-mock": "^3.0.0"
   },
