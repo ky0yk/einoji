@@ -11,7 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
-    "@types/uuid": "^9.0.2",
+    "@types/uuid": "^9.0.7",
     "aws-sdk-client-mock": "^3.0.0"
   },
   "dependencies": {
