@@ -4,7 +4,7 @@
   "scripts": {},
   "devDependencies": {
     "aws-cdk": "^2.100.0",
-    "aws-cdk-lib": "^2.100.0",
+    "aws-cdk-lib": "^2.110.0",
     "just-kebab-case": "^4.2.0"
   },
   "dependencies": {
